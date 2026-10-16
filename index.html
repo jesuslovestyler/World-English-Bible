@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>World English Bible</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --paper: #faf6ec;
+        --surface: #fffdf6;
+        --ink: #2b2517;
+        --ink-soft: #6f6350;
+        --line: #e3d8bf;
+        --accent: #7c5a1e;
+        --accent-ink: #ffffff;
+        --accent-soft: #f1e7cd;
+        --hl: #ffe89e;
+        --hl-edge: #d9a92c;
+        --mark: #ffe89e;
+        --shadow: 0 1px 3px rgba(80, 62, 20, 0.10);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #171410;
+          --surface: #201b14;
+          --ink: #ede4cf;
+          --ink-soft: #ab9f83;
+          --line: #3a3222;
+          --accent: #d9ab5e;
+          --accent-ink: #221a0c;
+          --accent-soft: #2e2716;
+          --hl: #57451a;
+          --hl-edge: #d9ab5e;
+          --mark: #57451a;
+          --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+      }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px 56px; }
+      [hidden] { display: none !important; }
+
+      /* ---------- home ---------- */
+      .home-head { padding: 34px 0 6px; }
+      h1 {
+        font-family: "Newsreader", Georgia, "Times New Roman", serif;
+        font-weight: 600;
+        font-size: 34px;
+        line-height: 1.15;
+        margin: 0 0 8px;
+        letter-spacing: 0.01em;
+      }
+      .lede { color: var(--ink-soft); font-size: 16.5px; margin: 0 0 22px; max-width: 34em; }
+
+      .searchbar { display: flex; gap: 8px; margin: 0 0 8px; }
+      .searchbar input {
+        flex: 1 1 auto; min-width: 0;
+        font: inherit; font-size: 17px;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        padding: 13px 14px;
+        min-height: 52px;
+      }
+      .searchbar input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+      .searchbar input::placeholder { color: var(--ink-soft); }
+      .btn {
+        font: inherit; font-weight: 600; cursor: pointer;
+        border-radius: 10px; border: 1.5px solid transparent;
+        min-height: 52px; padding: 12px 18px;
+        background: var(--accent); color: var(--accent-ink);
+      }
+      .btn:active { transform: translateY(1px); }
+
+      .continue-card {
+        display: flex; align-items: center; gap: 14px; width: 100%;
+        text-align: left; cursor: pointer;
+        background: var(--accent-soft);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 16px 18px; margin: 18px 0 4px;
+        color: var(--ink); font: inherit;
+        box-shadow: var(--shadow);
+      }
+      .continue-card .cc-label { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+      .continue-card .cc-where { display: block; font-family: "Newsreader", Georgia, serif; font-size: 22px; font-weight: 600; margin-top: 2px; }
+      .continue-card .cc-arrow { margin-left: auto; font-size: 22px; color: var(--accent); }
+
+      h2.testament {
+        font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--ink-soft);
+        margin: 34px 0 4px;
+        display: flex; justify-content: space-between; align-items: baseline;
+      }
+      h2.testament .t-count { letter-spacing: 0.02em; text-transform: none; font-weight: 500; font-size: 13px; }
+      .book-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+      .book-list li { border-bottom: 1px solid var(--line); }
+      .book-row {
+        display: flex; align-items: baseline; gap: 12px; width: 100%;
+        background: none; border: 0; cursor: pointer; text-align: left;
+        padding: 15px 6px; min-height: 56px; font: inherit; color: var(--ink);
+      }
+      .book-row .b-name { font-family: "Newsreader", Georgia, serif; font-size: 20px; font-weight: 500; }
+      .book-row .b-count { margin-left: auto; color: var(--ink-soft); font-size: 13.5px; white-space: nowrap; }
+      .book-row .b-arrow { color: var(--accent); font-size: 18px; }
+      .book-row:active { background: var(--accent-soft); }
+
+      footer.site {
+        margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line);
+        color: var(--ink-soft); font-size: 14px; text-align: center;
+      }
+
+      /* ---------- top bars (chapters / reader / search) ---------- */
+      .topbar {
+        position: sticky; top: 0; z-index: 5;
+        background: var(--paper);
+        border-bottom: 1px solid var(--line);
+        margin: 0 -20px; padding: 8px 20px;
+        display: flex; align-items: center; gap: 8px;
+      }
+      .topbar .tb-title {
+        flex: 1 1 auto; text-align: center; min-width: 0;
+        font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 18px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .navbtn {
+        font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: none; border: 0;
+        min-height: 44px; padding: 8px 6px; white-space: nowrap;
+      }
+
+      /* ---------- chapter grid ---------- */
+      .chap-head { padding: 22px 0 4px; }
+      .chap-head h2 { font-family: "Newsreader", Georgia, serif; font-size: 30px; font-weight: 600; margin: 0 0 4px; }
+      .chap-head p { color: var(--ink-soft); margin: 0 0 18px; }
+      .chap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 10px; }
+      .chap-grid button {
+        font: inherit; font-size: 17px; font-weight: 500; cursor: pointer;
+        aspect-ratio: 1 / 1; min-height: 52px;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .chap-grid button:active { background: var(--accent-soft); border-color: var(--accent); }
+
+      /* ---------- reader ---------- */
+      .reader-head { padding: 26px 0 2px; text-align: center; }
+      .reader-head .r-book { font-family: "Newsreader", Georgia, serif; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0; }
+      .reader-head h2 { font-family: "Newsreader", Georgia, serif; font-size: 34px; font-weight: 600; margin: 2px 0 18px; }
+      .chapter-text {
+        font-family: "Newsreader", Georgia, "Times New Roman", serif;
+        font-size: 20px; line-height: 1.78; font-weight: 400;
+      }
+      .chapter-text .verse { border-radius: 4px; }
+      .chapter-text sup.vn {
+        font-size: 11.5px; font-weight: 600; color: var(--accent);
+        margin: 0 3px 0 6px; vertical-align: super; line-height: 0;
+        font-family: system-ui, sans-serif;
+      }
+      .chapter-text .verse:first-child sup.vn { margin-left: 0; }
+      .chapter-text .verse.hl { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); outline: 1px solid var(--hl-edge); }
+      .loading-note { text-align: center; color: var(--ink-soft); padding: 48px 0; font-size: 16.5px; }
+
+      .chap-nav { display: flex; gap: 10px; margin-top: 40px; }
+      .chap-nav button {
+        flex: 1 1 0; min-width: 0; cursor: pointer; font: inherit;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 12px 14px; min-height: 60px; box-shadow: var(--shadow);
+        text-align: left;
+      }
+      .chap-nav button.next { text-align: right; }
+      .chap-nav button .cn-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+      .chap-nav button .cn-where { display: block; font-family: "Newsreader", Georgia, serif; font-size: 18.5px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .chap-nav button:disabled { opacity: 0.38; cursor: default; box-shadow: none; }
+      .reader-foot { text-align: center; color: var(--ink-soft); font-size: 13.5px; margin-top: 34px; }
+
+      /* ---------- search results ---------- */
+      .search-head { padding: 20px 0 6px; }
+      .search-head h2 { font-family: "Newsreader", Georgia, serif; font-size: 26px; font-weight: 600; margin: 0 0 4px; }
+      .search-head p { color: var(--ink-soft); margin: 0; }
+      .result-list { list-style: none; margin: 14px 0 0; padding: 0; }
+      .result-list li { border-bottom: 1px solid var(--line); }
+      .result-list li:first-child { border-top: 1px solid var(--line); }
+      .result {
+        display: block; width: 100%; text-align: left; cursor: pointer;
+        background: none; border: 0; font: inherit; color: var(--ink);
+        padding: 14px 6px; min-height: 52px;
+      }
+      .result:active { background: var(--accent-soft); }
+      .result .r-ref { display: block; font-weight: 700; font-size: 14px; color: var(--accent); margin-bottom: 3px; }
+      .result .r-text { display: block; font-family: "Newsreader", Georgia, serif; font-size: 17.5px; line-height: 1.55; }
+      .result mark, .chapter-text mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 1px; }
+      .noresults { text-align: center; padding: 44px 12px; color: var(--ink-soft); }
+      .noresults .nr-big { font-family: "Newsreader", Georgia, serif; font-size: 22px; color: var(--ink); margin: 0 0 8px; }
+      .noresults p { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <!-- ============ HOME ============ -->
+      <section id="view-home">
+        <div class="home-head">
+          <h1>World English Bible</h1>
+          <p class="lede">The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible.</p>
+          <form class="searchbar" id="search-form" role="search">
+            <input id="search-input" type="search" inputmode="search" autocomplete="off"
+                   placeholder="Search the whole Bible…" aria-label="Search the whole Bible" />
+            <button class="btn" type="submit">Search</button>
+          </form>
+        </div>
+
+        <button class="continue-card" id="continue-card" hidden>
+          <span>
+            <span class="cc-label">Continue reading</span>
+            <span class="cc-where" id="continue-where"></span>
+          </span>
+          <span class="cc-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <h2 class="testament">Old Testament <span class="t-count">39 books</span></h2>
+        <ul class="book-list" id="ot-list"></ul>
+        <h2 class="testament">New Testament <span class="t-count">27 books</span></h2>
+        <ul class="book-list" id="nt-list"></ul>
+
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.</footer>
+      </section>
+
+      <!-- ============ CHAPTER GRID ============ -->
+      <section id="view-chapters" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="chapters-back">‹ Books</button>
+          <span class="tb-title" id="chapters-bar-title"></span>
+          <span style="min-width:64px"></span>
+        </div>
+        <div class="chap-head">
+          <h2 id="chapters-title"></h2>
+          <p id="chapters-sub"></p>
+        </div>
+        <div class="chap-grid" id="chap-grid"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.</footer>
+      </section>
+
+      <!-- ============ READER ============ -->
+      <section id="view-reader" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="reader-to-chapters">‹ Chapters</button>
+          <span class="tb-title" id="reader-bar-title"></span>
+          <button class="navbtn" id="reader-to-books">Books</button>
+        </div>
+        <div class="reader-head">
+          <p class="r-book" id="reader-book"></p>
+          <h2 id="reader-chapter"></h2>
+        </div>
+        <div id="reader-body"></div>
+        <nav class="chap-nav" id="chap-nav" hidden>
+          <button id="prev-chap">
+            <span class="cn-label">‹ Previous chapter</span>
+            <span class="cn-where" id="prev-where"></span>
+          </button>
+          <button id="next-chap" class="next">
+            <span class="cn-label">Next chapter ›</span>
+            <span class="cn-where" id="next-where"></span>
+          </button>
+        </nav>
+        <p class="reader-foot">World English Bible (WEB) — public domain. Share freely.</p>
+      </section>
+
+      <!-- ============ SEARCH RESULTS ============ -->
+      <section id="view-search" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="search-back">‹ Books</button>
+          <span class="tb-title">Search</span>
+          <span style="min-width:64px"></span>
+        </div>
+        <div class="search-head">
+          <h2 id="search-title"></h2>
+          <p id="search-count"></p>
+        </div>
+        <div id="search-body"></div>
+      </section>
+
+    </div>
+
+    <script>
+      "use strict";
+      /* Book metadata: [name, chapter count] — 39 OT then 27 NT. */
+      var META = [
+        ["Genesis",50],["Exodus",40],["Leviticus",27],["Numbers",36],["Deuteronomy",34],
+        ["Joshua",24],["Judges",21],["Ruth",4],["1 Samuel",31],["2 Samuel",24],
+        ["1 Kings",22],["2 Kings",25],["1 Chronicles",29],["2 Chronicles",36],["Ezra",10],
+        ["Nehemiah",13],["Esther",10],["Job",42],["Psalms",150],["Proverbs",31],
+        ["Ecclesiastes",12],["Song of Solomon",8],["Isaiah",66],["Jeremiah",52],["Lamentations",5],
+        ["Ezekiel",48],["Daniel",12],["Hosea",14],["Joel",3],["Amos",9],
+        ["Obadiah",1],["Jonah",4],["Micah",7],["Nahum",3],["Habakkuk",3],
+        ["Zephaniah",3],["Haggai",2],["Zechariah",14],["Malachi",4],
+        ["Matthew",28],["Mark",16],["Luke",24],["John",21],["Acts",28],
+        ["Romans",16],["1 Corinthians",16],["2 Corinthians",13],["Galatians",6],["Ephesians",6],
+        ["Philippians",4],["Colossians",4],["1 Thessalonians",5],["2 Thessalonians",3],["1 Timothy",6],
+        ["2 Timothy",4],["Titus",3],["Philemon",1],["Hebrews",13],["James",5],
+        ["1 Peter",5],["2 Peter",3],["1 John",5],["2 John",1],["3 John",1],
+        ["Jude",1],["Revelation",22]
+      ];
+      var OT_COUNT = 39;
+
+      /* ---- lazy data loading: assets/ot.js / assets/nt.js set window.__WEB_OT__ / __WEB_NT__ ---- */
+      var dataPromises = {};
+      function loadTestament(t) {
+        if (!dataPromises[t]) {
+          dataPromises[t] = new Promise(function (resolve, reject) {
+            var s = document.createElement("script");
+            s.src = "assets/" + t + ".js";
+            s.onload = function () { resolve(window[t === "ot" ? "__WEB_OT__" : "__WEB_NT__"]); };
+            s.onerror = function () { reject(new Error("Could not load the Bible text.")); };
+            document.head.appendChild(s);
+          });
+        }
+        return dataPromises[t];
+      }
+      function testamentOf(bi) { return bi < OT_COUNT ? "ot" : "nt"; }
+      function bookData(bi) {
+        var arr = window[testamentOf(bi) === "ot" ? "__WEB_OT__" : "__WEB_NT__"];
+        return arr ? arr[testamentOf(bi) === "ot" ? bi : bi - OT_COUNT] : null;
+      }
+      function ensureBook(bi) { return loadTestament(testamentOf(bi)); }
+      function ensureAll() { return Promise.all([loadTestament("ot"), loadTestament("nt")]); }
+
+      /* ---- helpers ---- */
+      function $(id) { return document.getElementById(id); }
+      function el(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search"];
+      function showView(id) {
+        VIEWS.forEach(function (v) { $(v).hidden = v !== id; });
+        window.scrollTo(0, 0);
+      }
+      function refName(bi, ci) { return META[bi][0] + " " + (ci + 1); }
+      /* linear chapter position across the whole Bible, for prev/next */
+      var CHAP_START = [];
+      (function () { var acc = 0; META.forEach(function (m) { CHAP_START.push(acc); acc += m[1]; }); })();
+      function fromLinear(n) {
+        var bi = 0;
+        while (bi < 65 && CHAP_START[bi + 1] <= n) bi++;
+        return { b: bi, c: n - CHAP_START[bi] };
+      }
+
+      /* ---- home: book lists ---- */
+      function buildBookList(ul, from, to) {
+        for (var bi = from; bi < to; bi++) {
+          (function (bi) {
+            var li = el("li");
+            var btn = el("button", "book-row");
+            btn.type = "button";
+            btn.appendChild(el("span", "b-name", META[bi][0]));
+            btn.appendChild(el("span", "b-count", META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters")));
+            btn.appendChild(el("span", "b-arrow", "›"));
+            btn.addEventListener("click", function () { openChapters(bi); });
+            li.appendChild(btn);
+            ul.appendChild(li);
+          })(bi);
+        }
+      }
+      buildBookList($("ot-list"), 0, OT_COUNT);
+      buildBookList($("nt-list"), OT_COUNT, 66);
+
+      /* ---- continue reading (this browser only) ---- */
+      var lastRead = null;
+      try {
+        var raw = localStorage.getItem("web-bible:last-read");
+        if (raw) {
+          var p = JSON.parse(raw);
+          if (p && p.b >= 0 && p.b < 66 && p.c >= 0 && p.c < META[p.b][1]) lastRead = p;
+        }
+      } catch (e) { /* storage unavailable — feature quietly off */ }
+      function refreshContinue() {
+        var card = $("continue-card");
+        if (lastRead) {
+          $("continue-where").textContent = refName(lastRead.b, lastRead.c);
+          card.hidden = false;
+        } else { card.hidden = true; }
+      }
+      $("continue-card").addEventListener("click", function () {
+        if (lastRead) openChapter(lastRead.b, lastRead.c, 0);
+      });
+      refreshContinue();
+
+      /* ---- chapter grid ---- */
+      var currentBook = 0;
+      function openChapters(bi) {
+        currentBook = bi;
+        $("chapters-bar-title").textContent = META[bi][0];
+        $("chapters-title").textContent = META[bi][0];
+        $("chapters-sub").textContent =
+          (bi < OT_COUNT ? "Old Testament" : "New Testament") + " · " +
+          META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters");
+        var grid = $("chap-grid");
+        grid.textContent = "";
+        for (var ci = 0; ci < META[bi][1]; ci++) {
+          (function (ci) {
+            var b = el("button", null, String(ci + 1));
+            b.type = "button";
+            b.setAttribute("aria-label", META[bi][0] + " chapter " + (ci + 1));
+            b.addEventListener("click", function () { openChapter(bi, ci, 0); });
+            grid.appendChild(b);
+          })(ci);
+        }
+        showView("view-chapters");
+      }
+      $("chapters-back").addEventListener("click", function () { showView("view-home"); });
+
+      /* ---- reader ---- */
+      var readerToken = 0;
+      var current = { b: 0, c: 0 };
+      function openChapter(bi, ci, highlightVerse) {
+        current = { b: bi, c: ci };
+        var name = META[bi][0];
+        $("reader-bar-title").textContent = refName(bi, ci);
+        $("reader-to-chapters").textContent = "‹ " + name;
+        $("reader-book").textContent = name;
+        $("reader-chapter").textContent = "Chapter " + (ci + 1);
+        $("chap-nav").hidden = true;
+        var body = $("reader-body");
+        body.textContent = "";
+        body.appendChild(el("p", "loading-note", "Opening " + refName(bi, ci) + "…"));
+        showView("view-reader");
+        try { localStorage.setItem("web-bible:last-read", JSON.stringify({ b: bi, c: ci })); } catch (e) {}
+        lastRead = { b: bi, c: ci };
+        refreshContinue();
+
+        var token = ++readerToken;
+        ensureBook(bi).then(function () {
+          if (token !== readerToken) return;
+          renderChapter(bi, ci, highlightVerse);
+        }).catch(function () {
+          if (token !== readerToken) return;
+          body.textContent = "";
+          body.appendChild(el("p", "loading-note",
+            "The Bible text could not be loaded. Please check your connection and try again."));
+        });
+      }
+      function renderChapter(bi, ci, highlightVerse) {
+        var bk = bookData(bi);
+        var body = $("reader-body");
+        body.textContent = "";
+        if (!bk) { body.appendChild(el("p", "loading-note", "Text unavailable.")); return; }
+        var verses = bk.c[ci].split("\n");
+        var p = el("p", "chapter-text");
+        var hlEl = null;
+        verses.forEach(function (text, vi) {
+          if (!text) return; /* a verse the WEB leaves unnumbered-empty (see note in data) */
+          var span = el("span", "verse");
+          span.id = "v" + (vi + 1);
+          var sup = el("sup", "vn", String(vi + 1));
+          span.appendChild(sup);
+          span.appendChild(document.createTextNode(text + " "));
+          if (highlightVerse === vi + 1) { span.classList.add("hl"); hlEl = span; }
+          p.appendChild(span);
+        });
+        body.appendChild(p);
+
+        var lin = CHAP_START[bi] + ci;
+        var prev = lin > 0 ? fromLinear(lin - 1) : null;
+        var next = lin < 1188 ? fromLinear(lin + 1) : null;
+        var pb = $("prev-chap"), nb = $("next-chap");
+        pb.disabled = !prev; nb.disabled = !next;
+        $("prev-where").textContent = prev ? refName(prev.b, prev.c) : "—";
+        $("next-where").textContent = next ? refName(next.b, next.c) : "—";
+        pb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0); } : null;
+        nb.onclick = next ? function () { openChapter(next.b, next.c, 0); } : null;
+        $("chap-nav").hidden = false;
+
+        if (hlEl) {
+          setTimeout(function () { hlEl.scrollIntoView({ block: "center" }); }, 60);
+        }
+      }
+      $("reader-to-chapters").addEventListener("click", function () { openChapters(current.b); });
+      $("reader-to-books").addEventListener("click", function () { showView("view-home"); });
+
+      /* ---- search ---- */
+      var searchIndex = null; /* [{b,c,v,low}] built once both testaments are in */
+      function buildIndex() {
+        searchIndex = [];
+        for (var bi = 0; bi < 66; bi++) {
+          var bk = bookData(bi);
+          if (!bk) continue;
+          bk.c.forEach(function (chap, ci) {
+            chap.split("\n").forEach(function (text, vi) {
+              if (text) searchIndex.push({ b: bi, c: ci, v: vi + 1, low: text.toLowerCase() });
+            });
+          });
+        }
+      }
+      function verseText(bi, ci, vi) {
+        var bk = bookData(bi);
+        return bk ? bk.c[ci].split("\n")[vi] : "";
+      }
+      function appendHighlighted(parent, text, qLow) {
+        if (!qLow) { parent.appendChild(document.createTextNode(text)); return; }
+        var low = text.toLowerCase(), pos = 0, hit;
+        while ((hit = low.indexOf(qLow, pos)) !== -1) {
+          if (hit > pos) parent.appendChild(document.createTextNode(text.slice(pos, hit)));
+          parent.appendChild(el("mark", null, text.slice(hit, hit + qLow.length)));
+          pos = hit + qLow.length;
+        }
+        if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
+      }
+      var searchToken = 0;
+      function runSearch(query) {
+        var token = ++searchToken;
+        showView("view-search");
+        $("search-title").textContent = "“" + query + "”";
+        $("search-count").textContent = "Searching the whole Bible…";
+        var body = $("search-body");
+        body.textContent = "";
+        ensureAll().then(function () {
+          if (token !== searchToken) return;
+          if (!searchIndex) buildIndex();
+          var q = query.toLowerCase();
+          var hits = [];
+          for (var i = 0; i < searchIndex.length; i++) {
+            if (searchIndex[i].low.indexOf(q) !== -1) hits.push(searchIndex[i]);
+          }
+          if (!hits.length) {
+            $("search-count").textContent = "";
+            var nr = el("div", "noresults");
+            nr.appendChild(el("p", "nr-big", "No verses found for “" + query + ".”"));
+            nr.appendChild(el("p", null,
+              "Nothing in the Bible matches that exactly. Try a single word, or check the spelling — short words like “grace”, “mercy”, or “love” are a good place to start."));
+            body.appendChild(nr);
+            return;
+          }
+          var MAX = 200;
+          $("search-count").textContent =
+            hits.length + (hits.length === 1 ? " verse" : " verses") + " found" +
+            (hits.length > MAX ? " — showing the first " + MAX : "");
+          var ul = el("ul", "result-list");
+          hits.slice(0, MAX).forEach(function (h) {
+            var li = el("li");
+            var btn = el("button", "result");
+            btn.type = "button";
+            btn.appendChild(el("span", "r-ref", META[h.b][0] + " " + (h.c + 1) + ":" + h.v));
+            var rt = el("span", "r-text");
+            appendHighlighted(rt, verseText(h.b, h.c, h.v - 1), q);
+            btn.appendChild(rt);
+            btn.addEventListener("click", function () { openChapter(h.b, h.c, h.v); });
+            li.appendChild(btn);
+            ul.appendChild(li);
+          });
+          body.appendChild(ul);
+        }).catch(function () {
+          if (token !== searchToken) return;
+          $("search-count").textContent = "";
+          body.appendChild(el("p", "loading-note",
+            "The Bible text could not be loaded. Please check your connection and try again."));
+        });
+      }
+      $("search-form").addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var q = $("search-input").value.trim();
+        if (q) runSearch(q);
+      });
+      var debounce = null;
+      $("search-input").addEventListener("input", function () {
+        var q = $("search-input").value.trim();
+        if (debounce) clearTimeout(debounce);
+        if (q.length >= 3) {
+          debounce = setTimeout(function () { runSearch(q); }, 450);
+        }
+      });
+      $("search-back").addEventListener("click", function () { showView("view-home"); });
+    </script>
+  </body>
+</html>
