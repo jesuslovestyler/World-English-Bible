@@ -20,6 +20,7 @@
         --accent: #7c5a1e;
         --accent-ink: #ffffff;
         --accent-soft: #f1e7cd;
+        --redletter: #b02318;
         --hl: #ffe89e;
         --hl-edge: #d9a92c;
         --mark: #ffe89e;
@@ -35,6 +36,7 @@
           --accent: #d9ab5e;
           --accent-ink: #221a0c;
           --accent-soft: #2e2716;
+          --redletter: #ff8a70;
           --hl: #57451a;
           --hl-edge: #d9ab5e;
           --mark: #57451a;
@@ -165,6 +167,7 @@
         font-size: 20px; line-height: 1.78; font-weight: 400;
       }
       .chapter-text .verse { border-radius: 4px; }
+      .chapter-text .wj { color: var(--redletter); }
       .chapter-text sup.vn {
         font-size: 11.5px; font-weight: 600; color: var(--accent);
         margin: 0 3px 0 6px; vertical-align: super; line-height: 0;
@@ -237,7 +240,7 @@
         <h2 class="testament">New Testament <span class="t-count">27 books</span></h2>
         <ul class="book-list" id="nt-list"></ul>
 
-        <footer class="site">World English Bible (WEB) — public domain. Share freely.</footer>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
 
       <!-- ============ CHAPTER GRID ============ -->
@@ -252,7 +255,7 @@
           <p id="chapters-sub"></p>
         </div>
         <div class="chap-grid" id="chap-grid"></div>
-        <footer class="site">World English Bible (WEB) — public domain. Share freely.</footer>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
 
       <!-- ============ READER ============ -->
@@ -277,7 +280,7 @@
             <span class="cn-where" id="next-where"></span>
           </button>
         </nav>
-        <p class="reader-foot">World English Bible (WEB) — public domain. Share freely.</p>
+        <p class="reader-foot">Words of Jesus shown in red.<br />World English Bible (WEB) — public domain. Share freely.</p>
       </section>
 
       <!-- ============ SEARCH RESULTS ============ -->
@@ -456,12 +459,26 @@
             "The Bible text could not be loaded. Please check your connection and try again."));
         });
       }
+      /* Words-of-Christ spans (from the WEB's own markup, shipped in assets/nt.js
+         as window.__WEB_NT_WOC__: "book,chapter,verse" -> [[start,end],...]
+         character offsets into the unchanged verse text). NT only. */
+      function appendVerseText(parent, text, spans) {
+        if (!spans) { parent.appendChild(document.createTextNode(text)); return; }
+        var pos = 0;
+        spans.forEach(function (rg) {
+          if (rg[0] > pos) parent.appendChild(document.createTextNode(text.slice(pos, rg[0])));
+          parent.appendChild(el("span", "wj", text.slice(rg[0], rg[1])));
+          pos = rg[1];
+        });
+        if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
+      }
       function renderChapter(bi, ci, highlightVerse) {
         var bk = bookData(bi);
         var body = $("reader-body");
         body.textContent = "";
         if (!bk) { body.appendChild(el("p", "loading-note", "Text unavailable.")); return; }
         var verses = bk.c[ci].split("\n");
+        var woc = window.__WEB_NT_WOC__ || null;
         var p = el("p", "chapter-text");
         var hlEl = null;
         verses.forEach(function (text, vi) {
@@ -470,7 +487,8 @@
           span.id = "v" + (vi + 1);
           var sup = el("sup", "vn", String(vi + 1));
           span.appendChild(sup);
-          span.appendChild(document.createTextNode(text + " "));
+          appendVerseText(span, text, woc ? woc[bi + "," + ci + "," + (vi + 1)] : null);
+          span.appendChild(document.createTextNode(" "));
           if (highlightVerse === vi + 1) { span.classList.add("hl"); hlEl = span; }
           p.appendChild(span);
         });
