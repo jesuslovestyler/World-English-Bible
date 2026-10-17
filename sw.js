@@ -4,16 +4,15 @@
 // Updates: network-first — whenever the app is opened WITH internet, the
 // freshest files are served and the stored copies are refreshed, so fixes
 // and improvements arrive on their own. Offline opens use the stored copy.
-var CACHE = 'web-bible-v1';
+// The app icons are cached at runtime once they exist, so their arrival is
+// never a precondition for offline storage to switch on.
+var CACHE = 'web-bible-v2';
 var PRECACHE = [
   './',
   'index.html',
   'assets/ot.js',
   'assets/nt.js',
-  'manifest.webmanifest',
-  'icon-192.png',
-  'icon-512.png',
-  'apple-touch-icon.png'
+  'manifest.webmanifest'
 ];
 
 self.addEventListener('install', function (event) {
