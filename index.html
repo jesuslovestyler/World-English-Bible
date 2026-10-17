@@ -301,7 +301,7 @@
           </form>
           <div class="download-box">
             <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
-            <p class="download-note">Save it once, then open it anytime — no internet needed.</p>
+            <p class="download-note">One file with the whole Bible — opens anywhere, works offline.</p>
           </div>
           <div class="install-box" id="install-box">
             <button class="btn install-btn" id="install-btn" type="button">📲 Add the Bible to your home screen</button>
@@ -652,18 +652,121 @@
       });
       try { refreshContinue(); } catch (e) { /* the card simply stays hidden */ }
 
-      /* ---- download this Bible as one self-contained file ----
-         Builds the saved file from this page's own HTML with the two data
-         files (assets/ot.js, assets/nt.js) inlined where the offline-data
-         marker sits, ahead of the app script. In the saved file the text
-         is already present, loadTestament above resolves it in place, and
-         browsing, search, red letter, verse sharing, deep links, and
-         Continue Reading all run with no internet and no other files. */
-      function fetchText(url) {
-        return fetch(url).then(function (r) {
-          if (!r.ok) throw new Error("fetch failed: " + url);
-          return r.text();
-        });
+      /* ---- download this Bible as one static, self-contained book ----
+         The saved file is a plain reading document, not another copy of
+         the app: the whole WEB text (from the app's own two data files,
+         assets/ot.js and assets/nt.js, loaded through the same lazy
+         loader the reader uses) rendered as static HTML — a title
+         header, a contents list of all 66 books, an anchor id on every
+         book and chapter, chapter navigation links (contents /
+         previous / next), verse numbers, and the words of Jesus in red
+         exactly where the red-letter data marks them — with no scripts
+         at all. Phone file previews that never run JavaScript (like the
+         iOS Files preview) showed the old app copy as an empty shell;
+         this book needs nothing to run, so it opens anywhere, fully
+         offline. */
+      function escText(s) {
+        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+      function bookSlug(name) {
+        return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      }
+      function chapId(bi, ci) { return bookSlug(META[bi][0]) + "-" + (ci + 1); }
+      function buildStaticBook() {
+        var woc = window.__WEB_NT_WOC__ || {};
+        var css = [
+          ":root{color-scheme:light dark;--paper:#faf6ec;--ink:#2b2517;--ink-soft:#6f6350;--line:#e3d8bf;--accent:#7c5a1e;--red:#b02318}",
+          "@media (prefers-color-scheme:dark){:root{--paper:#171410;--ink:#ede4cf;--ink-soft:#ab9f83;--line:#3a3222;--accent:#d9ab5e;--red:#ff8a70}}",
+          "html{-webkit-text-size-adjust:100%}",
+          "body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.7}",
+          ".wrap{max-width:680px;margin:0 auto;padding:30px 20px 64px}",
+          "header.book-head{text-align:center;padding:10px 0 4px}",
+          "h1{font-size:36px;font-weight:600;line-height:1.15;margin:0 0 10px}",
+          ".sub{color:var(--ink-soft);font-size:16.5px;margin:0 0 6px}",
+          ".contents{margin-top:30px}",
+          ".contents h2{font-size:25px;font-weight:600;margin:0 0 6px}",
+          ".contents h3{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:26px 0 4px}",
+          ".contents ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}",
+          ".contents li{border-bottom:1px solid var(--line)}",
+          ".contents a{display:block;padding:11px 4px;color:var(--ink);text-decoration:none;font-size:19px}",
+          "section.book{margin-top:58px}",
+          "h2.book-name{font-size:31px;font-weight:600;margin:0 0 2px}",
+          ".book-testament{font-family:system-ui,sans-serif;color:var(--ink-soft);font-size:14px;margin:0 0 8px}",
+          "section.chapter{margin-top:30px}",
+          "h3.chap-name{font-size:23px;font-weight:600;text-align:center;margin:0 0 4px}",
+          ".cnav{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:system-ui,sans-serif;font-size:14.5px;margin:8px 0}",
+          ".cnav a{color:var(--accent);text-decoration:none;font-weight:600;padding:6px 2px}",
+          ".cnav .sp{min-width:1px}",
+          ".chapter-text{font-size:20px;line-height:1.78;margin:10px 0}",
+          ".chapter-text .wj{color:var(--red)}",
+          ".chapter-text sup.vn{font-size:11.5px;font-weight:600;color:var(--accent);margin:0 3px 0 6px;vertical-align:super;line-height:0;font-family:system-ui,sans-serif}",
+          ".chapter-text .verse:first-child sup.vn{margin-left:0}",
+          "footer.book-foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:14.5px;text-align:center;font-family:system-ui,sans-serif}",
+          "footer.book-foot a{color:var(--accent);text-decoration:none;font-weight:600}"
+        ].join("\n");
+        var out = [];
+        out.push("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\" />\n" +
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n" +
+          "<title>World English Bible</title>\n<style>\n" + css + "\n</style>\n</head>\n<body>\n<div class=\"wrap\">\n");
+        out.push("<header class=\"book-head\">\n<h1>World English Bible</h1>\n" +
+          "<p class=\"sub\">World English Bible — public domain. Share freely. From jesuslovestyler.com</p>\n" +
+          "<p class=\"sub\">The words of Jesus are shown in red.</p>\n</header>\n");
+        /* contents: every book name an in-page anchor link to that book */
+        out.push("<nav class=\"contents\" id=\"contents\">\n<h2>Contents</h2>\n");
+        for (var t = 0; t < 2; t++) {
+          var from = t === 0 ? 0 : OT_COUNT, to = t === 0 ? OT_COUNT : 66;
+          out.push("<h3>" + (t === 0 ? "Old Testament" : "New Testament") + "</h3>\n<ul>\n");
+          for (var bi = from; bi < to; bi++) {
+            out.push("<li><a href=\"#" + bookSlug(META[bi][0]) + "\">" + escText(META[bi][0]) + "</a></li>\n");
+          }
+          out.push("</ul>\n");
+        }
+        out.push("</nav>\n");
+        /* the books themselves, chapter by chapter */
+        for (var b = 0; b < 66; b++) {
+          var bk = bookData(b);
+          if (!bk) continue;
+          out.push("<section class=\"book\" id=\"" + bookSlug(META[b][0]) + "\">\n" +
+            "<h2 class=\"book-name\">" + escText(META[b][0]) + "</h2>\n" +
+            "<p class=\"book-testament\">" + (b < OT_COUNT ? "Old Testament" : "New Testament") + "</p>\n");
+          bk.c.forEach(function (chap, ci) {
+            var lin = CHAP_START[b] + ci;
+            var prev = lin > 0 ? fromLinear(lin - 1) : null;
+            var next = lin < 1188 ? fromLinear(lin + 1) : null;
+            var nav = "<nav class=\"cnav\">" +
+              (prev ? "<a href=\"#" + chapId(prev.b, prev.c) + "\">‹ " + escText(refName(prev.b, prev.c)) + "</a>" : "<span class=\"sp\"></span>") +
+              "<a href=\"#contents\">Contents</a>" +
+              (next ? "<a href=\"#" + chapId(next.b, next.c) + "\">" + escText(refName(next.b, next.c)) + " ›</a>" : "<span class=\"sp\"></span>") +
+              "</nav>\n";
+            out.push("<section class=\"chapter\" id=\"" + chapId(b, ci) + "\">\n" +
+              "<h3 class=\"chap-name\">" + escText(refName(b, ci)) + "</h3>\n" + nav);
+            var vp = ["<p class=\"chapter-text\">"];
+            chap.split("\n").forEach(function (text, vi) {
+              if (!text) return; /* a verse the WEB leaves unnumbered-empty */
+              vp.push("<span class=\"verse\" id=\"" + chapId(b, ci) + "v" + (vi + 1) + "\"><sup class=\"vn\">" + (vi + 1) + "</sup>");
+              var spans = woc[b + "," + ci + "," + (vi + 1)];
+              if (!spans) {
+                vp.push(escText(text));
+              } else {
+                var pos = 0;
+                spans.forEach(function (rg) {
+                  if (rg[0] > pos) vp.push(escText(text.slice(pos, rg[0])));
+                  vp.push("<span class=\"wj\">" + escText(text.slice(rg[0], rg[1])) + "</span>");
+                  pos = rg[1];
+                });
+                if (pos < text.length) vp.push(escText(text.slice(pos)));
+              }
+              vp.push(" </span>");
+            });
+            vp.push("</p>\n");
+            out.push(vp.join(""));
+            out.push(nav + "</section>\n");
+          });
+          out.push("</section>\n");
+        }
+        out.push("<footer class=\"book-foot\">World English Bible (WEB) — public domain. Share freely.<br /><a href=\"#contents\">Back to contents</a></footer>\n");
+        out.push("</div>\n</body>\n</html>\n");
+        return out.join("");
       }
       $("download-btn").addEventListener("click", function () {
         var btn = $("download-btn");
@@ -676,18 +779,8 @@
           btn.textContent = label;
           if (msg) showToast(msg);
         }
-        Promise.all([
-          fetchText(location.href),
-          fetchText("assets/ot.js"),
-          fetchText("assets/nt.js")
-        ]).then(function (parts) {
-          var marker = "<!-- offline-data -->";
-          if (parts[0].indexOf(marker) === -1) throw new Error("offline marker missing");
-          var inline =
-            "<script>\n" + parts[1] + "\n</" + "script>\n" +
-            "<script>\n" + parts[2] + "\n</" + "script>\n    ";
-          var html = parts[0].replace(marker, function () { return inline; });
-          var blob = new Blob([html], { type: "text/html;charset=utf-8" });
+        ensureAll().then(function () {
+          var blob = new Blob([buildStaticBook()], { type: "text/html;charset=utf-8" });
           var url = URL.createObjectURL(blob);
           var a = document.createElement("a");
           a.href = url;
