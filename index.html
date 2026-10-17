@@ -198,6 +198,12 @@
       .reader-head { padding: 26px 0 2px; text-align: center; }
       .reader-head .r-book { font-family: "Newsreader", Georgia, serif; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0; }
       .reader-head h2 { font-family: "Newsreader", Georgia, serif; font-size: 34px; font-weight: 600; margin: 2px 0 18px; }
+
+      /* ---------- listen (audio Bible) ---------- */
+      .listenbar { margin: 0 0 18px; text-align: center; }
+      .listen-btn { min-height: 50px; font-size: 16.5px; padding: 12px 22px; }
+      .listen-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+      .listen-stop-btn { background: var(--surface); color: var(--accent); border-color: var(--line); }
       .chapter-text {
         font-family: "Newsreader", Georgia, "Times New Roman", serif;
         font-size: 20px; line-height: 1.78; font-weight: 400;
@@ -353,6 +359,13 @@
           <p class="r-book" id="reader-book"></p>
           <h2 id="reader-chapter"></h2>
         </div>
+        <div class="listenbar" id="listen-bar" hidden>
+          <button class="btn listen-btn" id="listen-btn" type="button">▶ Listen to this chapter</button>
+          <div class="listen-controls" id="listen-controls" hidden>
+            <button class="btn listen-btn" id="listen-pause-btn" type="button">⏸ Pause</button>
+            <button class="btn listen-btn listen-stop-btn" id="listen-stop-btn" type="button">⏹ Stop</button>
+          </div>
+        </div>
         <div id="reader-body"></div>
         <nav class="chap-nav" id="chap-nav" hidden>
           <button id="prev-chap">
@@ -448,6 +461,13 @@
       }
       var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search"];
       function showView(id) {
+        /* Every navigation in the app passes through this one door, so it
+           is also where listening stops: another chapter or book, a search,
+           a deep link — any move ends the speech and restores the plain
+           Listen button. stopListening is declared further down (function
+           declarations hoist) and is fully guarded, so this can never
+           break navigation on a browser without speech. */
+        try { stopListening(); } catch (e) {}
         VIEWS.forEach(function (v) { $(v).hidden = v !== id; });
         window.scrollTo(0, 0);
         if (id !== "view-reader") dismissSelection();
@@ -1128,6 +1148,179 @@
       }
       $("reader-to-chapters").addEventListener("click", function () { openChapters(current.b); });
       $("reader-to-books").addEventListener("click", function () { showView("view-home"); });
+
+      /* ---- listen to this chapter (optional audio Bible) ----
+         Reads the open chapter aloud with the device's own speech (the
+         Web Speech API): no audio files, no network, and nothing plays
+         until the reader taps Listen. On tap, an intro ("John chapter 3.")
+         is spoken, then the chapter's verses in order, WITHOUT verse
+         numbers, as one small utterance per verse queued in order — small
+         utterances, so a long chapter is not cut off mid-way the way one
+         giant utterance can be. The verse currently being spoken wears
+         the chapter's usual highlight (.hl, the same styling a tap gives
+         it) and is kept scrolled into view. While speaking, the button
+         area shows Pause (which toggles to Resume) and Stop. Listening
+         ends when Stop is tapped, when the chapter finishes, or when the
+         reader navigates anywhere — every move passes through showView,
+         which calls stopListening above. If the browser has no
+         speechSynthesis the button never appears at all, and everything
+         here is wrapped the way the rest of the boot is: any speech
+         error, missing voice, or unsupported API must never break
+         reading, searching, or anything else on the page. */
+      var listenState = null;   /* { id, paused, spokenEl, left } while speaking */
+      var listenSession = 0;    /* bumped on every stop, so stale utterance events no-op */
+      function speechOK() {
+        try {
+          return !!(window.speechSynthesis &&
+                    typeof window.speechSynthesis.speak === "function" &&
+                    typeof window.speechSynthesis.cancel === "function");
+        } catch (e) { return false; }
+      }
+      function clearSpoken() {
+        try {
+          if (listenState && listenState.spokenEl) listenState.spokenEl.classList.remove("hl");
+        } catch (e) {}
+      }
+      function resetListenUI() {
+        try {
+          var bar = $("listen-bar");
+          if (!bar) return;
+          bar.hidden = !speechOK();
+          $("listen-btn").hidden = !!listenState;
+          $("listen-controls").hidden = !listenState;
+          $("listen-pause-btn").textContent =
+            listenState && listenState.paused ? "▶ Resume" : "⏸ Pause";
+        } catch (e) {}
+      }
+      function stopListening() {
+        var wasActive = !!listenState;
+        listenSession++;
+        clearSpoken();
+        listenState = null;
+        if (wasActive) {
+          try { if (speechOK()) window.speechSynthesis.cancel(); } catch (e) {}
+        }
+        resetListenUI();
+      }
+      function finishListening() {
+        listenSession++;
+        clearSpoken();
+        listenState = null;
+        resetListenUI();
+      }
+      /* The device's best available English voice: an en-US voice first,
+         then the default voice, then one that lives on the device. */
+      function bestEnglishVoice() {
+        try {
+          var vs = window.speechSynthesis.getVoices() || [];
+          var best = null, bestScore = -1;
+          for (var i = 0; i < vs.length; i++) {
+            var v = vs[i];
+            var lang = String(v.lang || "").replace("_", "-").toLowerCase();
+            if (lang !== "en" && lang.indexOf("en-") !== 0) continue;
+            var score = 0;
+            if (lang === "en-us") score += 4;
+            if (v.default) score += 2;
+            if (v.localService) score += 1;
+            if (score > bestScore) { bestScore = score; best = v; }
+          }
+          return best;
+        } catch (e) { return null; }
+      }
+      function makeUtterance(text, voice) {
+        var u;
+        try { u = new SpeechSynthesisUtterance(text); }
+        catch (e) { u = { text: text }; }
+        try {
+          u.rate = 0.95;   /* natural, unhurried */
+          u.pitch = 1;
+          if (voice) u.voice = voice;
+          if (voice && voice.lang) u.lang = voice.lang;
+        } catch (e) {}
+        return u;
+      }
+      function markSpoken(verse) {
+        try {
+          if (!listenState) return;
+          clearSpoken();
+          var span = $("v" + verse);
+          if (!span) return;
+          span.classList.add("hl");
+          listenState.spokenEl = span;
+          try { span.scrollIntoView({ block: "center" }); }
+          catch (e) { try { span.scrollIntoView(); } catch (e2) {} }
+        } catch (e) {}
+      }
+      function startListening() {
+        try {
+          if (!speechOK()) return;
+          var bi = current.b, ci = current.c;
+          var bk = bookData(bi);
+          if (!bk) return;
+          var items = [];
+          bk.c[ci].split("\n").forEach(function (text, vi) {
+            if (text) items.push({ v: vi + 1, text: text });
+          });
+          if (!items.length) return;
+          stopListening();
+          /* While listening, the spoken verse owns the highlight. */
+          try { dismissSelection(); } catch (e) {}
+          try {
+            var lit = document.querySelectorAll("#reader-body .verse.hl");
+            for (var s = 0; s < lit.length; s++) lit[s].classList.remove("hl");
+          } catch (e) {}
+          var id = ++listenSession;
+          var st = { id: id, paused: false, spokenEl: null, left: items.length + 1 };
+          listenState = st;
+          resetListenUI();
+          var voice = bestEnglishVoice();
+          function done() {
+            if (!listenState || listenState.id !== id) return;
+            st.left--;
+            if (st.left <= 0) finishListening();
+          }
+          var intro = makeUtterance(META[bi][0] + " chapter " + (ci + 1) + ".", voice);
+          intro.onend = done;
+          intro.onerror = done;
+          window.speechSynthesis.speak(intro);
+          items.forEach(function (it) {
+            var u = makeUtterance(it.text, voice);
+            u.onstart = function () {
+              if (listenState && listenState.id === id) markSpoken(it.v);
+            };
+            u.onend = done;
+            u.onerror = done;
+            window.speechSynthesis.speak(u);
+          });
+        } catch (e) {
+          try { finishListening(); } catch (e2) {}
+        }
+      }
+      function toggleListenPause() {
+        try {
+          if (!listenState || !speechOK()) return;
+          if (listenState.paused) {
+            if (typeof window.speechSynthesis.resume === "function") window.speechSynthesis.resume();
+            listenState.paused = false;
+          } else {
+            if (typeof window.speechSynthesis.pause === "function") window.speechSynthesis.pause();
+            listenState.paused = true;
+          }
+          resetListenUI();
+        } catch (e) {}
+      }
+      try { $("listen-btn").addEventListener("click", startListening); } catch (e) {}
+      try { $("listen-pause-btn").addEventListener("click", toggleListenPause); } catch (e) {}
+      try { $("listen-stop-btn").addEventListener("click", function () { stopListening(); }); } catch (e) {}
+      /* Voices often arrive a beat after load; warm the pick when they do.
+         The pick is re-made at tap time regardless, so this is a bonus. */
+      try {
+        if (speechOK() && typeof window.speechSynthesis.getVoices === "function" &&
+            typeof window.speechSynthesis.addEventListener === "function") {
+          window.speechSynthesis.addEventListener("voiceschanged", function () { bestEnglishVoice(); });
+        }
+      } catch (e) {}
+      try { resetListenUI(); } catch (e) {}
 
       /* ---- search ---- */
       var searchIndex = null; /* [{b,c,v,low}] built once both testaments are in */
