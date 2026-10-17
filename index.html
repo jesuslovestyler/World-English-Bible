@@ -4,6 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#faf6ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171410" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Bible" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
@@ -89,6 +96,17 @@
         background: var(--accent); color: var(--accent-ink);
       }
       .btn:active { transform: translateY(1px); }
+      .btn:disabled { opacity: 0.65; cursor: default; }
+      .btn:disabled:active { transform: none; }
+
+      .download-box { margin: 20px 0 2px; }
+      .download-btn { width: 100%; font-size: 16.5px; }
+      .download-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
+
+      .install-box { margin: 10px 0 2px; }
+      .install-btn { width: 100%; font-size: 16.5px; }
+      .install-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
+      .install-help { color: var(--ink); font-size: 15px; text-align: center; margin: 9px 0 0; }
 
       .continue-card {
         display: flex; align-items: center; gap: 14px; width: 100%;
@@ -273,6 +291,15 @@
                    placeholder="Search the whole Bible…" aria-label="Search the whole Bible" />
             <button class="btn" type="submit">Search</button>
           </form>
+          <div class="download-box">
+            <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
+            <p class="download-note">Save it once, then open it anytime — no internet needed.</p>
+          </div>
+          <div class="install-box" id="install-box">
+            <button class="btn install-btn" id="install-btn" type="button">📲 Add the Bible to your home screen</button>
+            <p class="install-note">Opens like an app — and the whole Bible works offline.</p>
+            <p class="install-help" id="install-help" hidden>Tap the Share button, then Add to Home Screen.</p>
+          </div>
         </div>
 
         <button class="continue-card" id="continue-card" hidden>
@@ -355,6 +382,7 @@
     </div>
     <div class="share-toast" id="share-toast" hidden role="status"></div>
 
+    <!-- offline-data -->
     <script>
       "use strict";
       /* Book metadata: [name, chapter count] — 39 OT then 27 NT. */
@@ -379,6 +407,10 @@
       /* ---- lazy data loading: assets/ot.js / assets/nt.js set window.__WEB_OT__ / __WEB_NT__ ---- */
       var dataPromises = {};
       function loadTestament(t) {
+        /* In the downloaded single-file Bible the text is inlined ahead of
+           this script, so it is already here — no file needs loading. */
+        var ready = window[t === "ot" ? "__WEB_OT__" : "__WEB_NT__"];
+        if (ready) return Promise.resolve(ready);
         if (!dataPromises[t]) {
           dataPromises[t] = new Promise(function (resolve, reject) {
             var s = document.createElement("script");
@@ -583,6 +615,56 @@
         if (lastRead) openChapter(lastRead.b, lastRead.c, 0);
       });
       refreshContinue();
+
+      /* ---- download this Bible as one self-contained file ----
+         Builds the saved file from this page's own HTML with the two data
+         files (assets/ot.js, assets/nt.js) inlined where the offline-data
+         marker sits, ahead of the app script. In the saved file the text
+         is already present, loadTestament above resolves it in place, and
+         browsing, search, red letter, verse sharing, deep links, and
+         Continue Reading all run with no internet and no other files. */
+      function fetchText(url) {
+        return fetch(url).then(function (r) {
+          if (!r.ok) throw new Error("fetch failed: " + url);
+          return r.text();
+        });
+      }
+      $("download-btn").addEventListener("click", function () {
+        var btn = $("download-btn");
+        if (btn.disabled) return;
+        var label = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Preparing your Bible…";
+        function restore(msg) {
+          btn.disabled = false;
+          btn.textContent = label;
+          if (msg) showToast(msg);
+        }
+        Promise.all([
+          fetchText(location.href),
+          fetchText("assets/ot.js"),
+          fetchText("assets/nt.js")
+        ]).then(function (parts) {
+          var marker = "<!-- offline-data -->";
+          if (parts[0].indexOf(marker) === -1) throw new Error("offline marker missing");
+          var inline =
+            "<script>\n" + parts[1] + "\n</" + "script>\n" +
+            "<script>\n" + parts[2] + "\n</" + "script>\n    ";
+          var html = parts[0].replace(marker, function () { return inline; });
+          var blob = new Blob([html], { type: "text/html;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "World-English-Bible.html";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+          restore("Your Bible is downloading — look in your downloads");
+        }).catch(function () {
+          restore("Couldn't prepare the download — check your connection and try again.");
+        });
+      });
 
       /* ---- chapter grid ---- */
       var currentBook = 0;
@@ -883,6 +965,46 @@
         if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
         openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
       });
+
+      /* ---- add to home screen (installable app) ----
+         Android/Chrome offers beforeinstallprompt; tapping the button then
+         triggers that prompt. iPhone/iPad Safari never fires it, so tapping
+         the button shows the Share-button instructions instead. When the
+         app is already running installed, the whole section is hidden. */
+      (function () {
+        var box = $("install-box");
+        if (!box) return;
+        var standalone =
+          (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+          window.navigator.standalone === true;
+        if (standalone) { box.hidden = true; return; }
+        var deferredPrompt = null;
+        window.addEventListener("beforeinstallprompt", function (e) {
+          e.preventDefault();
+          deferredPrompt = e;
+        });
+        window.addEventListener("appinstalled", function () { box.hidden = true; });
+        $("install-btn").addEventListener("click", function () {
+          if (deferredPrompt) {
+            var p = deferredPrompt;
+            deferredPrompt = null;
+            p.prompt();
+            if (p.userChoice) p.userChoice.then(function () {}, function () {});
+          } else {
+            $("install-help").hidden = false;
+          }
+        });
+      })();
+    </script>
+    <script>
+      /* Keep the whole Bible stored on the phone for offline reading, and
+         pick up newer versions of the app when it opens with internet.
+         Fails silently where service workers aren't supported. */
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("sw.js").catch(function () {});
+        });
+      }
     </script>
 <script data-goatcounter="https://jesuslovestyler.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   </body>
