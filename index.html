@@ -477,6 +477,19 @@
         });
         if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
       }
+      /* Tapping a verse highlights it and points the URL hash at that verse's
+         deep link (#Book/Chapter/Verse), so the address can be copied and
+         sent as-is. replaceState keeps the back button behaving as always.
+         A click that ends a drag-selection is left alone, so selecting text
+         never disturbs the highlight or the link. */
+      function selectVerse(bi, ci, verse, spanEl) {
+        var sel = window.getSelection ? window.getSelection() : null;
+        if (sel && String(sel.toString()).length > 0) return;
+        var prev = document.querySelector(".chapter-text .verse.hl");
+        if (prev) prev.classList.remove("hl");
+        spanEl.classList.add("hl");
+        try { history.replaceState(null, "", hashFor(bi, ci, verse)); } catch (e) {}
+      }
       function renderChapter(bi, ci, highlightVerse) {
         var bk = bookData(bi);
         var body = $("reader-body");
@@ -495,6 +508,7 @@
           appendVerseText(span, text, woc ? woc[bi + "," + ci + "," + (vi + 1)] : null);
           span.appendChild(document.createTextNode(" "));
           if (highlightVerse === vi + 1) { span.classList.add("hl"); hlEl = span; }
+          span.addEventListener("click", function () { selectVerse(bi, ci, vi + 1, span); });
           p.appendChild(span);
         });
         body.appendChild(p);
