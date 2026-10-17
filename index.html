@@ -145,6 +145,16 @@
         color: var(--accent); background: none; border: 0;
         min-height: 44px; padding: 8px 6px; white-space: nowrap;
       }
+      .homebtn {
+        font: inherit; font-size: 14.5px; font-weight: 600;
+        color: var(--accent); text-decoration: none; white-space: nowrap;
+        display: inline-flex; align-items: center;
+        border: 1.5px solid var(--line); border-radius: 999px;
+        background: var(--surface);
+        min-height: 40px; padding: 6px 14px;
+      }
+      .homebtn:active { background: var(--accent-soft); }
+      .home-row { display: flex; justify-content: flex-end; margin: 0 0 14px; }
 
       /* ---------- chapter grid ---------- */
       .chap-head { padding: 22px 0 4px; }
@@ -255,6 +265,7 @@
       <!-- ============ HOME ============ -->
       <section id="view-home">
         <div class="home-head">
+          <div class="home-row"><a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a></div>
           <h1>World English Bible</h1>
           <p class="lede">The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible.</p>
           <form class="searchbar" id="search-form" role="search">
@@ -285,7 +296,7 @@
         <div class="topbar">
           <button class="navbtn" id="chapters-back">‹ Books</button>
           <span class="tb-title" id="chapters-bar-title"></span>
-          <span style="min-width:64px"></span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
         <div class="chap-head">
           <h2 id="chapters-title"></h2>
@@ -300,6 +311,7 @@
         <div class="topbar">
           <button class="navbtn" id="reader-to-chapters">‹ Chapters</button>
           <span class="tb-title" id="reader-bar-title"></span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
           <button class="navbtn" id="reader-to-books">Books</button>
         </div>
         <div class="reader-head">
@@ -325,7 +337,7 @@
         <div class="topbar">
           <button class="navbtn" id="search-back">‹ Books</button>
           <span class="tb-title">Search</span>
-          <span style="min-width:64px"></span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
         <div class="search-head">
           <h2 id="search-title"></h2>
