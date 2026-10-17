@@ -444,6 +444,11 @@
         body.textContent = "";
         body.appendChild(el("p", "loading-note", "Opening " + refName(bi, ci) + "…"));
         showView("view-reader");
+        /* Reflect this chapter in the URL hash so the page being read can be
+           copied and shared as a link. replaceState swaps the current history
+           entry instead of adding one, so the back button still leaves the app
+           the way it always did, and no hashchange event fires. */
+        try { history.replaceState(null, "", hashFor(bi, ci, highlightVerse || 0)); } catch (e) {}
         try { localStorage.setItem("web-bible:last-read", JSON.stringify({ b: bi, c: ci })); } catch (e) {}
         lastRead = { b: bi, c: ci };
         refreshContinue();
@@ -604,6 +609,55 @@
         }
       });
       $("search-back").addEventListener("click", function () { showView("view-home"); });
+
+      /* ---- deep links ----
+         Format: #BookName/Chapter  or  #BookName/Chapter/Verse, using the book
+         names exactly as the app displays them, URL-encoded
+         (e.g. #John/3/16, #1%20Samuel/2, #Song%20of%20Solomon/8/7).
+         Other pages (the WEB Concordance) link here in this format. */
+      function hashFor(bi, ci, verse) {
+        return "#" + encodeURIComponent(META[bi][0]) + "/" + (ci + 1) + (verse ? "/" + verse : "");
+      }
+      function parseHash() {
+        var h = location.hash || "";
+        if (h.charAt(0) === "#") h = h.slice(1);
+        if (!h) return null;
+        var parts = h.split("/");
+        if (parts.length < 2 || parts.length > 3) return null;
+        var name;
+        try { name = decodeURIComponent(parts[0]).trim(); } catch (e) { return null; }
+        var bi = -1;
+        for (var i = 0; i < META.length; i++) {
+          if (META[i][0].toLowerCase() === name.toLowerCase()) { bi = i; break; }
+        }
+        if (bi < 0) return null;
+        if (!/^\d+$/.test(parts[1])) return null;
+        var chap = parseInt(parts[1], 10);
+        if (chap < 1 || chap > META[bi][1]) return null;
+        var verse = 0;
+        if (parts.length === 3) {
+          if (!/^\d+$/.test(parts[2])) return null;
+          verse = parseInt(parts[2], 10);
+          if (verse < 1) return null;
+        }
+        return { b: bi, c: chap - 1, v: verse };
+      }
+      /* If the page was opened through a deep link, it wins over the saved
+         Continue Reading position. No (or an invalid) hash: behavior is
+         exactly as before — the home view. */
+      (function () {
+        var link = parseHash();
+        if (link) openChapter(link.b, link.c, link.v);
+      })();
+      /* A hash changed by hand (pasted link, edited URL, back/forward to a
+         different hash) opens that chapter too. The app's own navigation uses
+         replaceState, which never fires this event, so there is no loop. */
+      window.addEventListener("hashchange", function () {
+        var link = parseHash();
+        if (!link) return;
+        if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
+        openChapter(link.b, link.c, link.v);
+      });
     </script>
   </body>
 </html>
