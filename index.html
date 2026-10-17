@@ -204,6 +204,16 @@
       .listen-btn { min-height: 50px; font-size: 16.5px; padding: 12px 22px; }
       .listen-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
       .listen-stop-btn { background: var(--surface); color: var(--accent); border-color: var(--line); }
+      .listen-voice { margin-top: 12px; display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
+      .listen-voice label { font-size: 14.5px; font-weight: 600; color: var(--ink-soft); }
+      .listen-voice select {
+        font: inherit; font-size: 16px; max-width: min(320px, 82vw);
+        min-height: 44px; padding: 8px 12px; cursor: pointer;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .listen-voice select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
       .chapter-text {
         font-family: "Newsreader", Georgia, "Times New Roman", serif;
         font-size: 20px; line-height: 1.78; font-weight: 400;
@@ -364,6 +374,10 @@
           <div class="listen-controls" id="listen-controls" hidden>
             <button class="btn listen-btn" id="listen-pause-btn" type="button">⏸ Pause</button>
             <button class="btn listen-btn listen-stop-btn" id="listen-stop-btn" type="button">⏹ Stop</button>
+          </div>
+          <div class="listen-voice" id="listen-voice-row" hidden>
+            <label for="listen-voice-select">Voice</label>
+            <select id="listen-voice-select"></select>
           </div>
         </div>
         <div id="reader-body"></div>
@@ -1208,24 +1222,116 @@
         listenState = null;
         resetListenUI();
       }
-      /* The device's best available English voice: an en-US voice first,
-         then the default voice, then one that lives on the device. */
-      function bestEnglishVoice() {
+      /* The English voices the device offers, in the order it offers them. */
+      function englishVoices() {
         try {
           var vs = window.speechSynthesis.getVoices() || [];
-          var best = null, bestScore = -1;
+          var out = [];
+          for (var i = 0; i < vs.length; i++) {
+            var lang = String(vs[i].lang || "").replace("_", "-").toLowerCase();
+            if (lang === "en" || lang.indexOf("en-") === 0) out.push(vs[i]);
+          }
+          return out;
+        } catch (e) { return []; }
+      }
+      /* Quality hinted by a voice's name: Enhanced, Premium, Siri and
+         Natural voices are the downloaded high-quality ones, and a
+         compact voice is the small rough one. Premium outranks the rest;
+         no hint scores 0. */
+      function voiceQuality(v) {
+        var n = String((v && v.name) || "").toLowerCase();
+        var q = 0;
+        if (n.indexOf("premium") >= 0) q += 40;
+        if (n.indexOf("enhanced") >= 0) q += 30;
+        if (n.indexOf("siri") >= 0) q += 25;
+        if (n.indexOf("natural") >= 0) q += 20;
+        if (n.indexOf("compact") >= 0) q -= 15;
+        return q;
+      }
+      /* The device's best available English voice: the highest-quality
+         one wins; ties (and voices with no quality hint at all) fall back
+         to the long-standing pick — an en-US voice first, then the
+         default voice, then one that lives on the device. */
+      function bestEnglishVoice() {
+        try {
+          var vs = englishVoices();
+          var best = null, bestScore = 0;
           for (var i = 0; i < vs.length; i++) {
             var v = vs[i];
             var lang = String(v.lang || "").replace("_", "-").toLowerCase();
-            if (lang !== "en" && lang.indexOf("en-") !== 0) continue;
-            var score = 0;
+            var score = voiceQuality(v);
             if (lang === "en-us") score += 4;
             if (v.default) score += 2;
             if (v.localService) score += 1;
-            if (score > bestScore) { bestScore = score; best = v; }
+            if (best === null || score > bestScore) { bestScore = score; best = v; }
           }
           return best;
         } catch (e) { return null; }
+      }
+      /* ---- the reader's own voice pick ----
+         The picker beside the Listen controls lists the device's English
+         voices by name. The pick is remembered on the device (the same
+         guarded localStorage pattern as Continue Reading — a storage
+         error can never break the page) and restored on the next visit.
+         A voice is identified by its voiceURI, falling back to its name.
+         Speech already queued keeps the voice it started with; a new
+         pick takes effect on the next Listen tap, so changing it
+         mid-chapter can never disturb what is playing. */
+      var VOICE_KEY = "web-bible:voice";
+      function voiceId(v) { return String((v && (v.voiceURI || v.name)) || ""); }
+      function savedVoiceId() {
+        try { return window.localStorage.getItem(VOICE_KEY) || ""; }
+        catch (e) { return ""; }
+      }
+      function saveVoiceId(id) {
+        try { window.localStorage.setItem(VOICE_KEY, id); } catch (e) {}
+      }
+      /* The voice to speak with: the reader's saved pick when the device
+         still offers it, else the best English voice. */
+      function chosenVoice() {
+        try {
+          var id = savedVoiceId();
+          if (id) {
+            var vs = englishVoices();
+            for (var i = 0; i < vs.length; i++) {
+              if (voiceId(vs[i]) === id) return vs[i];
+            }
+          }
+        } catch (e) {}
+        return bestEnglishVoice();
+      }
+      /* (Re)build the picker from the voices the device offers right now.
+         The reader's current pick survives a rebuild; before any pick is
+         made, the best voice is the selected one. The row shows only
+         when speech works and at least one English voice exists — it
+         lives inside the Listen bar, so a browser with no speech support
+         shows neither the button nor the picker. */
+      function refreshVoicePicker() {
+        try {
+          var row = $("listen-voice-row"), sel = $("listen-voice-select");
+          if (!row || !sel) return;
+          var vs = speechOK() ? englishVoices() : [];
+          row.hidden = !vs.length;
+          if (!vs.length) return;
+          var cur = sel.value, keep = "";
+          for (var k = 0; k < vs.length; k++) {
+            if (voiceId(vs[k]) === cur) keep = cur;
+          }
+          sel.innerHTML = "";
+          vs.forEach(function (v) {
+            var o = document.createElement("option");
+            o.value = voiceId(v);
+            o.textContent = v.name || o.value;
+            sel.appendChild(o);
+          });
+          var target = keep || voiceId(chosenVoice());
+          sel.value = target;
+          if (sel.value !== target) {
+            for (var j = 0; j < sel.options.length; j++) {
+              if (sel.options[j].value === target) { sel.selectedIndex = j; break; }
+            }
+          }
+        } catch (e) {}
       }
       function makeUtterance(text, voice) {
         var u;
@@ -1273,7 +1379,7 @@
           var st = { id: id, paused: false, spokenEl: null, left: items.length + 1 };
           listenState = st;
           resetListenUI();
-          var voice = bestEnglishVoice();
+          var voice = chosenVoice();
           function done() {
             if (!listenState || listenState.id !== id) return;
             st.left--;
@@ -1312,14 +1418,21 @@
       try { $("listen-btn").addEventListener("click", startListening); } catch (e) {}
       try { $("listen-pause-btn").addEventListener("click", toggleListenPause); } catch (e) {}
       try { $("listen-stop-btn").addEventListener("click", function () { stopListening(); }); } catch (e) {}
-      /* Voices often arrive a beat after load; warm the pick when they do.
-         The pick is re-made at tap time regardless, so this is a bonus. */
+      try {
+        $("listen-voice-select").addEventListener("change", function () {
+          try { saveVoiceId($("listen-voice-select").value); } catch (e) {}
+        });
+      } catch (e) {}
+      /* Voices often arrive a beat after load; rebuild the picker when
+         they do. The spoken voice is re-picked at tap time regardless,
+         so this only keeps the menu honest. */
       try {
         if (speechOK() && typeof window.speechSynthesis.getVoices === "function" &&
             typeof window.speechSynthesis.addEventListener === "function") {
-          window.speechSynthesis.addEventListener("voiceschanged", function () { bestEnglishVoice(); });
+          window.speechSynthesis.addEventListener("voiceschanged", function () { refreshVoicePicker(); });
         }
       } catch (e) {}
+      try { refreshVoicePicker(); } catch (e) {}
       try { resetListenUI(); } catch (e) {}
 
       /* ---- search ---- */
