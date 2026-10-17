@@ -214,6 +214,24 @@
         box-shadow: var(--shadow);
       }
       .listen-voice select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .voice-help-toggle {
+        margin-top: 10px; padding: 6px 8px; cursor: pointer;
+        background: none; border: none; font: inherit;
+        font-size: 14px; font-weight: 600; color: var(--accent);
+        text-decoration: underline; text-underline-offset: 3px;
+      }
+      .voice-help-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .voice-help {
+        margin: 8px auto 2px; max-width: 520px; text-align: left;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow); padding: 12px 16px;
+        font-size: 14px; line-height: 1.55; color: var(--ink-soft);
+      }
+      .voice-help p { margin: 0 0 8px; }
+      .voice-help p:last-child { margin-bottom: 0; }
+      .voice-help-head { font-weight: 700; color: var(--ink); font-size: 14.5px; }
+      .voice-help strong { color: var(--ink); }
+      .voice-help-note { font-size: 13px; }
       .chapter-text {
         font-family: "Newsreader", Georgia, "Times New Roman", serif;
         font-size: 20px; line-height: 1.78; font-weight: 400;
@@ -378,6 +396,15 @@
           <div class="listen-voice" id="listen-voice-row" hidden>
             <label for="listen-voice-select">Voice</label>
             <select id="listen-voice-select"></select>
+          </div>
+          <div>
+            <button class="voice-help-toggle" id="voice-help-toggle" type="button" aria-expanded="false" aria-controls="voice-help">Want a nicer voice?</button>
+            <div class="voice-help" id="voice-help" hidden>
+              <p class="voice-help-head">Get a better voice — free, one time.</p>
+              <p><strong>iPhone &amp; iPad:</strong> Open Settings → Accessibility → Spoken Content → Voices → English, choose a voice, and download its Enhanced or Premium version. Then pick it in the Voice menu here.</p>
+              <p><strong>Android:</strong> Open Settings and search for “Text-to-speech”, then Install voice data → English, and download a voice you like. Reopen this app and pick it in the Voice menu.</p>
+              <p class="voice-help-note">On a computer, Chrome already includes a natural Google voice.</p>
+            </div>
           </div>
         </div>
         <div id="reader-body"></div>
@@ -1421,6 +1448,19 @@
       try {
         $("listen-voice-select").addEventListener("change", function () {
           try { saveVoiceId($("listen-voice-select").value); } catch (e) {}
+        });
+      } catch (e) {}
+      /* "Want a nicer voice?" — a quiet toggle under the Voice picker
+         that opens a one-time tip for downloading a better voice on
+         the device. It sits inside the Listen bar, so a browser with
+         no speech support shows neither the bar nor this note. */
+      try {
+        $("voice-help-toggle").addEventListener("click", function () {
+          try {
+            var panel = $("voice-help"), open = panel.hidden;
+            panel.hidden = !open;
+            $("voice-help-toggle").setAttribute("aria-expanded", open ? "true" : "false");
+          } catch (e) {}
         });
       } catch (e) {}
       /* Voices often arrive a beat after load; rebuild the picker when
