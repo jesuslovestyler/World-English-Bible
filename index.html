@@ -336,7 +336,7 @@
 
     </div>
 
-    <!-- verse share bar: appears while a verse is selected in the reader -->
+    <!-- verse share bar: appears while verses are selected in the reader -->
     <div class="sharebar" id="sharebar" hidden>
       <span class="sb-ref" id="sharebar-ref"></span>
       <button type="button" id="sharebar-btn">Share this verse</button>
@@ -416,21 +416,64 @@
         if (ogDescEl && desc != null) ogDescEl.setAttribute("content", desc);
       }
 
-      /* ---- verse selection & sharing ---- */
-      var selectedVerse = null; /* {b, c, v} of the verse the share bar targets */
-      function verseRef(bi, ci, v) { return META[bi][0] + " " + (ci + 1) + ":" + v; }
-      function applySelection(bi, ci, v) {
-        selectedVerse = { b: bi, c: ci, v: v };
-        var ref = verseRef(bi, ci, v);
+      /* ---- verse selection & sharing ----
+         Any number of verses in the open chapter can be selected at once;
+         tapping a verse toggles its highlight. The share bar, the page
+         title, and the URL hash all follow the selection. */
+      var selection = null; /* {b, c, verses:[verse numbers, ascending]} */
+      function isContiguous(vs) {
+        for (var i = 1; i < vs.length; i++) if (vs[i] !== vs[i - 1] + 1) return false;
+        return true;
+      }
+      /* Compact reference for a selection: "John 3:16" for one verse,
+         "John 3:16–18" for a run, "John 3:16, 18" for a short scattered
+         list, "John 3 · 4 verses" once the list gets long. */
+      function refSummary(bi, ci, vs) {
+        var head = META[bi][0] + " " + (ci + 1);
+        if (vs.length === 1) return head + ":" + vs[0];
+        if (isContiguous(vs)) return head + ":" + vs[0] + "–" + vs[vs.length - 1];
+        if (vs.length <= 3) return head + ":" + vs.join(", ");
+        return head + " · " + vs.length + " verses";
+      }
+      function selectionHash() {
+        var s = selection, vs = s.verses;
+        if (vs.length > 1 && isContiguous(vs)) {
+          return "#" + encodeURIComponent(META[s.b][0]) + "/" + (s.c + 1) + "/" + vs[0] + "-" + vs[vs.length - 1];
+        }
+        return hashFor(s.b, s.c, vs[0]);
+      }
+      function selectionLink() { return location.href.split("#")[0] + selectionHash(); }
+      /* The selected verses as one block of plain text, each prefixed by
+         its number. This whole block is what gets shared, so the verse
+         words themselves are the message. */
+      function selectionPlainText() {
+        var s = selection, parts = [];
+        s.verses.forEach(function (v) { parts.push(v + " " + verseText(s.b, s.c, v - 1)); });
+        return parts.join(" ");
+      }
+      function selectionShareText() {
+        var s = selection;
+        return selectionPlainText() + " — " + refSummary(s.b, s.c, s.verses) +
+               " (World English Bible) " + selectionLink();
+      }
+      function refreshSelectionUI() {
+        if (!selection) return;
+        var s = selection, vs = s.verses;
+        var ref = refSummary(s.b, s.c, vs);
         $("sharebar-ref").textContent = ref;
+        $("sharebar-btn").textContent = vs.length === 1 ? "Share this verse" : "Share these verses";
         $("sharebar").hidden = false;
         document.body.classList.add("share-open");
-        var text = verseText(bi, ci, v - 1);
         setPageMeta(ref + " — World English Bible",
-                    text + " — " + ref + " (World English Bible)");
+                    selectionPlainText() + " — " + ref + " (World English Bible)");
+        try { history.replaceState(null, "", selectionHash()); } catch (e) {}
+      }
+      function setSelection(bi, ci, verses) {
+        selection = { b: bi, c: ci, verses: verses.slice().sort(function (a, b) { return a - b; }) };
+        refreshSelectionUI();
       }
       function dismissSelection() {
-        selectedVerse = null;
+        selection = null;
         $("sharebar").hidden = true;
         document.body.classList.remove("share-open");
       }
@@ -460,23 +503,25 @@
           navigator.clipboard.writeText(str).then(done, fallback);
         } else { fallback(); }
       }
-      function shareSelectedVerse() {
-        if (!selectedVerse) return;
-        var s = selectedVerse;
-        var ref = verseRef(s.b, s.c, s.v);
-        var text = verseText(s.b, s.c, s.v - 1);
-        var title = ref + " — World English Bible";
-        var body = text + " — " + ref + " (World English Bible)";
-        var url = location.href.split("#")[0] + hashFor(s.b, s.c, s.v);
+      function shareSelectedVerses() {
+        if (!selection) return;
+        var s = selection;
+        var title = refSummary(s.b, s.c, s.verses) + " — World English Bible";
+        var block = selectionShareText();
+        /* A single text field and NO separate url field: when a url rides
+           along, Messages and Messenger swallow the words and deliver a
+           bare link card titled "World English Bible". With everything in
+           the text, the verse words are the message and the link sits
+           inline at the end. */
         if (navigator.share) {
-          navigator.share({ title: title, text: body, url: url }).catch(function (err) {
-            if (!err || err.name !== "AbortError") copyVerseText(body + " " + url);
+          navigator.share({ title: title, text: block }).catch(function (err) {
+            if (!err || err.name !== "AbortError") copyVerseText(block);
           });
         } else {
-          copyVerseText(body + " " + url);
+          copyVerseText(block);
         }
       }
-      $("sharebar-btn").addEventListener("click", shareSelectedVerse);
+      $("sharebar-btn").addEventListener("click", shareSelectedVerses);
       function refName(bi, ci) { return META[bi][0] + " " + (ci + 1); }
       /* linear chapter position across the whole Bible, for prev/next */
       var CHAP_START = [];
@@ -573,7 +618,10 @@
            copied and shared as a link. replaceState swaps the current history
            entry instead of adding one, so the back button still leaves the app
            the way it always did, and no hashchange event fires. */
-        try { history.replaceState(null, "", hashFor(bi, ci, highlightVerse || 0)); } catch (e) {}
+        var hlFirst = 0;
+        if (typeof highlightVerse === "number") hlFirst = highlightVerse;
+        else if (highlightVerse) hlFirst = highlightVerse[0];
+        try { history.replaceState(null, "", hashFor(bi, ci, hlFirst)); } catch (e) {}
         try { localStorage.setItem("web-bible:last-read", JSON.stringify({ b: bi, c: ci })); } catch (e) {}
         lastRead = { b: bi, c: ci };
         refreshContinue();
@@ -602,29 +650,47 @@
         });
         if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
       }
-      /* Tapping a verse highlights it and points the URL hash at that verse's
-         deep link (#Book/Chapter/Verse), so the address can be copied and
-         sent as-is. replaceState keeps the back button behaving as always.
-         A click that ends a drag-selection is left alone, so selecting text
-         never disturbs the highlight or the link. */
-      function selectVerse(bi, ci, verse, spanEl) {
+      /* Tapping a verse toggles it in the selection: an unselected verse
+         lights up, an already-lit verse goes dark again. The share bar,
+         title, and URL hash follow the whole selection (replaceState keeps
+         the back button behaving as always). A click that ends a
+         drag-selection is left alone, so selecting text toggles nothing. */
+      function toggleVerse(bi, ci, verse, spanEl) {
         var sel = window.getSelection ? window.getSelection() : null;
         if (sel && String(sel.toString()).length > 0) return;
-        var prev = document.querySelector(".chapter-text .verse.hl");
-        if (prev) prev.classList.remove("hl");
-        spanEl.classList.add("hl");
-        try { history.replaceState(null, "", hashFor(bi, ci, verse)); } catch (e) {}
-        applySelection(bi, ci, verse);
+        if (!selection || selection.b !== bi || selection.c !== ci) {
+          selection = { b: bi, c: ci, verses: [] };
+        }
+        var i = selection.verses.indexOf(verse);
+        if (i === -1) {
+          selection.verses.push(verse);
+          selection.verses.sort(function (a, b) { return a - b; });
+          spanEl.classList.add("hl");
+        } else {
+          selection.verses.splice(i, 1);
+          spanEl.classList.remove("hl");
+        }
+        if (!selection.verses.length) {
+          dismissSelection();
+          setPageMeta(refName(bi, ci) + " — World English Bible", DEFAULT_DESC);
+          try { history.replaceState(null, "", hashFor(bi, ci, 0)); } catch (e) {}
+          return;
+        }
+        refreshSelectionUI();
       }
-      function renderChapter(bi, ci, highlightVerse) {
+      /* highlight: 0 for none, a verse number, or a [start, end] range */
+      function renderChapter(bi, ci, highlight) {
         var bk = bookData(bi);
         var body = $("reader-body");
         body.textContent = "";
         if (!bk) { body.appendChild(el("p", "loading-note", "Text unavailable.")); return; }
         var verses = bk.c[ci].split("\n");
         var woc = window.__WEB_NT_WOC__ || null;
+        var hlSet = {};
+        if (typeof highlight === "number" && highlight > 0) hlSet[highlight] = true;
+        else if (highlight) { for (var hv = highlight[0]; hv <= highlight[1]; hv++) hlSet[hv] = true; }
         var p = el("p", "chapter-text");
-        var hlEl = null;
+        var hlEl = null, hlVerses = [];
         verses.forEach(function (text, vi) {
           if (!text) return; /* a verse the WEB leaves unnumbered-empty (see note in data) */
           var span = el("span", "verse");
@@ -633,8 +699,8 @@
           span.appendChild(sup);
           appendVerseText(span, text, woc ? woc[bi + "," + ci + "," + (vi + 1)] : null);
           span.appendChild(document.createTextNode(" "));
-          if (highlightVerse === vi + 1) { span.classList.add("hl"); hlEl = span; }
-          span.addEventListener("click", function () { selectVerse(bi, ci, vi + 1, span); });
+          if (hlSet[vi + 1]) { span.classList.add("hl"); hlVerses.push(vi + 1); if (!hlEl) hlEl = span; }
+          span.addEventListener("click", function () { toggleVerse(bi, ci, vi + 1, span); });
           p.appendChild(span);
         });
         body.appendChild(p);
@@ -650,7 +716,7 @@
         nb.onclick = next ? function () { openChapter(next.b, next.c, 0); } : null;
         $("chap-nav").hidden = false;
 
-        if (hlEl) applySelection(bi, ci, highlightVerse);
+        if (hlVerses.length) setSelection(bi, ci, hlVerses);
         if (hlEl) {
           setTimeout(function () { hlEl.scrollIntoView({ block: "center" }); }, 60);
         }
@@ -752,9 +818,10 @@
       $("search-back").addEventListener("click", function () { showView("view-home"); });
 
       /* ---- deep links ----
-         Format: #BookName/Chapter  or  #BookName/Chapter/Verse, using the book
-         names exactly as the app displays them, URL-encoded
-         (e.g. #John/3/16, #1%20Samuel/2, #Song%20of%20Solomon/8/7).
+         Format: #BookName/Chapter, #BookName/Chapter/Verse, or
+         #BookName/Chapter/Start-End for a whole run of verses, using the
+         book names exactly as the app displays them, URL-encoded
+         (e.g. #John/3/16, #John/3/16-18, #1%20Samuel/2, #Song%20of%20Solomon/8/7).
          Other pages (the WEB Concordance) link here in this format. */
       function hashFor(bi, ci, verse) {
         return "#" + encodeURIComponent(META[bi][0]) + "/" + (ci + 1) + (verse ? "/" + verse : "");
@@ -775,20 +842,25 @@
         if (!/^\d+$/.test(parts[1])) return null;
         var chap = parseInt(parts[1], 10);
         if (chap < 1 || chap > META[bi][1]) return null;
-        var verse = 0;
+        var verse = 0, verseEnd = 0;
         if (parts.length === 3) {
-          if (!/^\d+$/.test(parts[2])) return null;
-          verse = parseInt(parts[2], 10);
+          var vm = /^(\d+)(?:-(\d+))?$/.exec(parts[2]);
+          if (!vm) return null;
+          verse = parseInt(vm[1], 10);
           if (verse < 1) return null;
+          if (vm[2] != null) {
+            verseEnd = parseInt(vm[2], 10);
+            if (verseEnd <= verse) verseEnd = 0; /* a degenerate range is just the one verse */
+          }
         }
-        return { b: bi, c: chap - 1, v: verse };
+        return { b: bi, c: chap - 1, v: verse, vEnd: verseEnd };
       }
       /* If the page was opened through a deep link, it wins over the saved
          Continue Reading position. No (or an invalid) hash: behavior is
          exactly as before — the home view. */
       (function () {
         var link = parseHash();
-        if (link) openChapter(link.b, link.c, link.v);
+        if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
       })();
       /* A hash changed by hand (pasted link, edited URL, back/forward to a
          different hash) opens that chapter too. The app's own navigation uses
@@ -797,8 +869,9 @@
         var link = parseHash();
         if (!link) return;
         if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
-        openChapter(link.b, link.c, link.v);
+        openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
       });
     </script>
+<script data-goatcounter="https://jesuslovestyler.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   </body>
 </html>
