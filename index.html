@@ -108,6 +108,12 @@
       .install-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
       .install-help { color: var(--ink); font-size: 15px; text-align: center; margin: 9px 0 0; }
 
+      .noscript-note {
+        border: 1.5px solid var(--line); border-radius: 10px;
+        background: var(--surface); color: var(--ink);
+        padding: 13px 14px; margin: 22px 0 4px; font-size: 15.5px; text-align: center;
+      }
+
       .continue-card {
         display: flex; align-items: center; gap: 14px; width: 100%;
         text-align: left; cursor: pointer;
@@ -280,6 +286,8 @@
   <body>
     <div class="wrap">
 
+      <noscript><p class="noscript-note">If the book list doesn't appear, this preview can't run the Bible — open this file in Safari or Chrome instead.</p></noscript>
+
       <!-- ============ HOME ============ -->
       <section id="view-home">
         <div class="home-head">
@@ -446,6 +454,46 @@
         if (id === "view-home") setPageMeta(DEFAULT_TITLE, DEFAULT_DESC);
       }
 
+      /* ---- home: book lists render FIRST ----
+         The lists are the app, so they are built before any other startup
+         step runs — and every step after this point that can throw in a
+         restricted viewer (deep links and history, storage, meta updates,
+         service workers) is wrapped where it lives. In the iOS Files app
+         preview several of those APIs throw; nothing out there may keep
+         the books off this screen. If even building the lists fails, a
+         plain message stands where they would be instead of blank space. */
+      function buildBookList(ul, from, to) {
+        for (var bi = from; bi < to; bi++) {
+          (function (bi) {
+            var li = el("li");
+            var btn = el("button", "book-row");
+            btn.type = "button";
+            btn.appendChild(el("span", "b-name", META[bi][0]));
+            btn.appendChild(el("span", "b-count", META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters")));
+            btn.appendChild(el("span", "b-arrow", "›"));
+            btn.addEventListener("click", function () { openChapters(bi); });
+            li.appendChild(btn);
+            ul.appendChild(li);
+          })(bi);
+        }
+      }
+      var listsRendered = false;
+      try {
+        buildBookList($("ot-list"), 0, OT_COUNT);
+        buildBookList($("nt-list"), OT_COUNT, 66);
+        listsRendered =
+          $("ot-list").children.length === OT_COUNT &&
+          $("nt-list").children.length === 66 - OT_COUNT;
+      } catch (e) { listsRendered = false; }
+      if (!listsRendered) {
+        try {
+          var dataError = el("p", "loading-note",
+            "The Bible couldn't be loaded in this viewer. If you opened this file in a preview, open it in Safari or Chrome instead — the whole Bible is in this one file and works offline.");
+          var otListEl = $("ot-list");
+          otListEl.parentNode.insertBefore(dataError, otListEl);
+        } catch (e) { /* nothing more can be done */ }
+      }
+
       /* ---- page title & link-preview meta ----
          The title (and the og: tags a share sheet reads) follow what is on
          screen: a selected verse names itself, an open chapter names the
@@ -455,9 +503,13 @@
       var ogTitleEl = document.querySelector('meta[property="og:title"]');
       var ogDescEl = document.querySelector('meta[property="og:description"]');
       function setPageMeta(title, desc) {
-        document.title = title;
-        if (ogTitleEl) ogTitleEl.setAttribute("content", title);
-        if (ogDescEl && desc != null) ogDescEl.setAttribute("content", desc);
+        /* Cosmetic only — a viewer that refuses a title or meta update
+           must never break navigation over it. */
+        try {
+          document.title = title;
+          if (ogTitleEl) ogTitleEl.setAttribute("content", title);
+          if (ogDescEl && desc != null) ogDescEl.setAttribute("content", desc);
+        } catch (e) {}
       }
 
       /* ---- verse selection & sharing ----
@@ -565,7 +617,7 @@
           copyVerseText(block);
         }
       }
-      $("sharebar-btn").addEventListener("click", shareSelectedVerses);
+      try { $("sharebar-btn").addEventListener("click", shareSelectedVerses); } catch (e) {}
       function refName(bi, ci) { return META[bi][0] + " " + (ci + 1); }
       /* linear chapter position across the whole Bible, for prev/next */
       var CHAP_START = [];
@@ -576,24 +628,8 @@
         return { b: bi, c: n - CHAP_START[bi] };
       }
 
-      /* ---- home: book lists ---- */
-      function buildBookList(ul, from, to) {
-        for (var bi = from; bi < to; bi++) {
-          (function (bi) {
-            var li = el("li");
-            var btn = el("button", "book-row");
-            btn.type = "button";
-            btn.appendChild(el("span", "b-name", META[bi][0]));
-            btn.appendChild(el("span", "b-count", META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters")));
-            btn.appendChild(el("span", "b-arrow", "›"));
-            btn.addEventListener("click", function () { openChapters(bi); });
-            li.appendChild(btn);
-            ul.appendChild(li);
-          })(bi);
-        }
-      }
-      buildBookList($("ot-list"), 0, OT_COUNT);
-      buildBookList($("nt-list"), OT_COUNT, 66);
+      /* ---- home: book lists are built at the top of this script, before
+         anything that can throw (see "book lists render FIRST") ---- */
 
       /* ---- continue reading (this browser only) ---- */
       var lastRead = null;
@@ -614,7 +650,7 @@
       $("continue-card").addEventListener("click", function () {
         if (lastRead) openChapter(lastRead.b, lastRead.c, 0);
       });
-      refreshContinue();
+      try { refreshContinue(); } catch (e) { /* the card simply stays hidden */ }
 
       /* ---- download this Bible as one self-contained file ----
          Builds the saved file from this page's own HTML with the two data
@@ -921,7 +957,11 @@
         return "#" + encodeURIComponent(META[bi][0]) + "/" + (ci + 1) + (verse ? "/" + verse : "");
       }
       function parseHash() {
-        var h = location.hash || "";
+        /* Reading the hash can itself throw in a restricted viewer
+           (file previews, sandboxed frames) — that means "no deep link",
+           never a dead page. */
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return null; }
         if (h.charAt(0) === "#") h = h.slice(1);
         if (!h) return null;
         var parts = h.split("/");
@@ -953,58 +993,79 @@
          Continue Reading position. No (or an invalid) hash: behavior is
          exactly as before — the home view. */
       (function () {
-        var link = parseHash();
-        if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
+        try {
+          var link = parseHash();
+          if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
+        } catch (e) { /* a deep link that cannot be followed leaves the home view standing */ }
       })();
       /* A hash changed by hand (pasted link, edited URL, back/forward to a
          different hash) opens that chapter too. The app's own navigation uses
          replaceState, which never fires this event, so there is no loop. */
       window.addEventListener("hashchange", function () {
-        var link = parseHash();
-        if (!link) return;
-        if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
-        openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
+        try {
+          var link = parseHash();
+          if (!link) return;
+          if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
+          openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
+        } catch (e) {}
       });
 
       /* ---- add to home screen (installable app) ----
-         Android/Chrome offers beforeinstallprompt; tapping the button then
-         triggers that prompt. iPhone/iPad Safari never fires it, so tapping
-         the button shows the Share-button instructions instead. When the
-         app is already running installed, the whole section is hidden. */
+         The section is visible by default for every visitor, on every
+         browser and platform. It is hidden only when the app is already
+         running installed (standalone display mode). Tapping the button
+         triggers the captured beforeinstallprompt when there is one
+         (Android/Chrome); otherwise it shows the Share-button instructions
+         (iPhone/iPad Safari never fires that event). Everything here is
+         wrapped so no error in the install code can hide the section or
+         affect the rest of the page. */
       (function () {
-        var box = $("install-box");
-        if (!box) return;
-        var standalone =
-          (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-          window.navigator.standalone === true;
-        if (standalone) { box.hidden = true; return; }
-        var deferredPrompt = null;
-        window.addEventListener("beforeinstallprompt", function (e) {
-          e.preventDefault();
-          deferredPrompt = e;
-        });
-        window.addEventListener("appinstalled", function () { box.hidden = true; });
-        $("install-btn").addEventListener("click", function () {
-          if (deferredPrompt) {
-            var p = deferredPrompt;
-            deferredPrompt = null;
-            p.prompt();
-            if (p.userChoice) p.userChoice.then(function () {}, function () {});
-          } else {
-            $("install-help").hidden = false;
-          }
-        });
+        try {
+          var box = $("install-box");
+          if (!box) return;
+          box.hidden = false;
+          var standalone = false;
+          try {
+            standalone =
+              (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+              window.navigator.standalone === true;
+          } catch (e) { standalone = false; }
+          if (standalone) { box.hidden = true; return; }
+          var deferredPrompt = null;
+          window.addEventListener("beforeinstallprompt", function (e) {
+            e.preventDefault();
+            deferredPrompt = e;
+          });
+          window.addEventListener("appinstalled", function () { box.hidden = true; });
+          $("install-btn").addEventListener("click", function () {
+            try {
+              if (deferredPrompt) {
+                var p = deferredPrompt;
+                deferredPrompt = null;
+                p.prompt();
+                if (p.userChoice) p.userChoice.then(function () {}, function () {});
+              } else {
+                $("install-help").hidden = false;
+              }
+            } catch (err) {
+              var help = $("install-help");
+              if (help) help.hidden = false;
+            }
+          });
+        } catch (err) { /* the install section must never break the page */ }
       })();
     </script>
     <script>
       /* Keep the whole Bible stored on the phone for offline reading, and
          pick up newer versions of the app when it opens with internet.
          Fails silently where service workers aren't supported. */
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker.register("sw.js").catch(function () {});
-        });
-      }
+      try {
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {}
+          });
+        }
+      } catch (e) { /* offline storage is a bonus, never a boot step */ }
     </script>
 <script data-goatcounter="https://jesuslovestyler.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   </body>
