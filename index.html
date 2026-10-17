@@ -659,7 +659,8 @@
          together right here: the mimetype entry first and stored
          uncompressed, per the EPUB spec, then the container, package
          document, contents (nav + NCX), one stylesheet in the app's
-         warm paper colors, a title page, and one XHTML document per
+         warm paper colors, a title page, a visible contents page
+         right after it, and one XHTML document per
          book with every chapter inside and the words of Jesus in red
          exactly where the red-letter data marks them. Apple Books and
          other reader apps open EPUB natively — working contents list,
@@ -717,7 +718,8 @@
       /* Every file that goes into the EPUB, in the order it is packed:
          mimetype first (stored, per spec), then the container, the
          package document, the two contents documents, the stylesheet,
-         the title page, and the 66 book documents. Paths inside the
+         the title page, the visible contents page, and the 66 book
+         documents. Paths inside the
          EPUB: package files live under OEBPS/. */
       function epubFileList() {
         var ident = "urn:uuid:" + epubUuid();
@@ -747,11 +749,12 @@
           "    <item id=\"nav\" href=\"nav.xhtml\" media-type=\"application/xhtml+xml\" properties=\"nav\" />\n" +
           "    <item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\" />\n" +
           "    <item id=\"css\" href=\"style.css\" media-type=\"text/css\" />\n" +
-          "    <item id=\"titlepage\" href=\"title.xhtml\" media-type=\"application/xhtml+xml\" />\n");
+          "    <item id=\"titlepage\" href=\"title.xhtml\" media-type=\"application/xhtml+xml\" />\n" +
+          "    <item id=\"contents\" href=\"contents.xhtml\" media-type=\"application/xhtml+xml\" />\n");
         for (var b = 0; b < 66; b++) {
           opf.push("    <item id=\"book" + (b + 1) + "\" href=\"" + epubBookFile(b) + "\" media-type=\"application/xhtml+xml\" />\n");
         }
-        opf.push("  </manifest>\n  <spine toc=\"ncx\">\n    <itemref idref=\"titlepage\" />\n");
+        opf.push("  </manifest>\n  <spine toc=\"ncx\">\n    <itemref idref=\"titlepage\" />\n    <itemref idref=\"contents\" />\n");
         for (var s = 0; s < 66; s++) opf.push("    <itemref idref=\"book" + (s + 1) + "\" />\n");
         opf.push("  </spine>\n</package>\n");
         files.push({ name: "OEBPS/content.opf", text: opf.join("") });
@@ -804,7 +807,12 @@
           "nav h1{font-size:1.6em;}\n" +
           "nav ol{list-style:none;padding:0;}\n" +
           "nav li{padding:0.35em 0;border-bottom:1px solid #e3d8bf;}\n" +
-          "nav a{color:#2b2517;text-decoration:none;}\n" });
+          "nav a{color:#2b2517;text-decoration:none;}\n" +
+          ".contents h1{font-size:1.6em;}\n" +
+          ".contents h2{font-size:1.15em;font-weight:600;color:#7c5a1e;margin:1.2em 0 0.3em;}\n" +
+          ".contents ol{list-style:none;padding:0;margin:0;}\n" +
+          ".contents li{padding:0.35em 0;border-bottom:1px solid #e3d8bf;}\n" +
+          ".contents a{color:#2b2517;text-decoration:none;}\n" });
 
         /* title page */
         files.push({ name: "OEBPS/title.xhtml", text:
@@ -817,6 +825,28 @@
           "<p>World English Bible (WEB) — public domain. Share freely. From jesuslovestyler.com</p>\n" +
           "<p>The words of Jesus are shown in red.</p>\n</div>\n" +
           "</body>\n</html>\n" });
+
+        /* Visible contents page: the first page after the title page,
+           so a reader whose app hides its own contents menu can still
+           tap any book name here and jump straight to that book. Plain
+           in-book links, which every EPUB reader follows. */
+        var toc = [];
+        toc.push("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+          "<!DOCTYPE html>\n" +
+          "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n" +
+          "<head>\n<title>Contents</title>\n" +
+          "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\n</head>\n<body>\n" +
+          "<div class=\"contents\">\n<h1>Contents</h1>\n" +
+          "<h2>Old Testament</h2>\n<ol>\n");
+        for (var o = 0; o < OT_COUNT; o++) {
+          toc.push("<li><a href=\"" + epubBookFile(o) + "\">" + escText(META[o][0]) + "</a></li>\n");
+        }
+        toc.push("</ol>\n<h2>New Testament</h2>\n<ol>\n");
+        for (var q = OT_COUNT; q < 66; q++) {
+          toc.push("<li><a href=\"" + epubBookFile(q) + "\">" + escText(META[q][0]) + "</a></li>\n");
+        }
+        toc.push("</ol>\n</div>\n</body>\n</html>\n");
+        files.push({ name: "OEBPS/contents.xhtml", text: toc.join("") });
 
         /* the 66 book documents */
         for (var d = 0; d < 66; d++) {
