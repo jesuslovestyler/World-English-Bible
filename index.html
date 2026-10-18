@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610180333" />
+    <meta name="app-build" content="202610181221" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -576,6 +576,47 @@
       }
       .lo-toggle.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
       .lo-toggle:active { transform: translateY(1px); }
+
+      /* ---------- book introduction (chapter picker) ---------- */
+      .book-intro {
+        font-family: "Newsreader", Georgia, serif; font-size: 18.5px; line-height: 1.55;
+        color: var(--ink); margin: 2px 0 18px; max-width: 34em;
+      }
+
+      /* ---------- reading plans ---------- */
+      .plan-block { margin: 30px 0 0; }
+      .plan-title { font-family: "Newsreader", Georgia, serif; font-size: 23px; font-weight: 600; margin: 0 0 2px; }
+      .plan-desc { color: var(--ink-soft); margin: 0 0 2px; font-size: 15.5px; }
+      .plan-progress { color: var(--ink-soft); font-size: 14px; margin: 0 0 10px; }
+      .plan-days { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+      .plan-days li { border-bottom: 1px solid var(--line); }
+      .plan-day {
+        display: flex; align-items: center; gap: 12px; width: 100%;
+        background: none; border: 0; cursor: pointer; text-align: left;
+        padding: 12px 6px; min-height: 52px; font: inherit; color: var(--ink);
+      }
+      .plan-day:active { background: var(--accent-soft); }
+      .pd-day { font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); min-width: 52px; }
+      .pd-range { flex: 1 1 auto; min-width: 0; font-family: "Newsreader", Georgia, serif; font-size: 18px; font-weight: 500; }
+      .pd-check {
+        display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: var(--accent-soft); color: var(--accent);
+        font-size: 13px; font-weight: 700; line-height: 1;
+      }
+      .pd-arrow { color: var(--accent); font-size: 18px; }
+
+      /* ---------- where to turn ---------- */
+      .turn-moment { margin: 26px 0 0; }
+      .turn-moment h3 { font-family: "Newsreader", Georgia, serif; font-size: 21px; font-weight: 600; margin: 0 0 10px; }
+      .turn-refs { display: flex; flex-wrap: wrap; gap: 8px; }
+      .turn-ref {
+        font: inherit; font-size: 15.5px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: var(--surface);
+        border: 1px solid var(--line); border-radius: 999px;
+        padding: 9px 16px; min-height: 44px; box-shadow: var(--shadow);
+      }
+      .turn-ref:active { background: var(--accent-soft); }
     </style>
   </head>
   <body>
@@ -606,6 +647,12 @@
           </div>
           <div class="saved-box">
             <button class="btn saved-btn" id="saved-btn" type="button">🔖 Saved Verses</button>
+          </div>
+          <div class="saved-box">
+            <button class="btn saved-btn" id="plans-btn" type="button">📖 Reading Plans</button>
+          </div>
+          <div class="saved-box">
+            <button class="btn saved-btn" id="turn-btn" type="button">🧭 Where to turn</button>
           </div>
           <div class="download-box">
             <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
@@ -673,6 +720,7 @@
           <h2 id="chapters-title"></h2>
           <p id="chapters-sub"></p>
         </div>
+        <p class="book-intro" id="chapters-intro"></p>
         <div class="chap-grid" id="chap-grid"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
@@ -792,6 +840,36 @@
         <div id="saved-body"></div>
       </section>
 
+      <!-- ============ READING PLANS ============ -->
+      <section id="view-plans" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="plans-back">‹ Books</button>
+          <span class="tb-title">Reading Plans</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Reading Plans</h2>
+          <p>Three gentle paths through the Bible. Go at your own pace — there are no dates here, and no falling behind. Read a day whenever you're ready; a day is checked off once you've read all of its chapters.</p>
+        </div>
+        <div id="plans-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ WHERE TO TURN ============ -->
+      <section id="view-turn" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="turn-back">‹ Books</button>
+          <span class="tb-title">Where to turn</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Where to turn</h2>
+          <p>Whatever today holds, God's word has something to say to it.</p>
+        </div>
+        <div id="turn-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
     </div>
 
     <!-- verse action bar: appears while verses are selected in the reader -->
@@ -846,6 +924,78 @@
       ];
       var OT_COUNT = 39;
 
+      /* One-line introductions, one per book in META order, shown at the
+         top of each book's chapter picker: a single warm sentence of
+         welcome before the reader chooses a chapter. */
+      var BOOK_INTROS = [
+        "The beginning of everything: creation, the fall, and God's promise carried through Abraham's family.",
+        "God rescues Israel from slavery in Egypt and gives them His law at Mount Sinai.",
+        "God teaches His rescued people how to live holy and near to Him.",
+        "Israel's forty years in the wilderness, counted and carried by God.",
+        "Moses' final sermons: remember God's faithfulness, and choose life.",
+        "Israel enters the promised land under Joshua's leadership.",
+        "A cycle of rebellion and rescue, as God raises up judges for a stubborn people.",
+        "A loyal widow from Moab finds a redeemer, and a place in the family line of Jesus.",
+        "From Samuel's birth to King Saul's fall, and the rise of David.",
+        "David's reign: great victories, deep sin, and God's unfailing covenant.",
+        "Solomon's glory, the kingdom splitting in two, and Elijah's fiery ministry.",
+        "Two kingdoms drift toward exile, while God's prophets keep calling them back.",
+        "Israel's story retold around David, worship, and the temple to come.",
+        "The kings of Judah, the temple's glory, and the road to exile and return.",
+        "God's people return from exile and rebuild the temple in Jerusalem.",
+        "Jerusalem's walls rebuilt in fifty-two days, against all opposition.",
+        "A Jewish queen risks her life, and God quietly saves His people.",
+        "A righteous man suffers, wrestles with God, and finds Him enough.",
+        "Israel's songbook: prayers and praise for every season of the soul.",
+        "Solomon's wisdom for everyday life: work, words, money, and character.",
+        "A king searches for meaning under the sun, and finds life's emptiness without God.",
+        "A love song celebrating marriage, desire, and devotion.",
+        "The prophet of the suffering Servant and the coming King: comfort for God's people.",
+        "The weeping prophet warns Jerusalem, and promises a new covenant.",
+        "Tears over fallen Jerusalem — grief that still dares to hope in God's mercy.",
+        "Visions of God's glory, dry bones living, and a new temple.",
+        "Faithful in exile: lions' dens, fiery furnaces, and visions of kingdoms to come.",
+        "God's unfailing love for an unfaithful people, pictured in a broken marriage.",
+        "Locusts, repentance, and the promise of God's Spirit poured out.",
+        "A shepherd from Tekoa calls the comfortable to justice and true worship.",
+        "A short warning to Edom: pride goes before a fall.",
+        "A runaway prophet, a great fish, and God's mercy on a wicked city.",
+        "Justice, mercy, and humility — and a Savior born in little Bethlehem.",
+        "God's judgment falls on Nineveh, the brutal empire.",
+        "A prophet asks God hard questions, and learns to rejoice anyway.",
+        "The day of the LORD is near — judgment, then a singing God.",
+        "Rebuild the temple: God's house first, and He will be with you.",
+        "Visions of the coming Messiah, the humble King on a donkey.",
+        "God's last Old Testament word: a call back to faithfulness before the coming silence.",
+        "Jesus the promised King, presented to Israel with His teaching and miracles.",
+        "The fast-moving Gospel: Jesus the Servant, always on His way to the cross.",
+        "The full, careful account of Jesus, the Savior who seeks the lost.",
+        "Jesus is God the Son: seven signs and His own 'I am' words, so that you may believe.",
+        "The Holy Spirit falls, the church is born, and the good news runs to the ends of the earth.",
+        "Paul's fullest explanation of the gospel: sin, grace, faith, and new life.",
+        "Paul straightens out a messy church with the wisdom of the cross.",
+        "Paul's most personal letter: strength in weakness, comfort in trouble.",
+        "Freedom in Christ: the gospel is grace alone, not law-keeping.",
+        "Who you are in Christ, and how to walk worthy of that calling.",
+        "Joy from a prison cell: Christ first, and everything else loss beside Him.",
+        "Christ is supreme over all creation — don't settle for less.",
+        "Encouragement for a young church: stand firm, Jesus is coming back.",
+        "Hold fast in confusing times; the Lord is faithful.",
+        "Paul's guidance to a young pastor on leading God's household.",
+        "Paul's last letter: preach the word, finish the race.",
+        "Sound teaching that shows up as good works on the island of Crete.",
+        "A tiny letter with a big heart: a runaway slave received as a brother.",
+        "Jesus is greater — than angels, Moses, and every old shadow; hold fast to Him.",
+        "Faith that works: taming the tongue, caring for the poor, living what you believe.",
+        "Hope for suffering believers: you're exiles with an inheritance that can't fade.",
+        "Peter's farewell: grow in grace, and watch for the day of the Lord.",
+        "John's letter of assurance: God is light, God is love, and you may know you have eternal life.",
+        "Walk in truth and love, and watch out for deceivers.",
+        "A short note praising hospitality and faithful friends.",
+        "Contend for the faith once delivered to the saints.",
+        "Jesus unveiled: the Lamb wins, and a new heaven and new earth are coming."
+      ];
+
       /* ---- lazy data loading: assets/ot.js / assets/nt.js set window.__WEB_OT__ / __WEB_NT__ ---- */
       var dataPromises = {};
       function loadTestament(t) {
@@ -880,7 +1030,7 @@
         if (text != null) e.textContent = text;
         return e;
       }
-      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved"];
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn"];
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -1621,6 +1771,175 @@
         });
       }
 
+      /* ---- reading plans ----
+         Three gentle paths through the Bible, grouped at build time
+         from the app's own book and chapter data (META). Days are not
+         tied to calendar dates: the reader goes at their own pace,
+         and a day counts as done when every chapter in it stands in
+         the chapters-read record — the same single record the home
+         view counts and its Start over clears, so plan progress and
+         the reading record can never disagree. Tapping a day opens
+         its first chapter in the reader. */
+      function flatChapters(books) {
+        var out = [];
+        for (var i = 0; i < books.length; i++) {
+          for (var ci = 0; ci < META[books[i]][1]; ci++) out.push({ b: books[i], c: ci });
+        }
+        return out;
+      }
+      /* Consecutive runs of up to cap chapters; the final day takes
+         whatever remains. */
+      function groupCapped(chaps, cap) {
+        var days = [];
+        for (var i = 0; i < chaps.length; i += cap) days.push(chaps.slice(i, i + cap));
+        return days;
+      }
+      /* Exactly nDays, spread as evenly as the chapter count allows:
+         each day's slice is cut by the same fraction of the whole, so
+         day sizes differ by at most one chapter. */
+      function groupEven(chaps, nDays) {
+        var days = [];
+        for (var d = 0; d < nDays; d++) {
+          var start = Math.floor(d * chaps.length / nDays);
+          var end = Math.floor((d + 1) * chaps.length / nDays);
+          days.push(chaps.slice(start, end));
+        }
+        return days;
+      }
+      var NT_BOOK_LIST = [];
+      for (var nbi = OT_COUNT; nbi < 66; nbi++) NT_BOOK_LIST.push(nbi);
+      var PLANS = [
+        {
+          title: "Meet Jesus: The Gospels in 30 Days",
+          desc: "Matthew, Mark, Luke, and John — the life of Jesus, in order.",
+          days: groupCapped(flatChapters([39, 40, 41, 42]), 3)
+        },
+        {
+          title: "Psalms in a Month",
+          desc: "Five psalms at a time through Israel's songbook.",
+          days: groupCapped(flatChapters([18]), 5)
+        },
+        {
+          title: "The New Testament in 90 Days",
+          desc: "From Matthew to Revelation, two or three chapters at a time.",
+          days: groupEven(flatChapters(NT_BOOK_LIST), 90)
+        }
+      ];
+      function planDayDone(day) {
+        for (var i = 0; i < day.length; i++) {
+          if (!readStore[day[i].b + ":" + day[i].c]) return false;
+        }
+        return day.length > 0;
+      }
+      function planDayLabel(day) {
+        var first = day[0], last = day[day.length - 1];
+        if (first.b === last.b) {
+          if (first.c === last.c) return refName(first.b, first.c);
+          return META[first.b][0] + " " + (first.c + 1) + "–" + (last.c + 1);
+        }
+        return refName(first.b, first.c) + " – " + refName(last.b, last.c);
+      }
+      function renderPlans() {
+        var body = $("plans-body");
+        body.textContent = "";
+        PLANS.forEach(function (plan) {
+          var block = el("div", "plan-block");
+          block.appendChild(el("h3", "plan-title", plan.title));
+          block.appendChild(el("p", "plan-desc", plan.desc));
+          var doneCount = 0;
+          plan.days.forEach(function (day) { if (planDayDone(day)) doneCount++; });
+          block.appendChild(el("p", "plan-progress",
+            doneCount + " of " + plan.days.length + " days done"));
+          var ul = el("ul", "plan-days");
+          plan.days.forEach(function (day, di) {
+            var li = el("li");
+            var btn = el("button", "plan-day");
+            btn.type = "button";
+            btn.appendChild(el("span", "pd-day", "Day " + (di + 1)));
+            btn.appendChild(el("span", "pd-range", planDayLabel(day)));
+            if (planDayDone(day)) {
+              var check = el("span", "pd-check", "✓");
+              check.setAttribute("aria-hidden", "true");
+              btn.appendChild(check);
+              btn.setAttribute("aria-label",
+                "Day " + (di + 1) + ": " + planDayLabel(day) + " — done");
+            }
+            btn.appendChild(el("span", "pd-arrow", "›"));
+            btn.addEventListener("click", function () {
+              openChapter(day[0].b, day[0].c, 0);
+            });
+            li.appendChild(btn);
+            ul.appendChild(li);
+          });
+          block.appendChild(ul);
+          body.appendChild(block);
+        });
+      }
+      function openPlans() {
+        renderPlans();
+        showView("view-plans");
+        setPageMeta("Reading Plans — World English Bible", DEFAULT_DESC);
+      }
+      try { $("plans-btn").addEventListener("click", openPlans); } catch (e) {}
+      try { $("plans-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- where to turn ----
+         Life moments, each with passages that open right in the
+         reader — a chapter reference opens its chapter, a verse
+         reference opens the chapter at that verse, exactly the way a
+         search result does. References are [label, book, chapter
+         (0-based), verse (1-based, 0 for the whole chapter)]. */
+      var TURN_MOMENTS = [
+        { title: "When you're afraid", refs: [
+          ["Psalm 23", 18, 22, 0], ["Psalm 56", 18, 55, 0], ["Isaiah 41:10", 22, 40, 10] ] },
+        { title: "When you're anxious or can't sleep", refs: [
+          ["Psalm 4", 18, 3, 0], ["Matthew 6", 39, 5, 0], ["Philippians 4", 49, 3, 0] ] },
+        { title: "When you're grieving", refs: [
+          ["Psalm 42", 18, 41, 0], ["John 11", 42, 10, 0], ["Revelation 21", 65, 20, 0] ] },
+        { title: "When you feel alone", refs: [
+          ["Psalm 139", 18, 138, 0], ["Deuteronomy 31:8", 4, 30, 8], ["Matthew 28:20", 39, 27, 20] ] },
+        { title: "When you're tempted", refs: [
+          ["Psalm 51", 18, 50, 0], ["1 Corinthians 10:13", 45, 9, 13], ["Hebrews 4", 57, 3, 0] ] },
+        { title: "When you need forgiveness", refs: [
+          ["Luke 15", 41, 14, 0], ["1 John 1", 61, 0, 0], ["Psalm 32", 18, 31, 0] ] },
+        { title: "When you're thankful", refs: [
+          ["Psalm 100", 18, 99, 0], ["Psalm 103", 18, 102, 0], ["1 Thessalonians 5", 51, 4, 0] ] },
+        { title: "When you doubt", refs: [
+          ["Mark 9", 40, 8, 0], ["John 20", 42, 19, 0], ["Jude 1", 64, 0, 0] ] },
+        { title: "When you're angry", refs: [
+          ["Psalm 37", 18, 36, 0], ["Ephesians 4", 48, 3, 0], ["James 1", 58, 0, 0] ] },
+        { title: "When you need strength", refs: [
+          ["Isaiah 40", 22, 39, 0], ["2 Corinthians 12", 46, 11, 0], ["Philippians 4:13", 49, 3, 13] ] },
+        { title: "When someone has hurt you", refs: [
+          ["Matthew 6", 39, 5, 0], ["Romans 12", 44, 11, 0], ["Colossians 3", 50, 2, 0] ] },
+        { title: "When you face a big decision", refs: [
+          ["Proverbs 3", 19, 2, 0], ["Psalm 32:8", 18, 31, 8], ["James 1", 58, 0, 0] ] }
+      ];
+      function renderTurn() {
+        var body = $("turn-body");
+        body.textContent = "";
+        TURN_MOMENTS.forEach(function (moment) {
+          var block = el("div", "turn-moment");
+          block.appendChild(el("h3", null, moment.title));
+          var refs = el("div", "turn-refs");
+          moment.refs.forEach(function (r) {
+            var btn = el("button", "turn-ref", r[0]);
+            btn.type = "button";
+            btn.addEventListener("click", function () { openChapter(r[1], r[2], r[3]); });
+            refs.appendChild(btn);
+          });
+          block.appendChild(refs);
+          body.appendChild(block);
+        });
+      }
+      function openTurn() {
+        showView("view-turn");
+        setPageMeta("Where to turn — World English Bible", DEFAULT_DESC);
+      }
+      try { renderTurn(); } catch (e) {}
+      try { $("turn-btn").addEventListener("click", openTurn); } catch (e) {}
+      try { $("turn-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
       /* ---- verse of the day ----
          A curated shelf of well-loved verses from across the whole
          Bible — Psalms and Proverbs, the Prophets, the Gospels, the
@@ -2092,6 +2411,7 @@
         $("chapters-sub").textContent =
           (bi < OT_COUNT ? "Old Testament" : "New Testament") + " · " +
           META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters");
+        $("chapters-intro").textContent = BOOK_INTROS[bi] || "";
         var grid = $("chap-grid");
         grid.textContent = "";
         for (var ci = 0; ci < META[bi][1]; ci++) {
@@ -3100,7 +3420,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610180333";
+      var APP_BUILD_STAMP = "202610181221";
       (function () {
         try {
           var btn = $("update-btn");
