@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark. */
+         Batches: Matthew, Mark, Luke. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1569,6 +1569,32 @@
           14: "The plot, the Last Supper, Gethsemane's agony, the arrest, the trial, and Peter's denial.",
           15: "Jesus is condemned by Pilate, crucified, and buried.",
           16: "The tomb is empty: the risen Jesus appears to His followers and sends them into all the world."
+        },
+        "Luke": {
+          1: "Luke's careful account begins: an angel promises a son to Zechariah, and announces Jesus' birth to Mary.",
+          2: "Jesus is born in Bethlehem and announced to shepherds; Simeon rejoices, and the boy Jesus amazes the temple teachers.",
+          3: "John prepares the way, Jesus is baptized, and His family line is traced back to Adam.",
+          4: "Jesus defeats temptation, is rejected at Nazareth, and heals and frees many in Capernaum.",
+          5: "Jesus calls fishermen after a miraculous catch, forgives a paralyzed man, and calls Levi the tax collector.",
+          6: "Jesus chooses the Twelve and preaches blessings and woes, love for enemies, and the house on the rock.",
+          7: "Jesus honors a centurion's faith, raises a widow's son, answers John, and forgives a sinful woman: 'Your faith has saved you.'",
+          8: "Jesus teaches the sower, calms the storm, frees a demon-tormented man, and raises Jairus's daughter.",
+          9: "Jesus sends the Twelve, feeds five thousand, is confessed by Peter, shines in glory, and sets His face toward Jerusalem.",
+          10: "Jesus sends out seventy-two, tells the parable of the Good Samaritan, and visits Mary and Martha.",
+          11: "Jesus teaches the Lord's Prayer, casts out demons, and pronounces woes on the Pharisees and experts in the law.",
+          12: "Jesus warns against hypocrisy and worry, tells of the rich fool, and calls His followers to watch and be ready.",
+          13: "Jesus calls all to repent, heals a crippled woman, and grieves over Jerusalem like a hen over her chicks.",
+          14: "Jesus heals on the Sabbath, tells the parable of the great banquet, and counts the cost of discipleship.",
+          15: "Three parables of the lost found — the sheep, the coin, and the son — and heaven rejoices.",
+          16: "Jesus teaches faithfulness with money and tells of the rich man and Lazarus.",
+          17: "Jesus teaches forgiveness and faith, heals ten lepers (one returns thankful), and speaks of the kingdom's coming.",
+          18: "Jesus tells of the persistent widow and the humble tax collector, and heals a blind man at Jericho.",
+          19: "Jesus saves Zacchaeus, enters Jerusalem as King, weeps over the city, and clears the temple.",
+          20: "Jesus answers the leaders: the wicked tenants, taxes for Caesar, the resurrection, and David's son.",
+          21: "Jesus honors a widow's two coins and foretells the temple's fall, hard days ahead, and His return.",
+          22: "The plot, the Last Supper, Gethsemane, the arrest, Peter's denial, and Jesus before the council.",
+          23: "Jesus is tried before Pilate and Herod, crucified between criminals, and buried in a borrowed tomb.",
+          24: "The tomb is empty; Jesus walks with two on the Emmaus road, appears to His disciples, and ascends to heaven."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1585,7 +1611,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark. */
+         headings yet shows none. Batches: Matthew, Mark, Luke. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1634,6 +1660,32 @@
           14: { 1: "The plot to kill Jesus", 3: "Jesus is anointed at Bethany", 10: "Judas agrees to betray Jesus", 12: "The Last Supper", 32: "Jesus prays in Gethsemane", 43: "Jesus is arrested", 53: "Jesus before the council", 66: "Peter denies Jesus" },
           15: { 1: "Jesus before Pilate", 6: "Barabbas is released", 16: "The soldiers mock Jesus", 21: "The crucifixion", 33: "The death of Jesus", 42: "Jesus is buried" },
           16: { 1: "He is risen!", 9: "Jesus appears to Mary Magdalene", 12: "Jesus appears to two followers", 14: "Jesus sends out the eleven", 19: "Jesus ascends to heaven" }
+        },
+        "Luke": {
+          1: { 1: "Luke's introduction", 5: "Zechariah and Elizabeth", 8: "An angel promises a son to Zechariah", 26: "An angel announces Jesus' birth to Mary", 39: "Mary visits Elizabeth", 46: "Mary's song of praise", 57: "The birth of John the Baptist", 67: "Zechariah's prophecy" },
+          2: { 1: "Jesus is born in Bethlehem", 8: "Angels announce Jesus to shepherds", 21: "Jesus is presented in the temple", 25: "Simeon and Anna rejoice", 41: "The boy Jesus in the temple" },
+          3: { 1: "John the Baptist prepares the way", 15: "John points to the One who is coming", 21: "Jesus is baptized", 23: "The genealogy of Jesus" },
+          4: { 1: "Jesus is tempted in the wilderness", 14: "Jesus begins His ministry in Galilee", 16: "Jesus is rejected at Nazareth", 31: "Jesus drives out an evil spirit", 38: "Jesus heals Simon's mother-in-law", 40: "Jesus heals many" },
+          5: { 1: "The miraculous catch: the first disciples are called", 12: "Jesus heals a man with leprosy", 17: "Jesus forgives and heals a paralyzed man", 27: "Jesus calls Levi", 33: "Questions about fasting" },
+          6: { 1: "Jesus, Lord of the Sabbath", 6: "Jesus heals a withered hand", 12: "Jesus chooses the twelve apostles", 17: "Blessings and woes", 27: "Love your enemies", 37: "Do not judge others", 43: "A tree and its fruit", 46: "The wise and foolish builders" },
+          7: { 1: "The faith of the centurion", 11: "Jesus raises a widow's son at Nain", 18: "Jesus answers John's disciples", 24: "Jesus speaks about John", 36: "A sinful woman is forgiven" },
+          8: { 1: "The women who followed Jesus", 4: "The parable of the sower", 9: "Why does Jesus use parables?", 11: "The sower explained", 16: "A lamp on a stand", 19: "Jesus' true family", 22: "Jesus calms the storm", 26: "Jesus frees a man from many demons", 40: "Jairus pleads for his daughter", 43: "A woman touches Jesus and is healed", 49: "Jesus raises Jairus's daughter" },
+          9: { 1: "Jesus sends out the twelve", 7: "Herod hears about Jesus", 10: "Jesus feeds five thousand", 18: "Peter declares Jesus is the Christ", 23: "Take up your cross", 28: "The Transfiguration", 37: "Jesus heals a boy with an evil spirit", 43: "Jesus foretells His death again", 46: "Who is the greatest?", 51: "A Samaritan village refuses Jesus", 57: "The cost of following Jesus" },
+          10: { 1: "Jesus sends out the seventy-two", 13: "Woe to the towns that would not repent", 17: "The seventy-two return with joy", 21: "Jesus rejoices in the Father's will", 25: "The parable of the Good Samaritan", 38: "Mary and Martha" },
+          11: { 1: "The prayer Jesus taught", 5: "Keep on asking", 14: "Jesus and the prince of demons", 24: "An evil spirit returns", 27: "True blessedness", 29: "The sign of Jonah", 33: "The lamp of the body", 37: "Woes on the Pharisees and experts in the law" },
+          12: { 1: "Warnings about hypocrisy", 4: "Fear God, not people", 13: "The parable of the rich fool", 22: "Do not worry", 35: "Be ready and watching", 49: "Jesus brings division", 54: "Interpreting the times" },
+          13: { 1: "Repent or perish", 6: "The parable of the barren fig tree", 10: "Jesus heals a crippled woman on the Sabbath", 18: "The mustard seed and the yeast", 22: "The narrow door", 31: "Jesus grieves over Jerusalem" },
+          14: { 1: "Jesus heals on the Sabbath", 7: "Lessons from a banquet", 15: "The parable of the great banquet", 25: "The cost of being a disciple" },
+          15: { 1: "The parable of the lost sheep", 8: "The parable of the lost coin", 11: "The parable of the lost son" },
+          16: { 1: "The parable of the shrewd manager", 10: "Be faithful in little things", 14: "The Law and the kingdom of God", 19: "The rich man and Lazarus" },
+          17: { 1: "Forgive again and again", 5: "Faith like a mustard seed", 7: "The servant's duty", 11: "Jesus heals ten lepers", 20: "The coming of the kingdom" },
+          18: { 1: "The parable of the persistent widow", 9: "The Pharisee and the tax collector", 15: "Jesus blesses the children", 18: "The rich ruler", 31: "Jesus foretells His death a third time", 35: "Jesus heals a blind man at Jericho" },
+          19: { 1: "Jesus and Zacchaeus", 11: "The parable of the ten servants", 28: "Jesus enters Jerusalem as King", 41: "Jesus weeps over Jerusalem", 45: "Jesus clears the temple" },
+          20: { 1: "The leaders question Jesus' authority", 9: "The parable of the wicked tenants", 20: "Taxes for Caesar", 27: "Questions about the resurrection", 41: "Whose son is the Messiah?", 45: "Beware the teachers of the law" },
+          21: { 1: "The widow's offering", 5: "Jesus foretells the temple's destruction", 7: "Signs of the end of the age", 20: "Jerusalem's destruction foretold", 25: "The coming of the Son of Man", 29: "The lesson of the fig tree", 34: "Always be watching" },
+          22: { 1: "The plot to kill Jesus", 3: "Judas agrees to betray Jesus", 7: "The Last Supper", 24: "Who is the greatest?", 31: "Peter's denial is foretold", 39: "Jesus prays on the Mount of Olives", 47: "Jesus is arrested", 54: "Peter denies Jesus", 63: "The guards mock Jesus", 66: "Jesus before the council" },
+          23: { 1: "Jesus before Pilate", 6: "Jesus before Herod", 13: "Jesus is sentenced to die", 26: "The road to the cross", 32: "Jesus is crucified", 44: "The death of Jesus", 50: "Jesus is buried" },
+          24: { 1: "He is risen!", 13: "On the road to Emmaus", 36: "Jesus appears to His disciples", 44: "Jesus opens the Scriptures", 50: "Jesus ascends to heaven" }
         }
       };
       function chapterHeadings(bi, ci) {
