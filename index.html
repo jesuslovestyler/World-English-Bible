@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1761,6 +1761,21 @@
         },
         "Philemon": {
           1: "Paul appeals to Philemon not by command but by love: receive Onesimus back — no longer as a slave, but as a beloved brother; if he owes you anything, charge it to me."
+        },
+        "Hebrews": {
+          1: "God, who spoke in many ways through the prophets, has in these last days spoken in His Son — the radiance of His glory, and far greater than the angels.",
+          2: "Pay close attention, lest we drift away; Jesus, made lower than the angels for a little while, tasted death for everyone and calls us His brothers.",
+          3: "Jesus is greater than Moses; so Today, if you hear His voice, do not harden your hearts as Israel did in the wilderness, and miss His rest.",
+          4: "God's rest still remains for His people; His word is living and active, sharper than any sword — and we have a great High Priest: let us approach the throne of grace with confidence.",
+          5: "Every high priest is appointed from among men; Christ learned obedience through suffering and became the source of eternal salvation — a priest forever after the order of Melchizedek.",
+          6: "A sobering warning against falling away after tasting the heavenly gift — and a sure hope: God's promise and oath are an anchor of the soul, entering behind the veil where Jesus has gone before.",
+          7: "Melchizedek, king of righteousness and of peace, pictures Jesus: a priest forever, whose indestructible life saves to the uttermost all who draw near to God through Him.",
+          8: "The main point: we have such a High Priest, seated at the right hand of the Majesty — mediator of a better covenant, in which God says, 'I will remember their sins no more.'",
+          9: "The old sanctuary's sacrifices could never perfect the worshipper; Christ entered heaven itself once for all with His own blood, obtaining eternal redemption.",
+          10: "By a single offering He has perfected forever those who are being sanctified: draw near with full assurance, hold fast the confession, stir one another up — the Day is drawing near.",
+          11: "The great hall of faith: Abel, Enoch, Noah, Abraham, Sarah, Moses, and many more — all died in faith, not having received the promises, but seeing the city whose builder and maker is God.",
+          12: "Surrounded by this cloud of witnesses, run with endurance, looking to Jesus; endure the Father's discipline as sons; for you have come to Mount Zion, and to a kingdom that cannot be shaken.",
+          13: "Let brotherly love continue — show hospitality, honor marriage, be content, for He has said, 'I will never leave you' — Jesus Christ is the same yesterday, today, and forever."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1777,7 +1792,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -2018,6 +2033,21 @@
         },
         "Philemon": {
           1: { 1: "Paul greets Philemon", 4: "Thanksgiving for Philemon's love and faith", 8: "Paul appeals for Onesimus", 17: "Receive him as you would receive me", 23: "Final greetings" }
+        },
+        "Hebrews": {
+          1: { 1: "God has spoken in His Son", 5: "The Son is greater than the angels", 10: "Angels are ministering spirits" },
+          2: { 1: "Pay close attention, lest we drift away", 5: "Jesus, crowned with glory and honor", 9: "The founder of their salvation", 14: "He frees those held in slavery by fear of death", 17: "A merciful and faithful High Priest" },
+          3: { 1: "Jesus, greater than Moses", 7: "Today, if you hear His voice", 16: "They could not enter, because of unbelief" },
+          4: { 1: "The promise of God's rest remains", 8: "There remains a Sabbath rest for God's people", 11: "The word of God is living and active", 14: "Approach the throne of grace with confidence" },
+          5: { 1: "Every high priest is taken from among men", 5: "Christ, a priest forever", 7: "With loud cries and tears", 11: "Dull of hearing: milk and solid food" },
+          6: { 1: "Let us press on to maturity", 4: "The danger of falling away", 9: "Things that accompany salvation", 13: "God's promise to Abraham", 19: "An anchor of the soul" },
+          7: { 1: "Melchizedek, king of righteousness", 11: "A change in the priesthood", 18: "A better hope is introduced", 23: "Jesus holds His priesthood permanently", 25: "He always lives to make intercession" },
+          8: { 1: "The main point: such a High Priest is ours", 6: "A better covenant, on better promises", 8: "Behold, the days are coming: a new covenant", 13: "The first covenant is obsolete" },
+          9: { 1: "The earthly sanctuary", 6: "Sacrifices that cannot perfect the conscience", 11: "Christ entered once for all", 15: "Mediator of a new covenant", 27: "Appointed to die once, and then judgment" },
+          10: { 1: "The law: a shadow of the good things to come", 5: "A body You have prepared for Me", 10: "By one offering He has perfected forever", 19: "Draw near with full assurance of faith", 26: "A fearful expectation of judgment", 32: "Remember the former days" },
+          11: { 1: "Faith is the assurance of things hoped for", 4: "By faith Abel, Enoch, and Noah", 8: "By faith Abraham obeyed and went out", 20: "By faith Isaac, Jacob, and Joseph", 23: "By faith Moses", 32: "And what more shall I say?" },
+          12: { 1: "Run with endurance, looking to Jesus", 4: "The Father disciplines His sons", 12: "Lift your drooping hands; pursue peace", 18: "You have come to Mount Zion", 25: "A kingdom that cannot be shaken" },
+          13: { 1: "Let brotherly love continue", 5: "Be content: I will never leave you", 7: "Remember your leaders; imitate their faith", 9: "Jesus Christ is the same forever", 15: "A sacrifice of praise", 20: "The God of peace equip you" }
         }
       };
       function chapterHeadings(bi, ci) {
