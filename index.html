@@ -1571,14 +1571,9 @@
         var q = $("search-input").value.trim();
         if (q) runSearch(q);
       });
-      var debounce = null;
-      $("search-input").addEventListener("input", function () {
-        var q = $("search-input").value.trim();
-        if (debounce) clearTimeout(debounce);
-        if (q.length >= 3) {
-          debounce = setTimeout(function () { runSearch(q); }, 450);
-        }
-      });
+      /* Searching happens only on an explicit action: the Search button or
+         Enter/Go in the field (both submit the form above). Typing alone
+         changes nothing on the page — no as-you-type searching. */
       $("search-back").addEventListener("click", function () { showView("view-home"); });
 
       /* ---- deep links ----
