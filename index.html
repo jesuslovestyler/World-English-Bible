@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis 1–25. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis. */
       var CHAPTER_IDEAS = {
         "Genesis": {
           1: "In the beginning, God creates the heavens and the earth — light, sky, seas, dry land, plants, sun and moon, animals, and mankind in His own image — and sees that it is all very good.",
@@ -1547,7 +1547,32 @@
           22: "God tests Abraham: 'Take your son, your only son Isaac' — the knife is raised, the Angel calls, a ram stands in the thicket: 'On the mountain of the Lord, it will be provided.'",
           23: "Sarah dies at 127 years, and Abraham buys the cave of Machpelah as a burial place — his first piece of the promised land held by deed.",
           24: "Abraham's servant swears the oath, prays at Nahor's well, and is led straight to Rebekah; she says 'I will go,' and Isaac, meditating in the field, is comforted in his grief.",
-          25: "Abraham gives everything to Isaac and dies full of years at 175; Ishmael fathers twelve princes; and Isaac's twins wrestle from the womb — Esau sells his birthright for a bowl of stew."
+          25: "Abraham gives everything to Isaac and dies full of years at 175; Ishmael fathers twelve princes; and Isaac's twins wrestle from the womb — Esau sells his birthright for a bowl of stew.",
+          26: "Isaac repeats his father's path in Gerar — the same sister-lie, the same God who keeps the promise; he digs Abraham's wells again, finds room at Rehoboth, and makes peace with Abimelech.",
+          27: "Jacob, dressed in Esau's clothes by Rebekah's plan, receives the blessing Isaac meant for his brother — and must flee Esau's murderous grief, carrying a blessing bought by deceit.",
+          28: "Alone with a stone for a pillow, Jacob dreams of a stairway to heaven, and the God of Abraham gives him the same promise: 'I am with you, and will keep you wherever you go.'",
+          29: "Jacob lifts the stone for Rachel, serves seven years that seem days — and wakes married to Leah; he serves seven more, and God opens unloved Leah's womb while Rachel waits.",
+          30: "Two sisters contend through sons and servants until God remembers Rachel and Joseph is born; God prospers Jacob under Laban despite wages changed ten times.",
+          31: "After twenty years, God sends Jacob home; Rachel hides Laban's idols, Laban pursues and is warned in a dream, and a heap of stones at Mizpah seals their uneasy peace.",
+          32: "Jacob prays the promise back to God, sends gifts ahead — and wrestles a Man all night at Peniel, limping into sunrise with a new name: Israel.",
+          33: "Esau comes with 400 men — and runs to embrace Jacob, weeping; Jacob presses gifts on the brother he wronged, and builds an altar at Shechem: God, the God of Israel.",
+          34: "Dinah is defiled, and Simeon and Levi answer Shechem's deed with a deceitful, bloody vengeance that shames Jacob before the peoples of the land.",
+          35: "Back at Bethel, Jacob buries the household's idols, hears his new name again, loses beloved Rachel on Benjamin's birth road, and buries Isaac beside Abraham.",
+          36: "Esau's line fills Seir: the generations of Edom, its chiefs and its early kings — the brother's nation growing great outside the promised land.",
+          37: "Joseph, seventeen and beloved, dreams of sheaves and stars bowing to him; his brothers sell him into Egypt for twenty pieces of silver, and Jacob weeps over a bloodied coat.",
+          38: "Judah's sons Er and Onan die for their wickedness; widowed Tamar risks everything for her right, and Judah confesses, 'She is more righteous than I' — twins are born: Perez and Zerah.",
+          39: "The Lord is with Joseph in Potiphar's house, and the Lord is with Joseph in prison: fleeing a false woman's grasp and her lie, he rises in favor even behind bars.",
+          40: "Two prisoners dream, and God gives Joseph the meanings: the cupbearer restored, the baker hanged — and the cupbearer forgets him for two full years.",
+          41: "Pharaoh's dreams summon Joseph from the dungeon: seven years of plenty, seven of famine — and the prisoner becomes Egypt's second ruler, gathering grain like the sand of the sea.",
+          42: "The brothers bow in Egypt before the brother they wronged, not knowing him; their money returns in their sacks, Simeon stays bound, and Jacob cries, 'All this is against me.'",
+          43: "Judah pledges his own life for Benjamin, and the brothers descend again; Joseph sees his brother, can barely hold back his tears, and seats them in birth order at his table.",
+          44: "The silver cup is found in Benjamin's sack — and Judah steps forward with the Bible's great plea: 'Let your servant remain instead of the boy.'",
+          45: "'I am Joseph. Does my father still live?' The brothers stand dismayed — and he weeps and tells them: 'God sent me before you to preserve life.'",
+          46: "Jacob journeys down with all he has; God speaks to him at Beersheba — 'Do not be afraid' — and Israel meets Joseph in Goshen, weeping long on his neck. Seventy souls come into Egypt.",
+          47: "Jacob, 130 years and 'few and evil' in his own telling, blesses Pharaoh; Israel grows rich in Goshen while Joseph gathers Egypt's land for Pharaoh in the famine.",
+          48: "Dying Jacob claims Joseph's sons as his own and crosses his arms: the younger, Ephraim, is set before firstborn Manasseh; 'the Angel who redeemed me from all evil — bless the lads.'",
+          49: "Jacob gathers his sons for their last blessings: Reuben falls, Levi is scattered, Judah receives the scepter until Shiloh comes, Joseph a fruitful bough by a spring — then Jacob is gathered to his people.",
+          50: "Jacob is carried up to Machpelah with royal mourning; the brothers fear revenge, and Joseph answers with the heart of the whole story: 'You meant evil against me, but God meant it for good' — then dies, trusting God's visitation."
         },
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1878,7 +1903,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis 1–25. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis. */
       var SECTION_HEADINGS = {
         "Genesis": {
           1: { 1: "In the beginning, God created", 3: "'Let there be light': the first day", 6: "The sky and the waters: the second day", 9: "Land, seas, and plants: the third day", 14: "Lights in the sky: the fourth day", 20: "Birds and sea creatures: the fifth day", 24: "Animals — and mankind in God's image: the sixth day" },
@@ -1905,7 +1930,32 @@
           22: { 1: "God tests Abraham: 'Take your son'", 6: "Isaac carries the wood", 9: "The altar on Moriah; the Angel calls out", 13: "A ram caught in the thicket", 15: "'By Myself I have sworn'", 20: "Nahor's family; Rebekah is named" },
           23: { 1: "Sarah dies at Hebron", 3: "Abraham asks for a burial place", 10: "Ephron's field and the cave of Machpelah", 17: "The field is deeded over; Sarah is buried" },
           24: { 1: "The oath: a wife for Isaac from Abraham's kin", 10: "The servant journeys to Nahor", 12: "The servant's prayer at the well", 15: "Rebekah comes with her pitcher", 28: "Rebekah tells her mother's household", 50: "'The thing proceeds from the Lord'", 61: "Rebekah departs; Isaac meets her" },
-          25: { 1: "Abraham marries Keturah", 5: "Abraham gives all he has to Isaac", 7: "Abraham dies at 175, full of years", 12: "The generations of Ishmael", 19: "Isaac and Rebekah: the twins", 29: "Esau sells his birthright" }
+          25: { 1: "Abraham marries Keturah", 5: "Abraham gives all he has to Isaac", 7: "Abraham dies at 175, full of years", 12: "The generations of Ishmael", 19: "Isaac and Rebekah: the twins", 29: "Esau sells his birthright" },
+          26: { 1: "Isaac in Gerar: 'She is my sister'", 7: "Abimelech finds out the truth", 12: "Isaac sows, and reaps a hundredfold", 19: "Wells: strife, strife — then room", 24: "The Lord appears at Beersheba", 34: "Esau's Hittite wives grieve his parents" },
+          27: { 1: "Isaac, old and blind, calls for Esau", 5: "Rebekah plots; Jacob obeys her", 18: "Jacob brings the savory food", 30: "Esau returns — 'Have you one blessing only?'", 41: "Esau's hatred; Jacob must flee" },
+          28: { 1: "Isaac blesses Jacob and sends him away", 6: "Esau takes yet another wife", 10: "Jacob's dream: a stairway set on earth", 16: "'Surely the Lord is in this place'", 20: "Jacob's vow at Bethel" },
+          29: { 1: "Jacob meets Rachel at the well", 9: "Jacob agrees to serve for Rachel", 20: "Seven years — and wakes with Leah", 27: "Seven more years for Rachel", 31: "Leah, unloved and seen by God, bears sons" },
+          30: { 1: "Rachel envies Leah; Bilhah's sons", 14: "Mandrakes, and a sisters' bargain", 22: "God remembers Rachel: Joseph is born", 25: "Jacob asks leave to return home", 31: "Speckled and spotted sheep: Jacob's wages" },
+          31: { 1: "'Go back to the land of your fathers'", 4: "Jacob tells Rachel and Leah everything", 17: "They flee — Rachel has stolen the idols", 22: "Laban pursues after seven days", 36: "Jacob recounts twenty hard years", 43: "The covenant heap at Mizpah" },
+          32: { 1: "Mahanaim — God's camp, Jacob's two camps", 3: "Messengers to Esau: 400 men are coming", 9: "Jacob prays the promise back to God", 13: "Portions of gifts go ahead in droves", 22: "Jacob wrestles until the breaking of dawn", 30: "Peniel: 'I have seen God face to face'" },
+          33: { 1: "Esau approaches; Jacob bows seven times", 4: "Esau runs, embraces him, and weeps", 12: "Jacob gently parts from Esau", 18: "Jacob settles at Shechem and raises an altar" },
+          34: { 1: "Dinah goes out; Shechem seizes her", 5: "Jacob hears; his sons come in from the field", 13: "The sons answer with deceit", 25: "Simeon and Levi strike the city", 30: "'You have brought trouble on me'" },
+          35: { 1: "'Arise, go up to Bethel'", 2: "'Put away the foreign gods among you'", 9: "God appears; Israel is named again", 16: "Benjamin is born; Rachel dies", 22: "Reuben's sin; the twelve sons named", 27: "Isaac dies at 180, and is buried" },
+          36: { 1: "The generations of Esau", 6: "Esau moves to Seir; the land cannot hold both", 9: "The chiefs of Edom", 31: "Kings who reigned in Edom before Israel had kings" },
+          37: { 1: "Joseph at seventeen, the beloved son", 3: "The ornate coat; the brothers' hatred", 5: "Joseph dreams: sheaves bow down", 12: "At Dothan, the brothers conspire", 23: "Into the pit, and sold for twenty pieces of silver", 31: "The bloodied coat is brought to Jacob", 36: "Midianites sell Joseph to Potiphar" },
+          38: { 1: "Judah goes down; three sons are born", 6: "Er dies; Onan refuses the duty", 12: "Tamar veils herself by the roadside", 24: "'She is more righteous than I'", 27: "Twins in her womb: Perez and Zerah" },
+          39: { 1: "'The Lord was with Joseph' in Potiphar's house", 7: "His master's wife tempts him daily", 11: "She seizes his garment; he flees", 19: "Potiphar's anger; Joseph imprisoned", 21: "'The Lord was with Joseph' in prison" },
+          40: { 1: "Two officers of Pharaoh dream in prison", 9: "The cupbearer's dream: the vine", 16: "The baker's dream: the baskets", 20: "Pharaoh's birthday: one restored, one hanged", 23: "The cupbearer forgets Joseph" },
+          41: { 1: "Pharaoh dreams beside the Nile", 9: "The cupbearer remembers his faults", 14: "Joseph, freshly shaved, stands before Pharaoh", 25: "'It is not in me: God will answer Pharaoh'", 37: "Joseph is set over all the land of Egypt", 50: "Manasseh and Ephraim are born in plenty", 53: "The seven years of famine begin" },
+          42: { 1: "Jacob: 'Go down to Egypt and buy for us'", 6: "The brothers bow down before Joseph", 9: "Joseph accuses them of spying; Simeon bound", 21: "'We are certainly guilty concerning our brother'", 29: "Money in the sacks: terror at home", 36: "'All this is against me'" },
+          43: { 1: "The famine weighs on the land: they must return", 8: "Judah pledges himself for the boy", 15: "Benjamin goes down to Egypt", 26: "They bow again; Joseph asks after their father", 29: "Joseph sees Benjamin, and weeps alone" },
+          44: { 1: "The steward plants the silver cup", 11: "The cup is found in Benjamin's sack", 14: "Judah and his brothers fall before Joseph", 18: "Judah's plea: 'Let your servant stay as slave'" },
+          45: { 1: "'I am Joseph. Does my father still live?'", 5: "'God sent me before you to preserve life'", 16: "Pharaoh's court hears; wagons are sent", 21: "Joseph provisions his brothers richly", 25: "'Joseph is still alive' — Jacob's spirit revives" },
+          46: { 1: "Jacob sacrifices at Beersheba", 5: "Seventy souls journey into Egypt", 28: "Joseph rides out to Goshen to meet his father", 31: "Shepherds settled apart in Goshen" },
+          47: { 1: "Five brothers presented to Pharaoh", 7: "Jacob stands before Pharaoh — and blesses him", 11: "Israel settles in Goshen and grows", 13: "The famine economy: money, livestock, land", 28: "'Do not bury me in Egypt'" },
+          48: { 1: "Jacob, ill, sits up in bed for Joseph's sons", 13: "Ephraim is set before Manasseh", 17: "'Not so, my father' — Jacob crosses his hands", 20: "'By you, Israel will bless'", 21: "'God will bring you back to the land of your fathers'" },
+          49: { 1: "Jacob calls his sons: 'Listen to Israel your father'", 3: "Reuben, Simeon and Levi", 8: "Judah: the scepter shall not depart", 13: "Zebulun, Issachar, Dan, Gad, Asher, Naphtali", 22: "Joseph: a fruitful bough by a spring", 28: "The charge about the cave of Machpelah", 33: "He gathered up his feet, and was gathered to his people" },
+          50: { 1: "Egypt mourns Jacob seventy days", 7: "A very great company goes up to Canaan", 15: "The brothers fear Joseph's revenge", 19: "'You meant evil — God meant it for good'", 24: "Joseph dies: 'God will surely visit you'" }
         },
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
