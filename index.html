@@ -218,6 +218,7 @@
       .chap-head p { color: var(--ink-soft); margin: 0 0 18px; }
       .chap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 10px; }
       .chap-grid button {
+        position: relative;
         font: inherit; font-size: 17px; font-weight: 500; cursor: pointer;
         aspect-ratio: 1 / 1; min-height: 52px;
         background: var(--surface); color: var(--ink);
@@ -225,6 +226,17 @@
         box-shadow: var(--shadow);
       }
       .chap-grid button:active { background: var(--accent-soft); border-color: var(--accent); }
+      /* a chapter finished (read or listened through) wears a small
+         check badge in its tile's corner, so the reader can see at a
+         glance which chapters of the book are done */
+      .chap-grid .chap-check {
+        position: absolute; top: 5px; right: 5px;
+        display: flex; align-items: center; justify-content: center;
+        width: 19px; height: 19px; border-radius: 50%;
+        background: var(--accent); color: var(--accent-ink);
+        font-size: 12px; font-weight: 700; line-height: 1;
+        pointer-events: none;
+      }
 
       /* ---------- reader ---------- */
       .reader-head { padding: 26px 0 2px; text-align: center; }
@@ -2078,7 +2090,13 @@
           (function (ci) {
             var b = el("button", null, String(ci + 1));
             b.type = "button";
-            b.setAttribute("aria-label", META[bi][0] + " chapter " + (ci + 1));
+            var done = !!readStore[bi + ":" + ci];
+            b.setAttribute("aria-label", META[bi][0] + " chapter " + (ci + 1) + (done ? " — read" : ""));
+            if (done) {
+              var check = el("span", "chap-check", "✓");
+              check.setAttribute("aria-hidden", "true");
+              b.appendChild(check);
+            }
             b.addEventListener("click", function () { openChapter(bi, ci, 0); });
             grid.appendChild(b);
           })(ci);
