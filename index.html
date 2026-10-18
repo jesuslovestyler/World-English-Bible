@@ -164,6 +164,25 @@
       .continue-card .cc-where { display: block; font-family: "Newsreader", Georgia, serif; font-size: 22px; font-weight: 600; margin-top: 2px; }
       .continue-card .cc-arrow { margin-left: auto; font-size: 22px; color: var(--accent); }
 
+      /* ---------- continue your plan (home) ---------- */
+      .plan-card {
+        background: var(--accent-soft);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 16px 18px; margin: 18px 0 4px;
+        box-shadow: var(--shadow);
+      }
+      .plan-card .pc-label { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+      .plan-card .pc-title { display: block; font-family: "Newsreader", Georgia, serif; font-size: 21px; font-weight: 600; margin-top: 2px; }
+      .plan-card .pc-next { display: block; color: var(--ink-soft); font-size: 15.5px; margin-top: 3px; }
+      .plan-card .pc-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .plan-card .pc-btn {
+        font: inherit; font-size: 15.5px; font-weight: 600; cursor: pointer;
+        border-radius: 999px; padding: 9px 18px; min-height: 44px;
+        background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent);
+      }
+      .plan-card .pc-btn.ghost { background: var(--surface); color: var(--accent); border-color: var(--line); }
+      .plan-card .pc-btn:active { transform: translateY(1px); }
+
       h2.testament {
         font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
         color: var(--ink-soft);
@@ -508,6 +527,12 @@
         padding: 14px 6px; min-height: 48px; white-space: nowrap;
       }
       .sv-remove:active { transform: translateY(1px); }
+      .sv-share {
+        font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: none; border: 0;
+        padding: 14px 6px; min-height: 48px; white-space: nowrap;
+      }
+      .sv-share:active { transform: translateY(1px); }
 
       /* ---------- start here path (home) ---------- */
       .starthere { margin: 26px 0 2px; }
@@ -584,7 +609,7 @@
       }
 
       /* ---------- reading plans ---------- */
-      .plan-block { margin: 30px 0 0; }
+      .plan-block { margin: 30px 0 0; scroll-margin-top: 84px; }
       .plan-title { font-family: "Newsreader", Georgia, serif; font-size: 23px; font-weight: 600; margin: 0 0 2px; }
       .plan-desc { color: var(--ink-soft); margin: 0 0 2px; font-size: 15.5px; }
       .plan-progress { color: var(--ink-soft); font-size: 14px; margin: 0 0 10px; }
@@ -637,6 +662,18 @@
       }
       .turn-ref:active { background: var(--accent-soft); }
 
+      /* ---------- list filters (where to turn, bible words) ---------- */
+      .filter-box { margin: 16px 0 0; }
+      .filter-box input {
+        width: 100%; box-sizing: border-box;
+        font: inherit; font-size: 16.5px; color: var(--ink);
+        background: var(--surface); border: 1.5px solid var(--line);
+        border-radius: 10px; padding: 11px 14px; min-height: 48px;
+      }
+      .filter-box input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+      .filter-box input::placeholder { color: var(--ink-soft); }
+      .filter-none { color: var(--ink-soft); font-size: 16px; margin: 18px 0 0; }
+
       /* ---------- my journey ---------- */
       .journey-stat { margin: 28px 0 0; }
       .journey-stat h3 {
@@ -652,12 +689,19 @@
       }
       .journey-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
       .journey-plans { list-style: none; margin: 4px 0 0; padding: 0; border-top: 1px solid var(--line); }
-      .journey-plans li {
-        display: flex; gap: 12px; align-items: baseline;
-        border-bottom: 1px solid var(--line); padding: 11px 6px;
+      .journey-plans li { border-bottom: 1px solid var(--line); }
+      /* a plan's whole progress line is a door into that plan */
+      .journey-plans .jp-link {
+        display: flex; gap: 12px; align-items: baseline; width: 100%;
+        background: none; border: 0; cursor: pointer; text-align: left;
+        padding: 11px 6px; min-height: 48px; font: inherit; color: var(--ink);
       }
+      .journey-plans .jp-link:active { background: var(--accent-soft); }
       .journey-plans .jp-name { flex: 1 1 auto; min-width: 0; font-family: "Newsreader", Georgia, serif; font-size: 17.5px; font-weight: 500; }
       .journey-plans .jp-count { color: var(--ink-soft); font-size: 14.5px; white-space: nowrap; }
+      /* the chapters-read count with Start over standing beside it */
+      .journey-chaprow { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; }
+      .journey-chaprow .journey-big { margin: 0; }
 
       /* ---------- bible words (glossary) ---------- */
       .glossary-list { border-top: 1px solid var(--line); margin-top: 14px; }
@@ -737,6 +781,17 @@
           <span class="cc-arrow" aria-hidden="true">→</span>
         </button>
 
+        <div class="plan-card" id="plan-card" hidden>
+          <span class="pc-label" id="plan-card-label">Your reading plan</span>
+          <span class="pc-title" id="plan-card-title"></span>
+          <span class="pc-next" id="plan-card-next"></span>
+          <div class="pc-actions">
+            <button type="button" class="pc-btn" id="plan-card-read">Read</button>
+            <button type="button" class="pc-btn ghost" id="plan-card-listen">▶ Listen</button>
+            <button type="button" class="pc-btn" id="plan-card-start" hidden>Start a reading plan</button>
+          </div>
+        </div>
+
         <div class="starthere">
           <h2 class="starthere-title">New to the Bible? Start here.</h2>
           <ol class="starthere-list">
@@ -756,7 +811,6 @@
 
         <p class="read-total" id="read-total" hidden>
           <span id="read-total-text"></span>
-          <button type="button" class="read-reset" id="read-reset" hidden>Start over</button>
         </p>
 
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
@@ -844,6 +898,9 @@
         <div class="plan-return-row" id="plan-return-row" hidden>
           <button type="button" class="plan-return-btn" id="plan-return-btn"></button>
         </div>
+        <div class="plan-return-row" id="turn-return-row" hidden>
+          <button type="button" class="plan-return-btn" id="turn-return-btn">← Back to Where to turn</button>
+        </div>
         <nav class="chap-nav chap-nav-top" id="chap-nav-top" hidden>
           <button id="prev-chap-top">
             <span class="cn-label">‹ Previous chapter</span>
@@ -922,6 +979,10 @@
           <h2>Where to turn</h2>
           <p>Whatever today holds, God's word has something to say to it.</p>
         </div>
+        <div class="filter-box">
+          <input id="turn-filter" type="search" autocomplete="off" placeholder="Type to filter topics…" aria-label="Filter topics by name" />
+        </div>
+        <p class="filter-none" id="turn-filter-none" hidden>No matches — try another word</p>
         <div id="turn-body"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
@@ -952,6 +1013,10 @@
           <h2>Bible Words</h2>
           <p>Big Bible words, in plain language.</p>
         </div>
+        <div class="filter-box">
+          <input id="words-filter" type="search" autocomplete="off" placeholder="Type to filter words…" aria-label="Filter Bible words by name" />
+        </div>
+        <p class="filter-none" id="words-filter-none" hidden>No matches — try another word</p>
         <div id="glossary-body"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
@@ -1129,7 +1194,12 @@
         VIEWS.forEach(function (v) { $(v).hidden = v !== id; });
         window.scrollTo(0, 0);
         if (id !== "view-reader") dismissSelection();
-        if (id === "view-home") setPageMeta(DEFAULT_TITLE, DEFAULT_DESC);
+        if (id === "view-home") {
+          setPageMeta(DEFAULT_TITLE, DEFAULT_DESC);
+          /* The home plan card follows the reading record, so it is
+             redrawn on every arrival home. */
+          try { refreshPlanCard(); } catch (e) {}
+        }
       }
 
       /* ---- home: book lists render FIRST ----
@@ -1302,16 +1372,13 @@
           navigator.clipboard.writeText(str).then(done, fallback);
         } else { fallback(); }
       }
-      function shareSelectedVerses() {
-        if (!selection) return;
-        var s = selection;
-        var title = refSummary(s.b, s.c, s.verses) + " — World English Bible";
-        var block = selectionShareText();
-        /* A single text field and NO separate url field: when a url rides
-           along, Messages and Messenger swallow the words and deliver a
-           bare link card titled "World English Bible". With everything in
-           the text, the verse words are the message and the link sits
-           inline at the end. */
+      /* Send one verse block out the door — the shape every share in
+         the app takes: a single text field and NO separate url field,
+         because when a url rides along, Messages and Messenger swallow
+         the words and deliver a bare link card titled "World English
+         Bible". With everything in the text, the verse words are the
+         message and the link sits inline at the end. */
+      function shareTextBlock(title, block) {
         if (navigator.share) {
           navigator.share({ title: title, text: block }).catch(function (err) {
             if (!err || err.name !== "AbortError") copyVerseText(block);
@@ -1319,6 +1386,12 @@
         } else {
           copyVerseText(block);
         }
+      }
+      function shareSelectedVerses() {
+        if (!selection) return;
+        var s = selection;
+        shareTextBlock(refSummary(s.b, s.c, s.verses) + " — World English Bible",
+                       selectionShareText());
       }
       try { $("sharebar-btn").addEventListener("click", shareSelectedVerses); } catch (e) {}
       function refName(bi, ci) { return META[bi][0] + " " + (ci + 1); }
@@ -1493,8 +1566,9 @@
          (see chapterPlaybackEnded). Marking is idempotent: reaching
          the end again changes nothing. On the home view, a book with
          any finished chapters shows a soft "x of y read" note, and a
-         total line counts the whole road, with a small Start over
-         that clears the record. No streaks, no scores. */
+         total line counts the whole road. A small Start over on the
+         My Journey page, beside its chapters-read count, clears the
+         record. No streaks, no scores. */
       var READ_KEY = "web-bible:read";
       var READ_TOTAL = 0;
       META.forEach(function (m) { READ_TOTAL += m[1]; });
@@ -1536,7 +1610,6 @@
             line.hidden = false;
             $("read-total-text").textContent =
               "Chapters read: " + total + " of " + READ_TOTAL.toLocaleString("en-US");
-            $("read-reset").hidden = total === 0;
           }
         } catch (e) {}
       }
@@ -1574,14 +1647,17 @@
       }
       try { loadRead(); } catch (e) { readStore = {}; }
       try { refreshReadNotes(); } catch (e) {}
-      try {
-        $("read-reset").addEventListener("click", function () {
-          readStore = {};
-          persistRead();
-          refreshReadNotes();
-          showToast("Reading record cleared — a fresh start");
-        });
-      } catch (e) {}
+      /* Start over: empties the chapters-read record — and with it
+         every reading plan's progress, since both are the one record.
+         Its button lives on the My Journey page now, beside the
+         chapters-read count it clears; the home view keeps the total
+         line alone. */
+      function resetReadingRecord() {
+        readStore = {};
+        persistRead();
+        refreshReadNotes();
+        showToast("Reading record cleared — a fresh start");
+      }
 
       /* ---- how a saved verse looks in the chapter ----
          A highlighted verse wears the soft wash (.marked) in its own
@@ -1772,7 +1848,9 @@
          color. Entries stand in Bible order; tapping one opens its
          chapter at that verse, the same way a search result does, and
          Remove clears the verse's whole saved record — bookmark,
-         note, and highlight alike. */
+         note, and highlight alike. The very same rows are what My
+         Journey lists under its Saved verses count, drawn from this
+         same record, so the two can never disagree. */
       function savedShelfEntries() {
         var out = [];
         for (var k in savedStore) {
@@ -1790,6 +1868,61 @@
           $("saved-btn").textContent = "🔖 Saved Verses" + (n ? " (" + n + ")" : "");
         } catch (e) {}
       }
+      /* Share one saved verse — only that verse, in the same shape as
+         a share from the reader: its words, its reference, and the
+         app's address with the deep link to it. Sharing stays one
+         verse at a time; there is no share-everything anywhere. */
+      function shareSavedVerse(en) {
+        var ref = refSummary(en.b, en.c, [en.v]);
+        var link = "";
+        try { link = location.href.split("#")[0] + hashFor(en.b, en.c, en.v); }
+        catch (e) { link = hashFor(en.b, en.c, en.v); }
+        shareTextBlock(ref + " — World English Bible",
+          en.v + " " + verseText(en.b, en.c, en.v - 1) +
+          " — " + ref + " (World English Bible) " + link);
+      }
+      /* One saved verse's row — the shelf's own shape, shared with My
+         Journey's saved-verses list: tap to open the chapter at the
+         verse, Share sends just this verse, Remove clears its whole
+         saved record; whichever list the row stands in is redrawn
+         (rerender) after a removal. */
+      function savedEntryRow(en, rerender) {
+        var li = el("li");
+        var wrap = el("div", "sv-entry");
+        var ref = META[en.b][0] + " " + (en.c + 1) + ":" + en.v;
+        var main = el("button", "sv-main");
+        main.type = "button";
+        var refSpan = el("span", "sv-ref", ref);
+        if (en.hl) {
+          var dot = el("span", "sv-hldot");
+          dot.setAttribute("data-hlc", en.hl);
+          dot.setAttribute("title", "Highlighted in " + hlColorName(en.hl));
+          refSpan.appendChild(dot);
+        }
+        main.appendChild(refSpan);
+        main.appendChild(el("span", "sv-text", verseText(en.b, en.c, en.v - 1)));
+        if (en.note) main.appendChild(el("span", "sv-note", en.note));
+        main.addEventListener("click", function () { openChapter(en.b, en.c, en.v); });
+        var share = el("button", "sv-share", "Share");
+        share.type = "button";
+        share.setAttribute("aria-label", "Share " + ref);
+        share.addEventListener("click", function () { shareSavedVerse(en); });
+        var rm = el("button", "sv-remove", "Remove");
+        rm.type = "button";
+        rm.setAttribute("aria-label", "Remove " + ref + " from Saved Verses");
+        rm.addEventListener("click", function () {
+          delete savedStore[savedKeyFor(en.b, en.c, en.v)];
+          persistSaved();
+          updateSavedCount();
+          rerender();
+          showToast("Removed from Saved Verses");
+        });
+        wrap.appendChild(main);
+        wrap.appendChild(share);
+        wrap.appendChild(rm);
+        li.appendChild(wrap);
+        return li;
+      }
       function renderShelf() {
         var body = $("saved-body");
         body.textContent = "";
@@ -1806,38 +1939,7 @@
           return;
         }
         var ul = el("ul", "sv-list");
-        entries.forEach(function (en) {
-          var li = el("li");
-          var wrap = el("div", "sv-entry");
-          var ref = META[en.b][0] + " " + (en.c + 1) + ":" + en.v;
-          var main = el("button", "sv-main");
-          main.type = "button";
-          var refSpan = el("span", "sv-ref", ref);
-          if (en.hl) {
-            var dot = el("span", "sv-hldot");
-            dot.setAttribute("data-hlc", en.hl);
-            dot.setAttribute("title", "Highlighted in " + hlColorName(en.hl));
-            refSpan.appendChild(dot);
-          }
-          main.appendChild(refSpan);
-          main.appendChild(el("span", "sv-text", verseText(en.b, en.c, en.v - 1)));
-          if (en.note) main.appendChild(el("span", "sv-note", en.note));
-          main.addEventListener("click", function () { openChapter(en.b, en.c, en.v); });
-          var rm = el("button", "sv-remove", "Remove");
-          rm.type = "button";
-          rm.setAttribute("aria-label", "Remove " + ref + " from Saved Verses");
-          rm.addEventListener("click", function () {
-            delete savedStore[savedKeyFor(en.b, en.c, en.v)];
-            persistSaved();
-            updateSavedCount();
-            renderShelf();
-            showToast("Removed from Saved Verses");
-          });
-          wrap.appendChild(main);
-          wrap.appendChild(rm);
-          li.appendChild(wrap);
-          ul.appendChild(li);
-        });
+        entries.forEach(function (en) { ul.appendChild(savedEntryRow(en, renderShelf)); });
         body.appendChild(ul);
       }
       function openShelf() {
@@ -1864,7 +1966,7 @@
          tied to calendar dates: the reader goes at their own pace,
          and a day counts as done when every chapter in it stands in
          the chapters-read record — the same single record the home
-         view counts and its Start over clears, so plan progress and
+         view counts and My Journey's Start over clears, so plan progress and
          the reading record can never disagree. Tapping a day opens
          its first chapter in the reader. */
       function flatChapters(books) {
@@ -1955,6 +2057,101 @@
           row.hidden = true;
         }
       }
+      /* The plan the reader most recently opened a day from — read or
+         listened — kept on this device like the other small records,
+         so the home view can offer the way back into that plan. */
+      var lastPlanIdx = -1;
+      try {
+        var lpRaw = localStorage.getItem("web-bible:last-plan");
+        if (lpRaw) {
+          var lpParsed = JSON.parse(lpRaw);
+          if (lpParsed && typeof lpParsed.p === "number" && lpParsed.p >= 0 && lpParsed.p < PLANS.length) {
+            lastPlanIdx = lpParsed.p;
+          }
+        }
+      } catch (e) { lastPlanIdx = -1; }
+      function notePlanOpened(pi) {
+        lastPlanIdx = pi;
+        try { localStorage.setItem("web-bible:last-plan", JSON.stringify({ p: pi })); } catch (e) {}
+      }
+      function planDoneCount(plan) {
+        var n = 0;
+        plan.days.forEach(function (day) { if (planDayDone(day)) n++; });
+        return n;
+      }
+      function planNextDay(plan) {
+        for (var di = 0; di < plan.days.length; di++) {
+          if (!planDayDone(plan.days[di])) return di;
+        }
+        return -1;
+      }
+      /* ---- continue your plan (home) ----
+         A small card on the home view that picks the reader's plan
+         back up: the plan they most recently opened a day from, at
+         its next unfinished day, with Read and Listen for that day.
+         If that plan stands finished, the card offers the next
+         unfinished day of any other plan they have started; if every
+         started plan is finished, the card steps aside. Before any
+         plan is touched, it simply invites a start. */
+      var planCardPick = null; /* { plan, day } the card's buttons act on */
+      function refreshPlanCard() {
+        var card = $("plan-card");
+        if (!card) return;
+        planCardPick = null;
+        var pick = -1, pickDay = -1;
+        if (lastPlanIdx >= 0 && PLANS[lastPlanIdx]) {
+          var nd = planNextDay(PLANS[lastPlanIdx]);
+          if (nd >= 0) { pick = lastPlanIdx; pickDay = nd; }
+        }
+        if (pick < 0) {
+          for (var i = 0; i < PLANS.length; i++) {
+            if (i === lastPlanIdx) continue;
+            var dc = planDoneCount(PLANS[i]);
+            if (dc > 0 && dc < PLANS[i].days.length) { pick = i; pickDay = planNextDay(PLANS[i]); break; }
+          }
+        }
+        var readBtn = $("plan-card-read"), listenBtn = $("plan-card-listen"), startBtn = $("plan-card-start");
+        if (pick >= 0) {
+          var plan = PLANS[pick];
+          planCardPick = { plan: pick, day: pickDay };
+          $("plan-card-label").textContent = "Your reading plan";
+          $("plan-card-title").textContent = plan.title;
+          $("plan-card-next").textContent =
+            "Next: Day " + (pickDay + 1) + " — " + planDayLabel(plan.days[pickDay]) +
+            " · " + planDoneCount(plan) + " of " + plan.days.length + " days done";
+          readBtn.hidden = false;
+          var canListen = false;
+          try { canListen = speechOK(); } catch (e) {}
+          listenBtn.hidden = !canListen;
+          startBtn.hidden = true;
+          card.hidden = false;
+          return;
+        }
+        var anyStarted = false;
+        PLANS.forEach(function (p) { if (planDoneCount(p) > 0) anyStarted = true; });
+        if (anyStarted) { card.hidden = true; return; } /* every started plan stands finished */
+        $("plan-card-label").textContent = "Reading plans";
+        $("plan-card-title").textContent = "Walk through the Bible, a day at a time";
+        $("plan-card-next").textContent = "Five gentle paths — go at your own pace, with no dates and no falling behind.";
+        readBtn.hidden = true;
+        listenBtn.hidden = true;
+        startBtn.hidden = false;
+        card.hidden = false;
+      }
+      try {
+        $("plan-card-read").addEventListener("click", function () {
+          if (!planCardPick) return;
+          var day = PLANS[planCardPick.plan].days[planCardPick.day];
+          openChapter(day[0].b, day[0].c, 0, { plan: planCardPick.plan, day: planCardPick.day });
+        });
+      } catch (e) {}
+      try {
+        $("plan-card-listen").addEventListener("click", function () {
+          if (planCardPick) startPlanDayListen(planCardPick.plan, planCardPick.day);
+        });
+      } catch (e) {}
+      try { $("plan-card-start").addEventListener("click", openPlans); } catch (e) {}
+      try { refreshPlanCard(); } catch (e) {}
       function renderPlans() {
         var body = $("plans-body");
         body.textContent = "";
@@ -1964,6 +2161,7 @@
         try { canListen = speechOK(); } catch (e) {}
         PLANS.forEach(function (plan, pi) {
           var block = el("div", "plan-block");
+          block.id = "plan-block-" + pi;
           block.appendChild(el("h3", "plan-title", plan.title));
           block.appendChild(el("p", "plan-desc", plan.desc));
           var doneCount = 0;
@@ -2010,6 +2208,16 @@
         renderPlans();
         showView("view-plans");
         setPageMeta("Reading Plans — World English Bible", DEFAULT_DESC);
+      }
+      /* The plans view, landed on one plan — the way in from a plan's
+         progress line on My Journey, so the reader steps from how far
+         they've come straight into the plan itself. */
+      function openPlansAt(pi) {
+        renderPlans();
+        showView("view-plans");
+        setPageMeta("Reading Plans — World English Bible", DEFAULT_DESC);
+        var target = document.getElementById("plan-block-" + pi);
+        if (target) target.scrollIntoView({ block: "start" });
       }
       try { $("plans-btn").addEventListener("click", openPlans); } catch (e) {}
       try { $("plans-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
@@ -2234,6 +2442,17 @@
         { title: "Young and starting out", refs: [
           ["Psalm 119", 18, 118, 0], ["Ecclesiastes 12", 20, 11, 0], ["1 Timothy 4", 53, 3, 0] ] }
       ];
+      /* While the reader is in a chapter opened from here, this
+         stands so the reader can offer its "← Back to Where to
+         turn" — the same courtesy a reading plan extends, on the
+         same terms (see openChapter): it rides along through the
+         reader's Previous/Next, and any other door in clears it. */
+      var turnReturn = false;
+      function refreshTurnReturn() {
+        var row = $("turn-return-row");
+        if (!row) return;
+        row.hidden = !turnReturn;
+      }
       function renderTurn() {
         var body = $("turn-body");
         body.textContent = "";
@@ -2244,20 +2463,45 @@
           moment.refs.forEach(function (r) {
             var btn = el("button", "turn-ref", r[0]);
             btn.type = "button";
-            btn.addEventListener("click", function () { openChapter(r[1], r[2], r[3]); });
+            btn.addEventListener("click", function () { openChapter(r[1], r[2], r[3], null, true); });
             refs.appendChild(btn);
           });
           block.appendChild(refs);
           body.appendChild(block);
         });
+        try { applyTurnFilter(); } catch (e) {}
       }
       function openTurn() {
         showView("view-turn");
         setPageMeta("Where to turn — World English Bible", DEFAULT_DESC);
       }
+      /* The filter box: as the reader types, topics whose name does
+         not hold what they typed step aside; clearing the box brings
+         every topic back. It filters this list only — the Bible text
+         search keeps its own button-and-Enter ways, untouched. */
+      function applyTurnFilter() {
+        var input = $("turn-filter"), none = $("turn-filter-none");
+        if (!input || !none) return;
+        var q = input.value.replace(/^\s+|\s+$/g, "").toLowerCase();
+        var blocks = $("turn-body").querySelectorAll(".turn-moment");
+        var shown = 0;
+        for (var i = 0; i < blocks.length; i++) {
+          var h = blocks[i].querySelector("h3");
+          var hit = !q || (h && h.textContent.toLowerCase().indexOf(q) !== -1);
+          blocks[i].hidden = !hit;
+          if (hit) shown++;
+        }
+        none.hidden = shown > 0;
+      }
       try { renderTurn(); } catch (e) {}
       try { $("turn-btn").addEventListener("click", openTurn); } catch (e) {}
       try { $("turn-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("turn-filter").addEventListener("input", applyTurnFilter); } catch (e) {}
+      try {
+        $("turn-return-btn").addEventListener("click", function () {
+          if (turnReturn) openTurn();
+        });
+      } catch (e) {}
 
       /* ---- my journey ----
          A quiet summary of the road so far, built only from what the
@@ -2283,8 +2527,22 @@
         }
         var chapStat = el("div", "journey-stat");
         chapStat.appendChild(el("h3", null, "Chapters read"));
-        chapStat.appendChild(el("p", "journey-big",
+        var chapRow = el("div", "journey-chaprow");
+        chapRow.appendChild(el("p", "journey-big",
           totalRead.toLocaleString("en-US") + " of " + READ_TOTAL.toLocaleString("en-US")));
+        /* Start over stands here now, beside the count it clears —
+           the same clearing it has always done, of the chapters-read
+           record and with it every plan's progress. */
+        if (totalRead > 0) {
+          var resetBtn = el("button", "read-reset", "Start over");
+          resetBtn.type = "button";
+          resetBtn.addEventListener("click", function () {
+            resetReadingRecord();
+            renderJourney();
+          });
+          chapRow.appendChild(resetBtn);
+        }
+        chapStat.appendChild(chapRow);
         var bar = el("div", "journey-bar");
         bar.setAttribute("role", "img");
         bar.setAttribute("aria-label",
@@ -2313,12 +2571,18 @@
         var planStat = el("div", "journey-stat");
         planStat.appendChild(el("h3", null, "Reading plans"));
         var pul = el("ul", "journey-plans");
-        PLANS.forEach(function (plan) {
+        PLANS.forEach(function (plan, pi) {
           var done = 0;
           plan.days.forEach(function (day) { if (planDayDone(day)) done++; });
           var li = el("li");
-          li.appendChild(el("span", "jp-name", plan.title));
-          li.appendChild(el("span", "jp-count", done + " of " + plan.days.length + " days done"));
+          var link = el("button", "jp-link");
+          link.type = "button";
+          link.appendChild(el("span", "jp-name", plan.title));
+          link.appendChild(el("span", "jp-count", done + " of " + plan.days.length + " days done"));
+          link.setAttribute("aria-label",
+            plan.title + " — " + done + " of " + plan.days.length + " days done. Open this plan.");
+          link.addEventListener("click", function () { openPlansAt(pi); });
+          li.appendChild(link);
           pul.appendChild(li);
         });
         planStat.appendChild(pul);
@@ -2328,14 +2592,38 @@
         savedStat.appendChild(el("h3", null, "Saved verses"));
         savedStat.appendChild(el("p", "journey-big",
           savedCount + (savedCount === 1 ? " verse" : " verses")));
-        savedStat.appendChild(el("p", "journey-note",
-          "Kept on the Saved Verses shelf, on the home page."));
+        /* The saved verses themselves, in the shelf's own rows from
+           the shelf's own record — bookmarked, highlighted (with the
+           dot of its color), and noted verses, in Bible order. The
+           rows quote each verse's text, so they are drawn once the
+           Bible text is here (openJourney sees to that). */
+        var savedEntries = savedShelfEntries();
+        if (savedEntries.length) {
+          var textReady = true;
+          savedEntries.forEach(function (en) { if (!bookData(en.b)) textReady = false; });
+          if (textReady) {
+            var svul = el("ul", "sv-list");
+            savedEntries.forEach(function (en) { svul.appendChild(savedEntryRow(en, renderJourney)); });
+            savedStat.appendChild(svul);
+          }
+        } else {
+          savedStat.appendChild(el("p", "journey-note",
+            "Open any chapter, tap a verse, and choose Save, Highlight, or Note — it will wait for you here."));
+        }
         body.appendChild(savedStat);
       }
       function openJourney() {
         renderJourney();
         showView("view-journey");
         setPageMeta("My Journey — World English Bible", DEFAULT_DESC);
+        /* The tallies render at once; the saved-verses rows under
+           their count quote the verse text, so once the Bible text
+           has landed the page is drawn again, complete — the same
+           patience the shelf asks. */
+        ensureAll().then(function () {
+          if ($("view-journey").hidden) return;
+          renderJourney();
+        }).catch(function () {});
       }
       try { $("journey-btn").addEventListener("click", openJourney); } catch (e) {}
       try { $("journey-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
@@ -2418,14 +2706,32 @@
           list.appendChild(item);
         });
         body.appendChild(list);
+        try { applyWordsFilter(); } catch (e) {}
       }
       function openGlossary() {
         renderGlossary();
         showView("view-glossary");
         setPageMeta("Bible Words — World English Bible", DEFAULT_DESC);
       }
+      /* The filter box, the twin of Where to Turn's: terms step aside
+         as the reader types and all return when the box is cleared. */
+      function applyWordsFilter() {
+        var input = $("words-filter"), none = $("words-filter-none");
+        if (!input || !none) return;
+        var q = input.value.replace(/^\s+|\s+$/g, "").toLowerCase();
+        var items = $("glossary-body").querySelectorAll(".gloss-item");
+        var shown = 0;
+        for (var i = 0; i < items.length; i++) {
+          var t = items[i].querySelector(".gloss-term");
+          var hit = !q || (t && t.textContent.toLowerCase().indexOf(q) !== -1);
+          items[i].hidden = !hit;
+          if (hit) shown++;
+        }
+        none.hidden = shown > 0;
+      }
       try { $("words-btn").addEventListener("click", openGlossary); } catch (e) {}
       try { $("words-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("words-filter").addEventListener("input", applyWordsFilter); } catch (e) {}
 
       /* ---- verse of the day ----
          A curated shelf of well-loved verses from across the whole
@@ -2923,23 +3229,29 @@
       /* ---- reader ---- */
       var readerToken = 0;
       var current = { b: 0, c: 0 };
-      function openChapter(bi, ci, highlightVerse, planCtx) {
+      function openChapter(bi, ci, highlightVerse, planCtx, fromTurn) {
         /* Any navigation of the reader's own cancels a pending
            auto-continue start; the roll itself sets the flag again
            after this call returns (see chapterPlaybackEnded). */
         pendingAutoListen = false;
         /* Where the chapter was opened from decides whether the
-           reader offers its "← Back to [plan]" way home: a plan day
-           passes its { plan, day }, the reader's own Previous/Next
-           buttons (and the listening roll) pass "keep" so the way
-           back stays while the reader works through the day, and
-           every other door in — home, search, a book's grid, Start
-           Here, Where to turn, Continue Reading, a deep link —
-           passes nothing and clears it. */
-        if (planCtx === "keep") { /* stay with the plan we're in */ }
-        else if (planCtx) planReturn = planCtx;
-        else planReturn = null;
+           reader offers a way back, and to where: a plan day passes
+           its { plan, day } and earns "← Back to [plan]"; a Where to
+           Turn passage passes fromTurn and earns "← Back to Where to
+           turn". Only one ever stands — the most recent origin wins.
+           The reader's own Previous/Next buttons (and the listening
+           roll) pass "keep", so whichever way back is up stays up
+           while the reader works on from that opening; every other
+           door in — home, search, a book's grid, Start Here, the
+           shelf, My Journey, Continue Reading, a deep link — passes
+           nothing and clears both. */
+        if (planCtx === "keep") { /* stay with the origin we're in */ }
+        else if (planCtx) { planReturn = planCtx; turnReturn = false; }
+        else if (fromTurn) { planReturn = null; turnReturn = true; }
+        else { planReturn = null; turnReturn = false; }
         refreshPlanReturn();
+        refreshTurnReturn();
+        if (planReturn) notePlanOpened(planReturn.plan);
         current = { b: bi, c: ci };
         dismissSelection();
         setPageMeta(refName(bi, ci) + " — World English Bible", DEFAULT_DESC);
