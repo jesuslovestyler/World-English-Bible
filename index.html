@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1776,6 +1776,41 @@
           11: "The great hall of faith: Abel, Enoch, Noah, Abraham, Sarah, Moses, and many more — all died in faith, not having received the promises, but seeing the city whose builder and maker is God.",
           12: "Surrounded by this cloud of witnesses, run with endurance, looking to Jesus; endure the Father's discipline as sons; for you have come to Mount Zion, and to a kingdom that cannot be shaken.",
           13: "Let brotherly love continue — show hospitality, honor marriage, be content, for He has said, 'I will never leave you' — Jesus Christ is the same yesterday, today, and forever."
+        },
+        "James": {
+          1: "Count trials all joy: God gives wisdom generously to all who ask; be doers of the word, not hearers only — and pure religion cares for orphans and widows.",
+          2: "Show no favoritism, but keep the royal law — 'You shall love your neighbor as yourself' — for faith without works is dead.",
+          3: "The tongue is a small member, yet a whole forest fire: no one can tame it — but the wisdom from above is pure, peaceable, gentle, and full of mercy.",
+          4: "Submit yourselves to God, resist the devil and he will flee: draw near to God, and He will draw near to you — and boast not of tomorrow, for your life is a vapor.",
+          5: "Woe to the rich who have hoarded; be patient like the farmer; the prayer of faith will save the sick — confess your faults and pray for one another, for Elijah was a man like us, and he prayed."
+        },
+        "1 Peter": {
+          1: "Born again to a living hope through the resurrection of Jesus Christ, to an inheritance that cannot perish — be holy as He is holy, ransomed by the precious blood of Christ.",
+          2: "You are a chosen people, a royal priesthood, living stones built into a spiritual house: submit for the Lord's sake, and follow Christ's example in suffering.",
+          3: "Wives and husbands, live together in understanding; repay evil with blessing; for Christ also suffered once for sins, the righteous for the unrighteous, that He might bring you to God.",
+          4: "Since Christ suffered in the flesh, arm yourselves with the same mind; the end is near — love one another earnestly, for love covers a multitude of sins, and rejoice when you share Christ's sufferings.",
+          5: "Shepherds of God's flock, serve willingly; all of you, clothe yourselves with humility; cast all your anxieties on Him, because He cares for you — and the God of all grace will restore, confirm, and strengthen you."
+        },
+        "2 Peter": {
+          1: "His divine power has given us all things for life and godliness: add virtue to faith and knowledge to virtue, make your calling and election sure — for no prophecy came by man's will, but men spoke from God as they were carried along by the Holy Spirit.",
+          2: "False prophets arose among the people, and false teachers will arise among you: God knows how to rescue the godly and to keep the unrighteous under punishment.",
+          3: "Scoffers will say, 'Where is the promise of His coming?' — but the Lord is not slow; He is patient, not wishing any to perish; the day of the Lord will come, and we look for new heavens and a new earth."
+        },
+        "1 John": {
+          1: "The word of life, which we have heard and seen and touched: God is light, and if we walk in the light and confess our sins, He is faithful and righteous to forgive us.",
+          2: "If anyone does sin, we have an advocate with the Father, Jesus Christ the righteous; do not love the world, but abide in Him — for you are God's children now.",
+          3: "See how great a love the Father has given us, that we should be called children of God! The one born of God does not practice sin; let us love not in word only, but in deed and truth.",
+          4: "Test the spirits; God is love, and He sent His Son to be the atoning sacrifice for our sins — perfect love casts out fear, and we love because He first loved us.",
+          5: "Whoever believes that Jesus is the Christ is born of God; the Spirit, the water, and the blood testify — and this is the testimony: God gave us eternal life, that you may know that you have eternal life."
+        },
+        "2 John": {
+          1: "The elder to the chosen lady and her children: walk in truth and love, beware the deceivers who do not confess Jesus Christ come in the flesh, and abide in His teaching."
+        },
+        "3 John": {
+          1: "The elder to beloved Gaius, who walks in truth: support those who work for the truth, imitate the good and not the evil — Diotrephes, who loves to be first, is the warning."
+        },
+        "Jude": {
+          1: "Contend earnestly for the faith once delivered to the saints, for ungodly men have crept in — but build yourselves up in your most holy faith, and rest in Him who is able to keep you from falling."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1792,7 +1827,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -2048,6 +2083,41 @@
           11: { 1: "Faith is the assurance of things hoped for", 4: "By faith Abel, Enoch, and Noah", 8: "By faith Abraham obeyed and went out", 20: "By faith Isaac, Jacob, and Joseph", 23: "By faith Moses", 32: "And what more shall I say?" },
           12: { 1: "Run with endurance, looking to Jesus", 4: "The Father disciplines His sons", 12: "Lift your drooping hands; pursue peace", 18: "You have come to Mount Zion", 25: "A kingdom that cannot be shaken" },
           13: { 1: "Let brotherly love continue", 5: "Be content: I will never leave you", 7: "Remember your leaders; imitate their faith", 9: "Jesus Christ is the same forever", 15: "A sacrifice of praise", 20: "The God of peace equip you" }
+        },
+        "James": {
+          1: { 1: "James greets the twelve tribes", 2: "Count it all joy in trials", 5: "If anyone lacks wisdom, ask God", 12: "Blessed is the one who endures", 19: "Be quick to hear, slow to speak", 22: "Be doers of the word, not hearers only" },
+          2: { 1: "Show no favoritism", 8: "The royal law: love your neighbor as yourself", 14: "Faith without works is dead", 20: "Even the demons believe — and shudder" },
+          3: { 1: "The tongue must be bridled", 5: "The tongue is a fire", 13: "The wisdom from above" },
+          4: { 1: "Where do wars and fightings come from?", 6: "God resists the proud, gives grace to the humble", 7: "Submit to God; resist the devil", 11: "Do not speak against a brother", 13: "Your life is a vapor" },
+          5: { 1: "Woe to the rich who hoard", 7: "Be patient, as the farmer waits", 12: "Let your yes be yes", 13: "The prayer of faith", 19: "Whoever turns back a sinner from error" }
+        },
+        "1 Peter": {
+          1: { 1: "Peter greets the chosen exiles", 3: "Born again to a living hope", 13: "Be holy, for I am holy", 18: "Ransomed by the precious blood of Christ", 22: "Love one another from the heart" },
+          2: { 1: "Living stones, a spiritual house", 4: "The stone the builders rejected", 9: "A chosen people, a royal priesthood", 13: "Submit to authority for the Lord's sake", 21: "Christ also suffered for you, leaving an example" },
+          3: { 1: "Wives and husbands", 8: "Repay evil with blessing", 13: "Suffer for righteousness' sake", 18: "Christ suffered once for sins", 21: "Baptism now saves you" },
+          4: { 1: "Arm yourselves with the same mind", 7: "The end of all things is near", 8: "Love covers a multitude of sins", 12: "Rejoice in Christ's sufferings", 17: "Judgment begins with God's household" },
+          5: { 1: "Shepherd the flock willingly", 5: "Clothe yourselves with humility", 6: "Cast all your anxieties on Him", 8: "Be sober-minded; resist the devil", 10: "The God of all grace will restore you" }
+        },
+        "2 Peter": {
+          1: { 1: "Peter greets the faithful", 3: "All things for life and godliness", 5: "Add to your faith virtue", 10: "Make your calling and election sure", 16: "We were eyewitnesses of His majesty", 19: "A lamp shining in a dark place" },
+          2: { 1: "False prophets will arise", 4: "God did not spare the angels who sinned", 10: "Bold and self-willed ones", 15: "They have followed Balaam's way", 17: "Springs without water" },
+          3: { 1: "Remember the words spoken beforehand", 3: "Scoffers will come in the last days", 8: "With the Lord, one day is as a thousand years", 10: "The day of the Lord will come as a thief", 14: "Be diligent to be found in peace", 17: "Grow in the grace and knowledge of our Lord" }
+        },
+        "1 John": {
+          1: { 1: "The word of life, which we have seen", 5: "God is light", 8: "If we confess our sins" },
+          2: { 1: "Christ, our advocate with the Father", 7: "An old commandment, yet a new one", 15: "Do not love the world", 18: "Antichrists have gone out from us", 24: "Abide in Him", 28: "We are God's children now" },
+          3: { 1: "See what love the Father has given us", 4: "The one born of God does not practice sin", 11: "Do not be like Cain", 16: "Love in deed and in truth", 19: "God is greater than our heart" },
+          4: { 1: "Test the spirits", 7: "God is love", 9: "God sent His Son, that we might live", 17: "Perfect love casts out fear", 19: "We love, because He first loved us" },
+          5: { 1: "Whoever believes is born of God", 6: "The Spirit, the water, and the blood", 11: "This is the testimony: eternal life", 13: "That you may know you have eternal life", 20: "The true God, and eternal life" }
+        },
+        "2 John": {
+          1: { 1: "The elder to the chosen lady", 4: "Walking in truth and love", 7: "Beware of deceivers", 9: "Abide in the teaching of Christ" }
+        },
+        "3 John": {
+          1: { 1: "The elder to Gaius, the beloved", 3: "You walk in truth", 9: "Diotrephes, who loves to be first", 11: "Imitate the good, not the evil" }
+        },
+        "Jude": {
+          1: { 1: "Jude greets those who are called and kept", 3: "Contend earnestly for the faith", 5: "Examples of judgment long ago", 17: "Remember the words of the apostles", 20: "Build yourselves up in your most holy faith", 24: "To Him who is able to keep you from falling" }
         }
       };
       function chapterHeadings(bi, ci) {
