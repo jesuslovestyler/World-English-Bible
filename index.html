@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1684,6 +1684,21 @@
           14: "In the assembly let everything be intelligible and in good order, prophecy above tongues, for God is not a God of confusion but of peace.",
           15: "The resurrection stands at the gospel's heart: Christ died, was buried, rose, and appeared; if He has not been raised, faith is empty — but He has, the first fruits!",
           16: "The collection for the saints, Paul's travel plans, and final counsel: watch, stand firm in the faith, be strong, and let all you do be done in love."
+        },
+        "2 Corinthians": {
+          1: "Paul blesses the God of all comfort, tells of his deadly affliction in Asia and God's rescue, and explains his changed plans — in Christ it is always Yes.",
+          2: "Paul urges the church to forgive and restore the punished brother, and rejoices: God leads us in triumph, and we are Christ's fragrance.",
+          3: "Ministers of the new covenant: the letter kills, but the Spirit gives life — and with unveiled faces we behold the Lord's glory and are transformed.",
+          4: "Treasure in clay jars: afflicted in every way, but not crushed — for this light affliction works an eternal weight of glory beyond all comparison.",
+          5: "An earthly tent, a heavenly home; the judgment seat of Christ; the love of Christ compels us — if anyone is in Christ, he is a new creation: be reconciled to God.",
+          6: "Now is the acceptable time, now is the day of salvation; Paul's hardships commend his ministry; do not be unequally yoked with unbelievers.",
+          7: "Paul's heart overflows with joy: the Corinthians' godly sorrow produced repentance leading to salvation, and Titus brings good news.",
+          8: "The Macedonians gave generously out of deep poverty; excel in this grace of giving too — for Christ, though rich, became poor for your sake.",
+          9: "God loves a cheerful giver: whoever sows bountifully will reap bountifully, and your generosity overflows in thanksgiving to God.",
+          10: "Paul answers his critics: the weapons of our warfare are not fleshly but mighty through God, and he will boast only within the Lord's measure.",
+          11: "Paul speaks as a fool to protect his children from false apostles, and catalogues his sufferings: beatings, shipwrecks, dangers — his boast is in weakness.",
+          12: "A man caught up to the third heaven; a thorn in the flesh; and the Lord's answer stands forever: 'My grace is sufficient for you, for my power is made perfect in weakness.'",
+          13: "Final warnings: examine yourselves, restore one another, live in peace — and the grace of the Lord Jesus, the love of God, and the fellowship of the Holy Spirit be with you all."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1700,7 +1715,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1864,6 +1879,21 @@
           14: { 1: "Desire especially to prophesy", 6: "Speech that builds up", 20: "Be mature in your thinking", 26: "Let all things be done in order" },
           15: { 1: "The gospel I preached to you", 12: "If Christ has not been raised", 20: "Christ, the first fruits", 35: "The resurrection body", 50: "We shall not all sleep" },
           16: { 1: "The collection for the saints", 5: "Paul's travel plans", 10: "Receive Timothy and Apollos kindly", 13: "Watch, stand firm, be strong", 19: "Final greetings" }
+        },
+        "2 Corinthians": {
+          1: { 1: "Paul greets the church", 3: "The God of all comfort", 8: "Affliction and deliverance in Asia", 15: "Paul's changed plans", 18: "Yes and Amen in Christ" },
+          2: { 1: "Paul's painful visit and sorrowful letter", 5: "Forgive and restore the offender", 12: "Triumph in Christ", 14: "The fragrance of Christ" },
+          3: { 1: "Letters written on hearts", 4: "Ministers of the new covenant", 7: "The surpassing glory of the Spirit's ministry", 12: "Unveiled faces, transformed" },
+          4: { 1: "We do not lose heart", 7: "Treasure in clay jars", 13: "We believe, and so we speak", 16: "The eternal weight of glory" },
+          5: { 1: "The earthly tent, the heavenly home", 6: "We walk by faith, not by sight", 9: "The judgment seat of Christ", 11: "The love of Christ compels us", 17: "The ministry of reconciliation" },
+          6: { 1: "Now is the day of salvation", 3: "Hardships that commend the ministry", 11: "Open wide your hearts", 14: "Do not be unequally yoked" },
+          7: { 2: "Paul's joy in their repentance", 5: "Titus brings good news", 8: "Godly sorrow and worldly sorrow" },
+          8: { 1: "The Macedonians' generosity", 6: "Excel in this grace of giving too", 9: "Christ became poor for your sake", 16: "Titus and the brothers are sent" },
+          9: { 1: "The gift for the saints", 6: "Sow generously, reap generously", 7: "God loves a cheerful giver", 10: "He supplies and multiplies your seed", 12: "The gift overflows in thanksgiving" },
+          10: { 1: "Paul's meekness and boldness", 3: "Weapons not of the flesh", 7: "Look at what is before your eyes", 12: "Measuring by the Lord's measure" },
+          11: { 1: "Paul's jealous concern for the church", 5: "The so-called super-apostles", 16: "Paul's fool's speech", 22: "Paul's catalogue of sufferings", 30: "Boasting in weakness" },
+          12: { 1: "Caught up to the third heaven", 7: "A thorn in the flesh", 9: "My grace is sufficient for you", 11: "The signs of an apostle", 14: "Paul plans a third visit" },
+          13: { 1: "Final warnings", 5: "Examine yourselves", 11: "Rejoice, be restored, live in peace" }
         }
       };
       function chapterHeadings(bi, ci) {
