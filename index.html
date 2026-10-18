@@ -246,6 +246,22 @@
         box-shadow: var(--shadow);
       }
       .listen-voice select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+      /* The seek row: shown only while listening (playing or paused).
+         The slider moves verse by verse; the times beside it are
+         estimates from the verses' word counts, marked with a ~. */
+      .listen-seek { margin-top: 12px; display: flex; align-items: center; gap: 8px; justify-content: center; }
+      .listen-seek input[type="range"] {
+        flex: 1 1 auto; min-width: 0; max-width: 400px; min-height: 36px;
+        accent-color: var(--accent); cursor: pointer;
+      }
+      .seek-step {
+        flex: 0 0 auto; width: 42px; height: 42px; cursor: pointer; font: inherit;
+        font-size: 15px; color: var(--accent);
+        background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .seek-step:active { background: var(--accent-soft); }
+      .seek-time { flex: 0 0 auto; font-size: 13.5px; color: var(--ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
       .voice-help-toggle {
         margin-top: 10px; padding: 6px 8px; cursor: pointer;
         background: none; border: none; font: inherit;
@@ -306,6 +322,9 @@
       .chap-nav button .cn-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
       .chap-nav button .cn-where { display: block; font-family: "Newsreader", Georgia, serif; font-size: 18.5px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .chap-nav button:disabled { opacity: 0.38; cursor: default; box-shadow: none; }
+      /* The same chapter buttons at the top of the chapter, under the
+         Listen bar: no big gap above them, a modest one below. */
+      .chap-nav.chap-nav-top { margin-top: 0; margin-bottom: 22px; }
       .reader-foot { text-align: center; color: var(--ink-soft); font-size: 13.5px; margin-top: 34px; }
 
       /* ---------- search results ---------- */
@@ -568,6 +587,12 @@
             <button class="btn listen-btn" id="listen-pause-btn" type="button">⏸ Pause</button>
             <button class="btn listen-btn listen-stop-btn" id="listen-stop-btn" type="button">⏹ Stop</button>
           </div>
+          <div class="listen-seek" id="listen-seek" hidden>
+            <button class="seek-step" id="seek-back" type="button" aria-label="Back one verse">⏮</button>
+            <input type="range" id="listen-slider" min="0" max="0" step="1" value="0" aria-label="Chapter position" />
+            <button class="seek-step" id="seek-fwd" type="button" aria-label="Forward one verse">⏭</button>
+            <span class="seek-time" id="seek-time">~0:00 / ~0:00</span>
+          </div>
           <div class="listen-voice" id="listen-voice-row" hidden>
             <label for="listen-voice-select">Voice</label>
             <select id="listen-voice-select"></select>
@@ -582,6 +607,16 @@
             </div>
           </div>
         </div>
+        <nav class="chap-nav chap-nav-top" id="chap-nav-top" hidden>
+          <button id="prev-chap-top">
+            <span class="cn-label">‹ Previous chapter</span>
+            <span class="cn-where" id="prev-where-top"></span>
+          </button>
+          <button id="next-chap-top" class="next">
+            <span class="cn-label">Next chapter ›</span>
+            <span class="cn-where" id="next-where-top"></span>
+          </button>
+        </nav>
         <div id="reader-body"></div>
         <nav class="chap-nav" id="chap-nav" hidden>
           <button id="prev-chap">
@@ -1793,6 +1828,7 @@
         $("reader-book").textContent = name;
         $("reader-chapter").textContent = "Chapter " + (ci + 1);
         $("chap-nav").hidden = true;
+        $("chap-nav-top").hidden = true;
         var body = $("reader-body");
         body.textContent = "";
         body.appendChild(el("p", "loading-note", "Opening " + refName(bi, ci) + "…"));
@@ -1901,6 +1937,15 @@
         pb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0); } : null;
         nb.onclick = next ? function () { openChapter(next.b, next.c, 0); } : null;
         $("chap-nav").hidden = false;
+        /* The same pair at the top of the chapter: identical labels,
+           destinations, and edge behavior as the bottom pair. */
+        var ptb = $("prev-chap-top"), ntb = $("next-chap-top");
+        ptb.disabled = !prev; ntb.disabled = !next;
+        $("prev-where-top").textContent = prev ? refName(prev.b, prev.c) : "—";
+        $("next-where-top").textContent = next ? refName(next.b, next.c) : "—";
+        ptb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0); } : null;
+        ntb.onclick = next ? function () { openChapter(next.b, next.c, 0); } : null;
+        $("chap-nav-top").hidden = false;
 
         if (hlVerses.length) setSelection(bi, ci, hlVerses);
         if (hlEl) {
@@ -1965,6 +2010,7 @@
           $("listen-controls").hidden = !listenState;
           $("listen-pause-btn").textContent =
             listenState && listenState.paused ? "▶ Resume" : "⏸ Pause";
+          syncSeekUI();
         } catch (e) {}
       }
       function clearListenTimer() {
@@ -2164,6 +2210,7 @@
         st.remaining = estimateSpeechMs(item.text);
         window.speechSynthesis.speak(u);
         if (!st.paused) armWatchdog(st, token);
+        try { syncSeekUI(); } catch (e) {}
       }
       /* Move to the next verse, exactly once per verse: the first
          caller (end event or watchdog) wins by bumping the guard
@@ -2200,10 +2247,22 @@
             var lit = document.querySelectorAll("#reader-body .verse.hl");
             for (var s = 0; s < lit.length; s++) lit[s].classList.remove("hl");
           } catch (e) {}
+          /* Per-verse speaking-time estimates from the same estimator
+             the watchdog uses, cumulated: cumMs[k] is the estimated
+             time before queue item k (verses only — the intro is not
+             timed), and totalMs is the whole chapter's estimate. These
+             feed the seek row's slider position and its ~m:ss labels. */
+          var cumMs = [0], totalMs = 0;
+          for (var qi = 1; qi < queue.length; qi++) {
+            cumMs[qi] = totalMs;
+            totalMs += estimateSpeechMs(queue[qi].text);
+          }
+          cumMs[queue.length] = totalMs;
           var st = {
             id: ++listenSession, paused: false, spokenEl: null,
             queue: queue, step: 0, token: 0, voice: chosenVoice(),
-            timer: null, deadline: 0, remaining: 0
+            timer: null, deadline: 0, remaining: 0,
+            cumMs: cumMs, totalMs: totalMs, restartOnResume: false
           };
           listenState = st;
           resetListenUI();
@@ -2217,11 +2276,19 @@
           if (!listenState || !speechOK()) return;
           var st = listenState;
           if (st.paused) {
-            if (typeof window.speechSynthesis.resume === "function") window.speechSynthesis.resume();
             st.paused = false;
-            /* Pick the watchdog back up where Pause froze it: the
-               time left when Pause was tapped, counted from now. */
-            armWatchdog(st, st.token);
+            if (st.restartOnResume) {
+              /* A seek while paused cancelled the utterance the engine
+                 was holding; speak the sought verse from its beginning
+                 instead of resuming the old one. */
+              st.restartOnResume = false;
+              speakStep(st);
+            } else {
+              if (typeof window.speechSynthesis.resume === "function") window.speechSynthesis.resume();
+              /* Pick the watchdog back up where Pause froze it: the
+                 time left when Pause was tapped, counted from now. */
+              armWatchdog(st, st.token);
+            }
           } else {
             if (typeof window.speechSynthesis.pause === "function") window.speechSynthesis.pause();
             st.paused = true;
@@ -2236,6 +2303,98 @@
           resetListenUI();
         } catch (e) {}
       }
+      /* ---- the seek row ----
+         Shown only while listening (playing or paused): a slider that
+         spans the chapter's verses and follows the verse being spoken,
+         ~m:ss labels estimated from the verses' word counts by the
+         same estimator the watchdog uses, and one-verse step buttons.
+         Dragging or tapping the slider seeks: current speech stops and
+         reading resumes at the chosen verse, from its beginning, with
+         the highlight moving there. Seeking while paused only moves
+         the position — Resume then starts at the new verse. The row
+         adds no timers of its own (the watchdog stays the only clock)
+         and hides with the rest of the Listen state through
+         resetListenUI, which Stop, chapter end, and every navigation
+         already funnel through. While the reader is dragging, playback
+         updates leave the slider and its time label alone, so the bar
+         never fights their finger. */
+      var seekDragging = false;
+      function fmtSeekTime(ms) {
+        var s = Math.max(0, Math.round(ms / 1000));
+        var r = s % 60;
+        return Math.floor(s / 60) + ":" + (r < 10 ? "0" : "") + r;
+      }
+      function syncSeekUI() {
+        try {
+          var row = $("listen-seek");
+          if (!row) return;
+          if (!listenState) { row.hidden = true; return; }
+          row.hidden = false;
+          var st = listenState;
+          var slider = $("listen-slider");
+          var last = Math.max(0, st.queue.length - 2);
+          if (slider.max !== String(last)) slider.max = String(last);
+          if (seekDragging) return;   /* the reader's finger owns it right now */
+          slider.value = String(Math.max(0, Math.min(last, st.step - 1)));
+          $("seek-time").textContent =
+            "~" + fmtSeekTime(st.cumMs[st.step] || 0) + " / ~" + fmtSeekTime(st.totalMs);
+        } catch (e) {}
+      }
+      /* Jump to queue item newStep (1 = the first verse): current
+         speech stops and the chosen verse starts from its beginning.
+         While paused nothing is spoken — position and highlight move,
+         and Resume picks the new verse up via restartOnResume. */
+      function seekToStep(newStep) {
+        try {
+          if (!listenState || !speechOK()) return;
+          var st = listenState;
+          newStep = Math.max(1, Math.min(st.queue.length - 1, newStep));
+          st.token++;   /* silence the current verse's pending end event */
+          try { if (st.timer) clearTimeout(st.timer); } catch (e) {}
+          st.timer = null;
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+          st.step = newStep;
+          if (st.paused) {
+            st.restartOnResume = true;
+            markSpoken(st.queue[newStep].v);
+            syncSeekUI();
+          } else {
+            speakStep(st);
+          }
+        } catch (e) {}
+      }
+      function stepVerse(delta) {
+        if (!listenState) return;
+        seekToStep(Math.max(1, listenState.step) + delta);
+      }
+      try { $("seek-back").addEventListener("click", function () { stepVerse(-1); }); } catch (e) {}
+      try { $("seek-fwd").addEventListener("click", function () { stepVerse(1); }); } catch (e) {}
+      try {
+        var sliderEl = $("listen-slider");
+        sliderEl.addEventListener("pointerdown", function () { seekDragging = true; });
+        sliderEl.addEventListener("input", function () {
+          seekDragging = true;
+          /* Preview the dragged verse's estimated time as it moves;
+             the seek itself lands on release (the change event). */
+          try {
+            if (!listenState) return;
+            var v = parseInt(sliderEl.value, 10) || 0;
+            $("seek-time").textContent =
+              "~" + fmtSeekTime(listenState.cumMs[v + 1] || 0) + " / ~" + fmtSeekTime(listenState.totalMs);
+          } catch (e) {}
+        });
+        sliderEl.addEventListener("change", function () {
+          var v = parseInt(sliderEl.value, 10) || 0;
+          seekDragging = false;
+          seekToStep(v + 1);
+        });
+        sliderEl.addEventListener("pointerup", function () {
+          /* If the value never changed, no change event follows —
+             hand the slider back to playback updates. */
+          setTimeout(function () { seekDragging = false; }, 80);
+        });
+        sliderEl.addEventListener("pointercancel", function () { seekDragging = false; });
+      } catch (e) {}
       try { $("listen-btn").addEventListener("click", startListening); } catch (e) {}
       try { $("listen-pause-btn").addEventListener("click", toggleListenPause); } catch (e) {}
       try { $("listen-stop-btn").addEventListener("click", function () { stopListening(); }); } catch (e) {}
