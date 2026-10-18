@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1648,6 +1648,24 @@
           26: "Paul tells Agrippa his whole story — 'I was not disobedient to the heavenly vision' — and Agrippa is almost persuaded.",
           27: "Paul sails for Rome; a great storm wrecks the ship at Malta, but every life aboard is saved, as God promised.",
           28: "Paul heals on Malta, reaches Rome at last, and preaches the kingdom there for two full years — boldly and unhindered."
+        },
+        "Romans": {
+          1: "Paul longs to visit Rome; the gospel is God's power to save everyone who believes; and God's wrath is revealed against human wickedness.",
+          2: "God judges impartially, by the heart and not by outward privilege; the true Jew is one inwardly, by the Spirit.",
+          3: "All have sinned and fall short of God's glory — and righteousness comes through faith in Jesus Christ for all who believe.",
+          4: "Abraham believed God, and it was counted to him as righteousness — before circumcision, before the Law — the father of all who believe.",
+          5: "We have peace with God through faith; Christ died for the ungodly, and in Him we are reconciled and shall be saved by His life.",
+          6: "Baptized into Christ's death, we are dead to sin and alive to God — for the wages of sin is death, but God's free gift is eternal life.",
+          7: "The Law is holy, yet sin works through it; Paul describes the war within — and thanks God for deliverance through Jesus Christ.",
+          8: "There is no condemnation for those in Christ Jesus; the Spirit intercedes for us, God works all things for good, and nothing can separate us from His love.",
+          9: "Paul grieves for Israel, defends God's sovereign mercy in election, and grieves that Israel stumbled over the stumbling stone.",
+          10: "Christ is the goal of the law; everyone who calls on the Lord's name will be saved, and faith comes by hearing the word.",
+          11: "A remnant is chosen by grace; Gentiles are grafted into the olive tree; God's mercy reaches all — O the depth of His riches!",
+          12: "Present your bodies as living sacrifices; be transformed by the renewing of your mind; love sincerely and overcome evil with good.",
+          13: "Submit to the governing authorities, owe no one anything but love — for love fulfills the law — and put on the Lord Jesus Christ.",
+          14: "Welcome the brother whose faith is weak; don't judge him over food or days, for the kingdom of God is righteousness, peace, and joy in the Holy Spirit.",
+          15: "Bear with the weak as Christ welcomed us; Paul plans Rome on his way to Spain and carries a gift to Jerusalem's poor saints.",
+          16: "Paul greets the beloved saints of Rome by name, warns against dividers, and closes: the mystery is now revealed to all the nations."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1664,7 +1682,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1792,6 +1810,24 @@
           26: { 1: "Paul speaks before Agrippa", 19: "Not disobedient to the heavenly vision", 24: "Festus cries out; Agrippa is almost persuaded" },
           27: { 1: "Paul sails for Rome", 9: "A warning ignored", 13: "The storm", 33: "Paul urges them to eat and take heart", 39: "The shipwreck" },
           28: { 1: "On Malta: a snake and many healings", 11: "On to Rome", 17: "Paul speaks to the Jewish leaders in Rome", 23: "Preaching the kingdom in Rome", 30: "Two years, boldly and unhindered" }
+        },
+        "Romans": {
+          1: { 1: "Paul greets the Romans", 8: "Paul longs to visit Rome", 16: "The power of the gospel", 18: "God's wrath against wickedness" },
+          2: { 1: "God judges impartially", 12: "The Law and judgment", 17: "The Jews and the Law", 25: "Circumcision of the heart" },
+          3: { 1: "God's faithfulness, human sin", 9: "All have sinned", 21: "Righteousness through faith in Jesus", 27: "Boasting excluded" },
+          4: { 1: "Abraham justified by faith", 9: "Faith before circumcision", 13: "The promise received by faith", 16: "Father of many nations", 18: "Abraham believed against hope" },
+          5: { 1: "Peace with God through faith", 3: "Rejoicing in suffering", 6: "Christ died for the ungodly", 12: "Death through Adam, life through Christ" },
+          6: { 1: "Dead to sin, alive to God", 8: "Died and risen with Christ", 15: "Slaves of righteousness", 20: "The wages of sin, the gift of God" },
+          7: { 1: "Freed from the Law, joined to Christ", 7: "The Law reveals sin", 13: "Sin worked death through the commandment", 14: "The war within", 24: "Who will deliver me? Thanks be to God" },
+          8: { 1: "No condemnation in Christ", 5: "Life in the Spirit", 12: "Heirs with Christ", 18: "The glory to come", 26: "The Spirit intercedes for us", 28: "God works all things for good", 31: "Nothing can separate us from God's love" },
+          9: { 1: "Paul's grief for Israel", 6: "God's promise and election", 14: "Is God unjust? By no means", 19: "The potter and the clay", 25: "A people called from the nations", 30: "Israel stumbles over the stone" },
+          10: { 1: "Zeal without knowledge", 4: "Christ, the goal of the law", 9: "Confess and believe", 14: "Faith comes by hearing", 18: "Israel heard the word" },
+          11: { 1: "A remnant chosen by grace", 11: "Salvation comes to the Gentiles", 17: "The olive tree", 25: "The mystery: God's mercy for Israel", 33: "The depth of God's riches" },
+          12: { 1: "Living sacrifices", 3: "Humble service in the body", 9: "Love without hypocrisy", 17: "Overcome evil with good" },
+          13: { 1: "Submit to the governing authorities", 8: "Love fulfills the law", 11: "The day is at hand: put on Christ" },
+          14: { 1: "Welcome the one weak in faith", 5: "Each one fully convinced in his own mind", 10: "We will all stand before God", 13: "Do not make your brother stumble", 19: "Pursue peace and building up" },
+          15: { 1: "Bear with the weak", 7: "Christ: servant to the Jews, hope for the Gentiles", 14: "Paul's ministry to the Gentiles", 22: "Plans for Rome and Spain", 25: "A gift for Jerusalem's poor", 30: "Pray for me" },
+          16: { 1: "Greetings to the saints in Rome", 17: "Beware those who cause divisions", 21: "Greetings from Paul's companions", 24: "The mystery now revealed" }
         }
       };
       function chapterHeadings(bi, ci) {
