@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
+    <meta name="app-build" content="202610180333" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -133,6 +134,10 @@
       .install-btn { width: 100%; font-size: 16.5px; }
       .install-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
       .install-help { color: var(--ink); font-size: 15px; text-align: center; margin: 9px 0 0; }
+
+      .update-box { margin: 10px 0 2px; }
+      .update-btn { width: 100%; font-size: 16.5px; background: var(--surface); color: var(--accent); border-color: var(--line); }
+      .update-status { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
 
       .passiton { margin: 28px 0 2px; text-align: center; }
       .passiton-title { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 600; margin: 0 0 12px; }
@@ -610,6 +615,10 @@
             <button class="btn install-btn" id="install-btn" type="button">📲 Add the Bible to your home screen</button>
             <p class="install-note">Opens like an app — and the whole Bible works offline.</p>
             <p class="install-help" id="install-help" hidden>Tap the Share button, then Add to Home Screen.</p>
+          </div>
+          <div class="update-box">
+            <button class="btn update-btn" id="update-btn" type="button">↻ Check for updates</button>
+            <p class="update-status" id="update-status" role="status" aria-live="polite" hidden></p>
           </div>
           <div class="passiton">
             <h2 class="passiton-title">Pass it on</h2>
@@ -3073,6 +3082,101 @@
             }
           });
         } catch (err) { /* the install section must never break the page */ }
+      })();
+
+      /* ---- check for updates ----
+         A build stamp is baked into this page twice — the
+         <meta name="app-build"> tag in the head and the constant
+         below — and it changes with every new build of the page.
+         Tapping Check for updates fetches this app's own address
+         from the network, bypassing caches (a cache-busting query
+         plus a no-store fetch), reads the stamp of what the server
+         returns, and compares it with the running page's stamp.
+         A match means "You're up to date." A difference means a
+         newer copy is waiting: the app reloads fresh (a
+         cache-busting navigation) so the newest version loads, and
+         the wb_updated flag in that address makes the reloaded page
+         show a small "Updated to the latest version" note. A failed
+         fetch (offline) shows a friendly no-connection line instead.
+         Everything is wrapped so a check can never break offline
+         reading or any other feature. */
+      var APP_BUILD_STAMP = "202610180333";
+      (function () {
+        try {
+          var btn = $("update-btn");
+          var status = $("update-status");
+          if (!btn) return;
+          function setUpdateStatus(msg) {
+            try {
+              if (!status) return;
+              if (msg) { status.textContent = msg; status.hidden = false; }
+              else { status.textContent = ""; status.hidden = true; }
+            } catch (e) {}
+          }
+          /* After a fresh reload for an update, say so — then tidy
+             the flag out of the address so a later manual check
+             starts clean and no reload loop can form. */
+          try {
+            if (/[?&]wb_updated=1(?:&|$)/.test(window.location.search || "")) {
+              setUpdateStatus("Updated to the latest version");
+              try { showToast("Updated to the latest version"); } catch (e2) {}
+              try {
+                var cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete("wb_updated");
+                cleanUrl.searchParams.delete("_wbupdate");
+                window.history.replaceState(null, "", cleanUrl.toString());
+              } catch (e3) {}
+            }
+          } catch (e) {}
+          function extractBuildStamp(html) {
+            if (!html) return null;
+            var m = html.match(/<meta[^>]*name\s*=\s*["']app-build["'][^>]*content\s*=\s*["']([^"']+)["']/i);
+            if (m) return m[1];
+            m = html.match(/<meta[^>]*content\s*=\s*["']([^"']+)["'][^>]*name\s*=\s*["']app-build["']/i);
+            if (m) return m[1];
+            m = html.match(/APP_BUILD_STAMP\s*=\s*["']([^"']+)["']/);
+            if (m) return m[1];
+            return null;
+          }
+          function restoreBtn() {
+            try { btn.disabled = false; btn.textContent = "↻ Check for updates"; } catch (e) {}
+          }
+          btn.addEventListener("click", function () {
+            if (btn.disabled) return;
+            try { btn.disabled = true; btn.textContent = "Checking…"; } catch (e) {}
+            setUpdateStatus("");
+            var base = "";
+            var hash = "";
+            try { base = window.location.href.split("#")[0].split("?")[0]; } catch (e) { base = ""; }
+            try { hash = window.location.hash || ""; } catch (e) { hash = ""; }
+            if (!base || typeof window.fetch !== "function") {
+              restoreBtn();
+              setUpdateStatus("No connection right now — updates will arrive when you're back online.");
+              return;
+            }
+            var fetchUrl = base + "?_wbcheck=" + Date.now();
+            window.fetch(fetchUrl, { cache: "no-store" }).then(function (resp) {
+              if (!resp || !resp.ok) throw new Error("check failed");
+              return resp.text();
+            }).then(function (html) {
+              var remoteStamp = extractBuildStamp(html);
+              if (remoteStamp && remoteStamp !== APP_BUILD_STAMP) {
+                setUpdateStatus("A new version is ready — refreshing…");
+                var reloadUrl = base + "?wb_updated=1&_wbupdate=" + Date.now() + hash;
+                setTimeout(function () {
+                  try { window.location.replace(reloadUrl); }
+                  catch (e) { window.location.href = reloadUrl; }
+                }, 500);
+              } else {
+                restoreBtn();
+                setUpdateStatus("You're up to date.");
+              }
+            }).catch(function () {
+              restoreBtn();
+              setUpdateStatus("No connection right now — updates will arrive when you're back online.");
+            });
+          });
+        } catch (err) { /* the update check must never break the page */ }
       })();
     </script>
     <script>
