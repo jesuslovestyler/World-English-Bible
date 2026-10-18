@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1715,6 +1715,12 @@
           4: "Walk worthy of the calling: one body, one Spirit, one Lord — gifts given to build up the body; put off the old self and put on the new.",
           5: "Walk in love, as Christ loved us and gave Himself for us; walk as children of light, be filled with the Spirit, and let marriage picture Christ and the church.",
           6: "Children and parents, servants and masters — and for the real battle: put on the whole armor of God, stand firm, and pray at all times."
+        },
+        "Philippians": {
+          1: "Paul thanks God for the Philippians' partnership in the gospel; his chains have only advanced it — 'for me to live is Christ, and to die is gain.'",
+          2: "Have this mind in you which was also in Christ Jesus: He humbled Himself to death on a cross, and God has highly exalted Him above every name.",
+          3: "Paul counts everything he once prized as loss for Christ, presses on toward the prize of God's upward call — for our citizenship is in heaven.",
+          4: "Rejoice in the Lord always; do not be anxious, but pray — and the peace of God will guard your hearts; Paul has learned contentment in whatever circumstance."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1731,7 +1737,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1926,6 +1932,12 @@
           4: { 1: "Walk worthy of your calling", 7: "Gifts given to build up the body", 17: "Put off the old self, put on the new", 25: "Rules for the new life", 29: "Do not grieve the Holy Spirit" },
           5: { 1: "Walk in love", 6: "Walk as children of light", 15: "Walk carefully; be filled with the Spirit", 21: "Wives and husbands: Christ and the church" },
           6: { 1: "Children and parents", 5: "Servants and masters", 10: "The whole armor of God", 18: "Pray at all times", 21: "Final greetings" }
+        },
+        "Philippians": {
+          1: { 1: "Paul greets the saints in Philippi", 3: "Thanksgiving and prayer", 12: "Paul's chains advance the gospel", 21: "To live is Christ, to die is gain", 27: "Live worthy of the gospel" },
+          2: { 1: "Be of one mind, in humility", 5: "The humility and exaltation of Christ", 12: "Work out your own salvation", 19: "Timothy and Epaphroditus" },
+          3: { 2: "Beware those who trust the flesh", 7: "Counting all things loss for Christ", 12: "Press on toward the prize", 17: "Our citizenship is in heaven" },
+          4: { 1: "Stand firm in the Lord", 2: "Agree in the Lord", 4: "Rejoice in the Lord always", 6: "The peace of God guards your hearts", 10: "Paul thanks them for their gift", 21: "Final greetings" }
         }
       };
       function chapterHeadings(bi, ci) {
