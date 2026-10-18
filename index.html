@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1721,6 +1721,12 @@
           2: "Have this mind in you which was also in Christ Jesus: He humbled Himself to death on a cross, and God has highly exalted Him above every name.",
           3: "Paul counts everything he once prized as loss for Christ, presses on toward the prize of God's upward call — for our citizenship is in heaven.",
           4: "Rejoice in the Lord always; do not be anxious, but pray — and the peace of God will guard your hearts; Paul has learned contentment in whatever circumstance."
+        },
+        "Colossians": {
+          1: "Christ is the image of the invisible God, the firstborn over all creation — all things were created through Him and hold together in Him — and Paul proclaims the mystery: Christ in you, the hope of glory.",
+          2: "In Christ are hidden all the treasures of wisdom and knowledge; walk in Him, rooted and built up — and do not be taken captive by human philosophy and empty rules.",
+          3: "Set your minds on things above, where Christ is; put to death what is earthly, put on the new self, and let the word of Christ dwell in you richly.",
+          4: "Devote yourselves to prayer, walk in wisdom toward outsiders, and let your speech be gracious — with final greetings from the fellow workers."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1737,7 +1743,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1938,6 +1944,12 @@
           2: { 1: "Be of one mind, in humility", 5: "The humility and exaltation of Christ", 12: "Work out your own salvation", 19: "Timothy and Epaphroditus" },
           3: { 2: "Beware those who trust the flesh", 7: "Counting all things loss for Christ", 12: "Press on toward the prize", 17: "Our citizenship is in heaven" },
           4: { 1: "Stand firm in the Lord", 2: "Agree in the Lord", 4: "Rejoice in the Lord always", 6: "The peace of God guards your hearts", 10: "Paul thanks them for their gift", 21: "Final greetings" }
+        },
+        "Colossians": {
+          1: { 1: "Paul greets the saints in Colossae", 3: "Thanksgiving for their faith and love", 9: "Paul prays for their growth", 15: "Christ, the image of the invisible God", 24: "Paul's suffering for the church", 27: "The mystery: Christ in you" },
+          2: { 1: "Paul's struggle for the churches", 6: "Walk in Christ, rooted and built up", 8: "Do not be taken captive by empty philosophy", 16: "Do not let anyone judge you in these things", 20: "Rules that perish with use" },
+          3: { 1: "Set your minds on things above", 5: "Put to death what is earthly", 9: "Put on the new self", 16: "Let the word of Christ dwell in you richly", 18: "Wives, husbands, children, and servants" },
+          4: { 1: "Masters: be just and fair", 2: "Devote yourselves to prayer", 5: "Walk in wisdom toward outsiders", 7: "Final greetings" }
         }
       };
       function chapterHeadings(bi, ci) {
