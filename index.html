@@ -52,7 +52,7 @@
         --shadow: 0 1px 3px rgba(80, 62, 20, 0.10);
       }
       @media (prefers-color-scheme: dark) {
-        :root {
+        :root:not([data-theme]) {
           --paper: #171410;
           --surface: #201b14;
           --ink: #ede4cf;
@@ -78,6 +78,63 @@
           --dot-v: #9d7fc9;
           --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
+      }
+      /* reader-chosen themes (the Theme pick beside the text-size
+         buttons): no data-theme attribute means Auto — the app follows
+         the device exactly as it always has, through the two palettes
+         above. Light and Dark pin one of those looks; Paper is a warm
+         reading room of its own: soft sepia, dark warm ink, and a
+         red-letter red that stays red, with a Listen highlight strong
+         enough to see against the sepia. */
+      :root[data-theme="light"] { color-scheme: light; }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --paper: #171410;
+        --surface: #201b14;
+        --ink: #ede4cf;
+        --ink-soft: #ab9f83;
+        --line: #3a3222;
+        --accent: #d9ab5e;
+        --accent-ink: #221a0c;
+        --accent-soft: #2e2716;
+        --redletter: #ff8a70;
+        --hl: #57451a;
+        --hl-edge: #d9ab5e;
+        --mark: #57451a;
+        --wash: #453613;
+        --wash-y: #453613;
+        --wash-g: #2c4530;
+        --wash-b: #264156;
+        --wash-p: #4c2a37;
+        --wash-v: #3a2b50;
+        --dot-y: #d9a92c;
+        --dot-g: #6fae6a;
+        --dot-b: #5f97c4;
+        --dot-p: #d98aa5;
+        --dot-v: #9d7fc9;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+      :root[data-theme="paper"] {
+        color-scheme: light;
+        --paper: #f1e6cb;
+        --surface: #f8f1dc;
+        --ink: #3a2c17;
+        --ink-soft: #77644a;
+        --line: #dcc9a0;
+        --accent: #7c5210;
+        --accent-ink: #fffaf0;
+        --accent-soft: #ecdcb4;
+        --redletter: #a02318;
+        --hl: #f2cf7e;
+        --hl-edge: #b98a1e;
+        --mark: #f2cf7e;
+        --wash: #f3e3b3;
+        --wash-y: #f3e3b3;
+        --wash-g: #dfe4c0;
+        --wash-b: #d9dfc4;
+        --wash-p: #f0d3bd;
+        --wash-v: #e6d7b8;
+        --shadow: 0 1px 3px rgba(90, 70, 30, 0.14);
       }
       html { -webkit-text-size-adjust: 100%; }
       body {
@@ -319,8 +376,10 @@
       .chapter-text {
         font-family: "Newsreader", Georgia, "Times New Roman", serif;
         /* the reader's chosen reading size (see the text-size control);
-           20px is the size this text has always worn */
-        font-size: var(--reader-size, 20px); line-height: 1.78; font-weight: 400;
+           20px is the size this text has always worn. The line height
+           is the reader's spacing pick (see the comfort settings);
+           1.78 is the air this text has always worn. */
+        font-size: var(--reader-size, 20px); line-height: var(--reader-lh, 1.78); font-weight: 400;
       }
       .chapter-text .verse { border-radius: 4px; }
       .chapter-text .wj { color: var(--redletter); }
@@ -369,6 +428,19 @@
       .search-head { padding: 20px 0 6px; }
       .search-head h2 { font-family: "Newsreader", Georgia, serif; font-size: 26px; font-weight: 600; margin: 0 0 4px; }
       .search-head p { color: var(--ink-soft); margin: 0; }
+      /* the scope control a finished search gains: it narrows the
+         results already on the page — no new search is run */
+      .search-scope { display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; margin: 0 0 16px; }
+      .search-scope label { font-size: 14.5px; font-weight: 600; color: var(--ink-soft); }
+      .search-scope select {
+        font: inherit; font-size: 15.5px;
+        min-height: 40px; padding: 6px 10px; cursor: pointer; max-width: 100%;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .search-scope select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .search-scope .scope-count { font-size: 14.5px; color: var(--ink-soft); }
       .result-list { list-style: none; margin: 14px 0 0; padding: 0; }
       .result-list li { border-bottom: 1px solid var(--line); }
       .result-list li:first-child { border-top: 1px solid var(--line); }
@@ -581,6 +653,19 @@
       #ts-down { font-size: 13.5px; }
       #ts-up { font-size: 18px; }
 
+      /* ---------- comfort reading: theme & line spacing (reader) ---------- */
+      .comfort-row { display: flex; gap: 10px 18px; justify-content: center; align-items: center; flex-wrap: wrap; margin: 0 0 14px; }
+      .comfort-row .cf-group { display: inline-flex; gap: 7px; align-items: center; }
+      .comfort-row label { font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+      .comfort-row select {
+        font: inherit; font-size: 15.5px;
+        min-height: 40px; padding: 6px 10px; cursor: pointer;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .comfort-row select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
       /* ---------- listen options: speed, sleep timer, auto-continue ---------- */
       .listen-opts { margin-top: 12px; display: flex; gap: 10px 16px; justify-content: center; align-items: center; flex-wrap: wrap; }
       .listen-opts .lo-group { display: inline-flex; gap: 7px; align-items: center; }
@@ -630,6 +715,17 @@
         padding: 12px 10px 12px 2px; min-height: 52px; flex: 0 0 auto;
       }
       .pd-listen:active { background: var(--accent-soft); }
+      /* the day's Share button: a small companion to the day row, in
+         the same voice as its Listen button — it sends the day out
+         with a link that opens the app right at that day. */
+      .pd-share {
+        font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: none; border: 0; white-space: nowrap;
+        padding: 12px 10px 12px 2px; min-height: 52px; flex: 0 0 auto;
+      }
+      .pd-share:active { background: var(--accent-soft); }
+      /* a day arrived at through its shared link wears a clear mark */
+      .plan-day.pd-target { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); border-radius: 6px; }
       .pd-day { font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); min-width: 52px; }
       .pd-range { flex: 1 1 auto; min-width: 0; font-family: "Newsreader", Georgia, serif; font-size: 18px; font-weight: 500; }
       .pd-check {
@@ -849,6 +945,25 @@
           <button type="button" id="ts-down" aria-label="Smaller reading text">A−</button>
           <button type="button" id="ts-up" aria-label="Larger reading text">A+</button>
         </div>
+        <div class="comfort-row">
+          <span class="cf-group">
+            <label for="theme-select">Theme</label>
+            <select id="theme-select">
+              <option value="auto">Auto</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="paper">Paper</option>
+            </select>
+          </span>
+          <span class="cf-group">
+            <label for="spacing-select">Spacing</label>
+            <select id="spacing-select">
+              <option value="0">Compact</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Airy</option>
+            </select>
+          </span>
+        </div>
         <div class="listenbar" id="listen-bar" hidden>
           <button class="btn listen-btn" id="listen-btn" type="button">▶ Listen to this chapter</button>
           <div class="listen-controls" id="listen-controls" hidden>
@@ -935,6 +1050,11 @@
         <div class="search-head">
           <h2 id="search-title"></h2>
           <p id="search-count"></p>
+        </div>
+        <div class="search-scope" id="search-scope" hidden>
+          <label for="scope-select">Show results in</label>
+          <select id="scope-select"></select>
+          <span class="scope-count" id="scope-count" role="status"></span>
         </div>
         <div id="search-body"></div>
       </section>
@@ -1554,6 +1674,70 @@
       try { $("ts-up").addEventListener("click", function () { stepTextSize(1); }); } catch (e) {}
       try { applyTextSize(); } catch (e) {}
 
+      /* ---- comfort reading: theme & line spacing (this device only) ----
+         Two small picks that live beside the text-size buttons and are
+         remembered the same guarded way. The theme pick drives a
+         data-theme attribute on the root element: "auto" leaves the
+         attribute off and the app follows the device exactly as it
+         always has, while Light, Dark, and the warm Paper theme pin
+         their palettes through the CSS variables — Paper included,
+         whose red-letter color stays a true red and whose Listen
+         highlight (--hl with its --hl-edge outline) stands out against
+         the sepia. The spacing pick drives the --reader-lh custom
+         property the .chapter-text rule reads. Both apply the moment
+         they are chosen, to every chapter, and survive a reload. */
+      var THEME_KEY = "web-bible:theme";
+      var THEMES = ["auto", "light", "dark", "paper"];
+      var themePick = "auto";
+      try {
+        var storedTheme = window.localStorage.getItem(THEME_KEY) || "";
+        if (THEMES.indexOf(storedTheme) !== -1) themePick = storedTheme;
+      } catch (e) {}
+      function applyTheme() {
+        try {
+          var rootEl = document.documentElement;
+          if (themePick === "auto") rootEl.removeAttribute("data-theme");
+          else rootEl.setAttribute("data-theme", themePick);
+          var tsel = $("theme-select");
+          if (tsel) tsel.value = themePick;
+        } catch (e) {}
+      }
+      try {
+        $("theme-select").addEventListener("change", function () {
+          var v = $("theme-select").value;
+          if (THEMES.indexOf(v) === -1) return;
+          themePick = v;
+          try { window.localStorage.setItem(THEME_KEY, v); } catch (e) {}
+          applyTheme();
+        });
+      } catch (e) {}
+      try { applyTheme(); } catch (e) {}
+
+      var SPACING_KEY = "web-bible:spacing";
+      var SPACINGS = [1.55, 1.78, 2.1];   /* Compact, Normal — the air this text has always worn — Airy */
+      var spacingIdx = 1;
+      try {
+        var storedSpacing = parseInt(window.localStorage.getItem(SPACING_KEY) || "", 10);
+        if (storedSpacing >= 0 && storedSpacing < SPACINGS.length) spacingIdx = storedSpacing;
+      } catch (e) {}
+      function applySpacing() {
+        try {
+          document.documentElement.style.setProperty("--reader-lh", String(SPACINGS[spacingIdx]));
+          var ssel = $("spacing-select");
+          if (ssel) ssel.value = String(spacingIdx);
+        } catch (e) {}
+      }
+      try {
+        $("spacing-select").addEventListener("change", function () {
+          var v = parseInt($("spacing-select").value, 10);
+          if (!(v >= 0 && v < SPACINGS.length)) return;
+          spacingIdx = v;
+          try { window.localStorage.setItem(SPACING_KEY, String(v)); } catch (e) {}
+          applySpacing();
+        });
+      } catch (e) {}
+      try { applySpacing(); } catch (e) {}
+
       /* ---- chapters read (this device only) ----
          A quiet record of the chapters a reader has finished, kept on
          their own device in the same guarded pattern as everything
@@ -2152,6 +2336,20 @@
       } catch (e) {}
       try { $("plan-card-start").addEventListener("click", openPlans); } catch (e) {}
       try { refreshPlanCard(); } catch (e) {}
+      /* Send one plan day out the door, the app's usual share way:
+         a friendly line naming the plan and the day, with the day's
+         reading, and a link that opens the app right at that day
+         (the #plan/<plan>/<day> deep link read back below). */
+      function sharePlanDay(pi, di) {
+        var plan = PLANS[pi];
+        if (!plan || !plan.days[di]) return;
+        var link = "";
+        try { link = location.href.split("#")[0] + "#plan/" + pi + "/" + (di + 1); } catch (e) {}
+        var text = "Read Day " + (di + 1) + " of " + plan.title + " with me — " +
+          planDayLabel(plan.days[di]) + " (World English Bible)" +
+          (link ? " " + link : "");
+        shareTextBlock("Day " + (di + 1) + " of " + plan.title + " — World English Bible", text);
+      }
       function renderPlans() {
         var body = $("plans-body");
         body.textContent = "";
@@ -2198,6 +2396,14 @@
               });
               li.appendChild(lbtn);
             }
+            var sbtn = el("button", "pd-share", "Share");
+            sbtn.type = "button";
+            sbtn.setAttribute("aria-label",
+              "Share Day " + (di + 1) + " of " + plan.title);
+            sbtn.addEventListener("click", function () {
+              sharePlanDay(pi, di);
+            });
+            li.appendChild(sbtn);
             ul.appendChild(li);
           });
           block.appendChild(ul);
@@ -2218,6 +2424,19 @@
         setPageMeta("Reading Plans — World English Bible", DEFAULT_DESC);
         var target = document.getElementById("plan-block-" + pi);
         if (target) target.scrollIntoView({ block: "start" });
+      }
+      /* The plans view, landed on one day — the way in from a shared
+         plan-day link: the plan is opened at that day, and the day's
+         row wears a clear mark so the reader's eye lands on it. */
+      function openPlansAtDay(pi, di) {
+        renderPlans();
+        showView("view-plans");
+        setPageMeta("Reading Plans — World English Bible", DEFAULT_DESC);
+        var target = document.getElementById("plan-day-" + pi + "-" + di);
+        if (target) {
+          target.classList.add("pd-target");
+          target.scrollIntoView({ block: "center" });
+        }
       }
       try { $("plans-btn").addEventListener("click", openPlans); } catch (e) {}
       try { $("plans-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
@@ -4124,11 +4343,99 @@
         if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
       }
       var searchToken = 0;
+      /* The last search that ran, kept whole in memory, and the scope
+         it is currently narrowed to. Scoping filters these hits in
+         place — it never re-runs the search — and returning to All
+         Bible restores the full list from this same copy. A brand-new
+         search resets the scope to All Bible. */
+      var lastHits = null, lastQuery = "", searchScope = "all";
+      var SEARCH_MAX = 200;
+      function scopeHits(hits, scope) {
+        if (scope === "ot") return hits.filter(function (h) { return h.b < OT_COUNT; });
+        if (scope === "nt") return hits.filter(function (h) { return h.b >= OT_COUNT; });
+        if (scope && scope.charAt(0) === "b") {
+          var bi = parseInt(scope.slice(1), 10);
+          return hits.filter(function (h) { return h.b === bi; });
+        }
+        return hits;
+      }
+      function scopeName(scope) {
+        if (scope === "ot") return "Old Testament";
+        if (scope === "nt") return "New Testament";
+        if (scope && scope.charAt(0) === "b") {
+          var bi = parseInt(scope.slice(1), 10);
+          if (bi >= 0 && bi < META.length) return META[bi][0];
+        }
+        return "All Bible";
+      }
+      function renderSearchResults() {
+        var body = $("search-body");
+        body.textContent = "";
+        if (!lastHits) return;
+        var hits = lastHits;
+        $("search-count").textContent =
+          hits.length + (hits.length === 1 ? " verse" : " verses") + " found" +
+          (searchScope === "all" && hits.length > SEARCH_MAX ? " — showing the first " + SEARCH_MAX : "");
+        var shown = scopeHits(hits, searchScope);
+        var sc = $("scope-count");
+        if (searchScope === "all") {
+          sc.textContent = "";
+        } else {
+          sc.textContent =
+            shown.length + (shown.length === 1 ? " result" : " results") +
+            " in " + scopeName(searchScope) +
+            (shown.length > SEARCH_MAX ? " — showing the first " + SEARCH_MAX : "");
+        }
+        var q = lastQuery.toLowerCase();
+        var ul = el("ul", "result-list");
+        shown.slice(0, SEARCH_MAX).forEach(function (h) {
+          var li = el("li");
+          var btn = el("button", "result");
+          btn.type = "button";
+          btn.appendChild(el("span", "r-ref", META[h.b][0] + " " + (h.c + 1) + ":" + h.v));
+          var rt = el("span", "r-text");
+          appendHighlighted(rt, verseText(h.b, h.c, h.v - 1), q);
+          btn.appendChild(rt);
+          btn.addEventListener("click", function () { openChapter(h.b, h.c, h.v); });
+          li.appendChild(btn);
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
+      }
+      /* The scope menu's choices: the whole Bible, either Testament,
+         or any one of the 66 books. Built once, from the same META
+         the rest of the app reads. */
+      try {
+        var scopeSel = $("scope-select");
+        if (scopeSel) {
+          [["all", "All Bible"], ["ot", "Old Testament"], ["nt", "New Testament"]].forEach(function (o) {
+            var op = document.createElement("option");
+            op.value = o[0];
+            op.textContent = o[1];
+            scopeSel.appendChild(op);
+          });
+          META.forEach(function (m, bi) {
+            var op = document.createElement("option");
+            op.value = "b" + bi;
+            op.textContent = m[0];
+            scopeSel.appendChild(op);
+          });
+          scopeSel.addEventListener("change", function () {
+            searchScope = scopeSel.value;
+            renderSearchResults();
+          });
+        }
+      } catch (e) {}
       function runSearch(query) {
         var token = ++searchToken;
         showView("view-search");
         $("search-title").textContent = "“" + query + "”";
         $("search-count").textContent = "Searching the whole Bible…";
+        lastHits = null;
+        searchScope = "all";
+        try { $("scope-select").value = "all"; } catch (e) {}
+        $("scope-count").textContent = "";
+        $("search-scope").hidden = true;
         var body = $("search-body");
         body.textContent = "";
         ensureAll().then(function () {
@@ -4148,24 +4455,10 @@
             body.appendChild(nr);
             return;
           }
-          var MAX = 200;
-          $("search-count").textContent =
-            hits.length + (hits.length === 1 ? " verse" : " verses") + " found" +
-            (hits.length > MAX ? " — showing the first " + MAX : "");
-          var ul = el("ul", "result-list");
-          hits.slice(0, MAX).forEach(function (h) {
-            var li = el("li");
-            var btn = el("button", "result");
-            btn.type = "button";
-            btn.appendChild(el("span", "r-ref", META[h.b][0] + " " + (h.c + 1) + ":" + h.v));
-            var rt = el("span", "r-text");
-            appendHighlighted(rt, verseText(h.b, h.c, h.v - 1), q);
-            btn.appendChild(rt);
-            btn.addEventListener("click", function () { openChapter(h.b, h.c, h.v); });
-            li.appendChild(btn);
-            ul.appendChild(li);
-          });
-          body.appendChild(ul);
+          lastHits = hits;
+          lastQuery = query;
+          $("search-scope").hidden = false;
+          renderSearchResults();
         }).catch(function () {
           if (token !== searchToken) return;
           $("search-count").textContent = "";
@@ -4235,11 +4528,38 @@
         if (h.charAt(0) === "#") h = h.slice(1);
         return h.trim().toLowerCase() === "plans";
       }
+      /* "#plan/<plan>/<day>" is a shared plan day: plan is the plan's
+         position in PLANS, day is 1-based as readers count days. A
+         hash that means to be one but points nowhere real — a plan
+         or day that no longer exists — comes back marked invalid, so
+         the caller can land on the plain Reading Plans view instead
+         of nowhere. Anything else returns null: not a plan link. */
+      function parsePlanHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return null; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        h = h.trim();
+        if (!/^plan(\/|$)/i.test(h)) return null;
+        var m = /^plan\/(\d+)\/(\d+)$/i.exec(h);
+        if (!m) return { invalid: true };
+        var pi = parseInt(m[1], 10), day = parseInt(m[2], 10);
+        if (pi < 0 || pi >= PLANS.length) return { invalid: true };
+        if (day < 1 || day > PLANS[pi].days.length) return { invalid: true };
+        return { plan: pi, day: day - 1 };
+      }
+      function followPlanHash() {
+        var planLink = parsePlanHash();
+        if (!planLink) return false;
+        if (planLink.invalid) openPlans();
+        else openPlansAtDay(planLink.plan, planLink.day);
+        return true;
+      }
       /* If the page was opened through a deep link, it wins over the saved
          Continue Reading position. No (or an invalid) hash: behavior is
          exactly as before — the home view. */
       (function () {
         try {
+          if (followPlanHash()) return;
           if (isPlansHash()) { openPlans(); return; }
           var link = parseHash();
           if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
@@ -4250,6 +4570,7 @@
          replaceState, which never fires this event, so there is no loop. */
       window.addEventListener("hashchange", function () {
         try {
+          if (followPlanHash()) return;
           if (isPlansHash()) { openPlans(); return; }
           var link = parseHash();
           if (!link) return;
