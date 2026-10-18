@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John. */
+         Batches: Matthew, Mark, Luke, John, Acts. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1618,6 +1618,36 @@
           19: "Jesus is crucified — 'It is finished' — His side is pierced, and Joseph and Nicodemus bury Him.",
           20: "The tomb is empty; Jesus appears to Mary and to the disciples, and Thomas confesses: 'My Lord and my God!'",
           21: "By the sea, the risen Jesus restores Peter — 'Feed my sheep' — and hints at the beloved disciple's path."
+        },
+        "Acts": {
+          1: "Jesus ascends to heaven; the disciples wait in Jerusalem and choose Matthias to take Judas's place.",
+          2: "At Pentecost the Holy Spirit comes with wind and fire, Peter preaches, and about three thousand are baptized.",
+          3: "Peter heals a lame beggar at the temple gate and preaches Jesus — risen, and the Author of life.",
+          4: "Peter and John testify boldly before the council, and the praying believers share everything they have.",
+          5: "Ananias and Sapphira lie to the Holy Spirit; the apostles are jailed, freed by an angel, and flogged — rejoicing.",
+          6: "Seven servants are chosen to care for the widows, and Stephen, full of grace and power, is seized.",
+          7: "Stephen retells Israel's whole story before the council and is stoned — the first martyr, seeing Jesus standing at God's right hand.",
+          8: "Persecution scatters the church; Philip brings the gospel to Samaria and to an Ethiopian official on a desert road.",
+          9: "Saul meets Jesus on the Damascus road and is baptized; Peter heals Aeneas and raises Dorcas to life.",
+          10: "God sends Peter to Cornelius, a Gentile centurion, and the Holy Spirit falls on the Gentiles — the door opens to the nations.",
+          11: "Peter explains God's work among the Gentiles, Antioch grows, and believers are first called Christians there.",
+          12: "Herod kills James and imprisons Peter, whom an angel sets free; proud Herod dies, and God's word keeps spreading.",
+          13: "The Spirit sends Barnabas and Saul from Antioch; Paul preaches in Pisidian Antioch and turns to the Gentiles.",
+          14: "Iconium, Lystra (where Paul is stoned and rises), and Derbe — then back through the churches, appointing elders and strengthening hearts.",
+          15: "The Jerusalem council frees Gentile believers from circumcision; Paul and Barnabas part over Mark, and Paul takes Silas.",
+          16: "Timothy joins the mission; a vision calls them to Macedonia; in Philippi Lydia believes and a jailer is saved at midnight.",
+          17: "Thessalonica, Berea's noble searchers, and Athens — where Paul proclaims the unknown God and the resurrection.",
+          18: "Eighteen months in Corinth with Aquila and Priscilla; then Apollos learns the way more perfectly in Ephesus.",
+          19: "Two years in Ephesus: extraordinary miracles, burned magic books, and a riot raised by Demetrius over Artemis.",
+          20: "Eutychus falls and is restored at Troas; at Miletus Paul bids the Ephesian elders a tearful farewell.",
+          21: "Paul reaches Jerusalem despite warnings, and is seized in the temple after a riot; he begins to address the crowd.",
+          22: "Paul tells the crowd his conversion story in Hebrew, invokes his Roman citizenship, and is brought before the council.",
+          23: "Paul divides the council, a plot to kill him is uncovered by his nephew, and he is sent by night to Caesarea.",
+          24: "Paul stands trial before Felix, speaks to him of righteousness, self-control, and judgment — and waits two years in custody.",
+          25: "Before Festus, Paul appeals to Caesar; King Agrippa arrives and asks to hear him.",
+          26: "Paul tells Agrippa his whole story — 'I was not disobedient to the heavenly vision' — and Agrippa is almost persuaded.",
+          27: "Paul sails for Rome; a great storm wrecks the ship at Malta, but every life aboard is saved, as God promised.",
+          28: "Paul heals on Malta, reaches Rome at last, and preaches the kingdom there for two full years — boldly and unhindered."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1634,7 +1664,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1732,6 +1762,36 @@
           19: { 1: "Jesus is flogged and mocked", 17: "The crucifixion", 25: "The women at the cross", 28: "It is finished", 31: "Jesus' side is pierced", 38: "Jesus is buried" },
           20: { 1: "The empty tomb", 11: "Jesus appears to Mary Magdalene", 19: "Jesus appears to His disciples", 24: "Thomas believes", 30: "Why this book was written" },
           21: { 1: "Jesus appears by the Sea of Galilee", 15: "Jesus restores Peter: feed My sheep", 20: "The disciple whom Jesus loved" }
+        },
+        "Acts": {
+          1: { 1: "Jesus promises the Holy Spirit", 6: "Jesus ascends to heaven", 12: "The disciples wait and pray", 15: "Matthias replaces Judas" },
+          2: { 1: "The Holy Spirit comes at Pentecost", 14: "Peter preaches to the crowd", 37: "Three thousand are baptized", 42: "The believers share everything" },
+          3: { 1: "A lame man is healed at the gate", 11: "Peter preaches in Solomon's porch" },
+          4: { 1: "Peter and John are arrested", 5: "Before the council", 13: "The council is amazed at their boldness", 23: "The believers pray for boldness", 32: "The believers share all they have" },
+          5: { 1: "Ananias and Sapphira", 12: "Many signs and wonders", 17: "The apostles are jailed and freed", 27: "Before the council again", 33: "Gamaliel's counsel", 40: "Flogged, yet rejoicing" },
+          6: { 1: "Seven servants are chosen", 8: "Stephen is seized" },
+          7: { 1: "Stephen's story: Abraham", 9: "Joseph and the patriarchs", 20: "Moses in Egypt and Midian", 35: "Israel rejects God's messengers", 44: "The tabernacle and the temple", 51: "You stiff-necked people", 54: "Stephen is stoned" },
+          8: { 1: "Persecution scatters the church", 4: "Philip preaches in Samaria", 14: "Peter and John come to Samaria", 18: "Simon the sorcerer", 26: "Philip and the Ethiopian official" },
+          9: { 1: "Saul seeks to destroy the church", 3: "Jesus meets Saul on the Damascus road", 10: "Ananias is sent to Saul", 19: "Saul preaches in Damascus", 26: "Saul in Jerusalem, then sent to Tarsus", 32: "Peter heals Aeneas", 36: "Dorcas is raised to life" },
+          10: { 1: "Cornelius sees an angel", 9: "Peter's vision on the roof", 19: "Peter goes to Caesarea", 34: "Peter preaches to the Gentiles", 44: "The Holy Spirit falls on the Gentiles" },
+          11: { 1: "Peter explains God's work", 19: "The church in Antioch grows", 27: "A famine foretold; relief is sent" },
+          12: { 1: "Herod kills James", 3: "Peter is imprisoned", 6: "An angel frees Peter", 18: "Herod's pride and death", 24: "The word of God spreads" },
+          13: { 1: "Barnabas and Saul are sent out", 6: "On Cyprus: Bar-Jesus is blinded", 13: "Paul preaches in Pisidian Antioch", 42: "The Gentiles beg to hear more", 48: "The word spreads; opposition rises" },
+          14: { 1: "Preaching in Iconium", 8: "Paul heals a lame man in Lystra", 19: "Paul is stoned and rises", 21: "Strengthening the churches on the way back" },
+          15: { 1: "The dispute over circumcision", 6: "The council at Jerusalem", 13: "James gives the judgment", 22: "A letter to the Gentile churches", 36: "Paul and Barnabas part ways" },
+          16: { 1: "Timothy joins Paul", 6: "The call to Macedonia", 11: "Lydia believes in Philippi", 16: "A slave girl is freed from a spirit", 19: "Paul and Silas in prison", 25: "Songs at midnight, then an earthquake", 29: "The jailer is saved", 35: "Paul claims his Roman rights" },
+          17: { 1: "In Thessalonica", 10: "In Berea: searching the Scriptures", 16: "In Athens: the unknown god", 22: "Paul preaches at the Areopagus" },
+          18: { 1: "In Corinth, with Aquila and Priscilla", 9: "The Lord speaks to Paul in a vision", 12: "Before Gallio", 18: "Paul sails toward Antioch", 24: "Apollos in Ephesus" },
+          19: { 1: "Disciples receive the Holy Spirit in Ephesus", 8: "Paul preaches in Ephesus for two years", 13: "The sons of Sceva", 19: "Magic books are burned", 21: "Paul plans for Rome", 23: "The riot of the silversmiths" },
+          20: { 1: "Through Macedonia and Greece", 7: "Eutychus falls and is restored", 13: "On to Miletus", 17: "Paul's farewell to the Ephesian elders" },
+          21: { 1: "Toward Jerusalem, despite warnings", 10: "Agabus foretells Paul's arrest", 17: "Paul arrives in Jerusalem", 27: "Paul is seized in the temple", 37: "Paul addresses the crowd" },
+          22: { 1: "Paul tells his story to the crowd", 22: "The crowd rages; Paul claims his citizenship", 30: "Before the council" },
+          23: { 1: "Paul before the council", 6: "Pharisees and Sadducees divided", 12: "The plot to kill Paul", 16: "Paul's nephew uncovers the plot", 23: "Paul is sent to Caesarea by night" },
+          24: { 1: "Paul is accused before Felix", 10: "Paul's defense", 24: "Paul speaks to Felix of righteousness and judgment" },
+          25: { 1: "Paul appeals to Caesar", 13: "Agrippa visits Festus", 23: "Paul is brought before Agrippa" },
+          26: { 1: "Paul speaks before Agrippa", 19: "Not disobedient to the heavenly vision", 24: "Festus cries out; Agrippa is almost persuaded" },
+          27: { 1: "Paul sails for Rome", 9: "A warning ignored", 13: "The storm", 33: "Paul urges them to eat and take heart", 39: "The shipwreck" },
+          28: { 1: "On Malta: a snake and many healings", 11: "On to Rome", 17: "Paul speaks to the Jewish leaders in Rome", 23: "Preaching the kingdom in Rome", 30: "Two years, boldly and unhindered" }
         }
       };
       function chapterHeadings(bi, ci) {
