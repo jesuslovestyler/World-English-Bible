@@ -282,7 +282,9 @@
       .voice-help-note { font-size: 13px; }
       .chapter-text {
         font-family: "Newsreader", Georgia, "Times New Roman", serif;
-        font-size: 20px; line-height: 1.78; font-weight: 400;
+        /* the reader's chosen reading size (see the text-size control);
+           20px is the size this text has always worn */
+        font-size: var(--reader-size, 20px); line-height: 1.78; font-weight: 400;
       }
       .chapter-text .verse { border-radius: 4px; }
       .chapter-text .wj { color: var(--redletter); }
@@ -489,6 +491,74 @@
         padding: 14px 6px; min-height: 48px; white-space: nowrap;
       }
       .sv-remove:active { transform: translateY(1px); }
+
+      /* ---------- start here path (home) ---------- */
+      .starthere { margin: 26px 0 2px; }
+      .starthere-title {
+        font-family: "Newsreader", Georgia, serif; font-size: 21px; font-weight: 600;
+        margin: 0 0 4px;
+      }
+      .starthere-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+      .starthere-list li { border-bottom: 1px solid var(--line); }
+      .sh-step {
+        display: flex; align-items: baseline; gap: 12px; width: 100%;
+        background: none; border: 0; cursor: pointer; text-align: left;
+        padding: 11px 6px; min-height: 48px; font: inherit; color: var(--ink);
+      }
+      .sh-step:active { background: var(--accent-soft); }
+      .sh-num { color: var(--accent); font-weight: 700; font-size: 14px; min-width: 16px; }
+      .sh-main { flex: 1 1 auto; min-width: 0; }
+      .sh-book { font-family: "Newsreader", Georgia, serif; font-size: 18.5px; font-weight: 600; }
+      .sh-why { display: block; color: var(--ink-soft); font-size: 14.5px; margin-top: 1px; }
+      .sh-arrow { color: var(--accent); font-size: 18px; }
+
+      /* ---------- chapters read (home) ---------- */
+      .book-row .b-read { color: var(--ink-soft); font-size: 13.5px; white-space: nowrap; }
+      .read-total { text-align: center; color: var(--ink-soft); font-size: 14.5px; margin: 26px 0 0; }
+      .read-reset {
+        font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: none; border: 0;
+        text-decoration: underline; text-underline-offset: 3px;
+        padding: 6px 8px; min-height: 36px;
+      }
+      .read-reset:active { transform: translateY(1px); }
+
+      /* ---------- reading text size (reader) ---------- */
+      .textsize-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 14px; }
+      .textsize-row .ts-label { font-size: 14px; font-weight: 600; color: var(--ink-soft); margin-right: 2px; }
+      .textsize-row button {
+        font: inherit; font-weight: 600; cursor: pointer;
+        min-width: 48px; min-height: 40px; padding: 6px 10px;
+        background: var(--surface); color: var(--accent);
+        border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .textsize-row button:active { background: var(--accent-soft); }
+      .textsize-row button:disabled { opacity: 0.38; cursor: default; box-shadow: none; }
+      .textsize-row button:disabled:active { background: var(--surface); }
+      #ts-down { font-size: 13.5px; }
+      #ts-up { font-size: 18px; }
+
+      /* ---------- listen options: speed, sleep timer, auto-continue ---------- */
+      .listen-opts { margin-top: 12px; display: flex; gap: 10px 16px; justify-content: center; align-items: center; flex-wrap: wrap; }
+      .listen-opts .lo-group { display: inline-flex; gap: 7px; align-items: center; }
+      .listen-opts label { font-size: 14.5px; font-weight: 600; color: var(--ink-soft); }
+      .listen-opts select {
+        font: inherit; font-size: 15.5px;
+        min-height: 40px; padding: 6px 10px; cursor: pointer;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+      .listen-opts select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .lo-toggle {
+        font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
+        min-height: 40px; padding: 7px 14px; border-radius: 999px;
+        background: var(--accent-soft); color: var(--accent);
+        border: 1px solid var(--line);
+      }
+      .lo-toggle.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+      .lo-toggle:active { transform: translateY(1px); }
     </style>
   </head>
   <body>
@@ -546,10 +616,27 @@
           <span class="cc-arrow" aria-hidden="true">→</span>
         </button>
 
+        <div class="starthere">
+          <h2 class="starthere-title">New to the Bible? Start here.</h2>
+          <ol class="starthere-list">
+            <li><button type="button" class="sh-step" data-book="41"><span class="sh-num">1</span><span class="sh-main"><span class="sh-book">Luke</span><span class="sh-why">Meet Jesus: His life, His death, His resurrection.</span></span><span class="sh-arrow" aria-hidden="true">›</span></button></li>
+            <li><button type="button" class="sh-step" data-book="42"><span class="sh-num">2</span><span class="sh-main"><span class="sh-book">John</span><span class="sh-why">Who Jesus is, and why He came.</span></span><span class="sh-arrow" aria-hidden="true">›</span></button></li>
+            <li><button type="button" class="sh-step" data-book="43"><span class="sh-num">3</span><span class="sh-main"><span class="sh-book">Acts</span><span class="sh-why">The church begins, and the good news spreads.</span></span><span class="sh-arrow" aria-hidden="true">›</span></button></li>
+            <li><button type="button" class="sh-step" data-book="44"><span class="sh-num">4</span><span class="sh-main"><span class="sh-book">Romans</span><span class="sh-why">The gospel, explained from the ground up.</span></span><span class="sh-arrow" aria-hidden="true">›</span></button></li>
+            <li><button type="button" class="sh-step" data-book="18"><span class="sh-num">5</span><span class="sh-main"><span class="sh-book">Psalms</span><span class="sh-why">Songs and prayers for every feeling.</span></span><span class="sh-arrow" aria-hidden="true">›</span></button></li>
+            <li><button type="button" class="sh-step" data-book="0"><span class="sh-num">6</span><span class="sh-main"><span class="sh-book">Genesis</span><span class="sh-why">Where everything begins.</span></span><span class="sh-arrow" aria-hidden="true">›</span></button></li>
+          </ol>
+        </div>
+
         <h2 class="testament">Old Testament <span class="t-count">39 books</span></h2>
         <ul class="book-list" id="ot-list"></ul>
         <h2 class="testament">New Testament <span class="t-count">27 books</span></h2>
         <ul class="book-list" id="nt-list"></ul>
+
+        <p class="read-total" id="read-total" hidden>
+          <span id="read-total-text"></span>
+          <button type="button" class="read-reset" id="read-reset" hidden>Start over</button>
+        </p>
 
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
@@ -581,6 +668,11 @@
           <p class="r-book" id="reader-book"></p>
           <h2 id="reader-chapter"></h2>
         </div>
+        <div class="textsize-row">
+          <span class="ts-label">Text size</span>
+          <button type="button" id="ts-down" aria-label="Smaller reading text">A−</button>
+          <button type="button" id="ts-up" aria-label="Larger reading text">A+</button>
+        </div>
         <div class="listenbar" id="listen-bar" hidden>
           <button class="btn listen-btn" id="listen-btn" type="button">▶ Listen to this chapter</button>
           <div class="listen-controls" id="listen-controls" hidden>
@@ -596,6 +688,27 @@
           <div class="listen-voice" id="listen-voice-row" hidden>
             <label for="listen-voice-select">Voice</label>
             <select id="listen-voice-select"></select>
+          </div>
+          <div class="listen-opts" id="listen-opts" hidden>
+            <span class="lo-group">
+              <label for="listen-rate-select">Speed</label>
+              <select id="listen-rate-select">
+                <option value="0.75">0.75×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.25">1.25×</option>
+                <option value="1.5">1.5×</option>
+              </select>
+            </span>
+            <span class="lo-group">
+              <label for="listen-sleep-select">Sleep timer</label>
+              <select id="listen-sleep-select">
+                <option value="0" selected>Off</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="60">60 min</option>
+              </select>
+            </span>
+            <button type="button" class="lo-toggle on" id="listen-autocont" aria-pressed="true">Auto-continue: On</button>
           </div>
           <div>
             <button class="voice-help-toggle" id="voice-help-toggle" type="button" aria-expanded="false" aria-controls="voice-help">Want a nicer voice?</button>
@@ -675,6 +788,7 @@
         <button type="button" class="sb-ghost" id="sharebar-save" aria-pressed="false">Save</button>
         <button type="button" class="sb-ghost" id="sharebar-hl" aria-pressed="false" aria-expanded="false" aria-controls="hl-palette">Highlight</button>
         <button type="button" class="sb-ghost" id="sharebar-note">Note</button>
+        <button type="button" class="sb-ghost" id="sharebar-listen">▶ Listen from here</button>
         <button type="button" id="sharebar-btn">Share this verse</button>
       </div>
     </div>
@@ -776,6 +890,12 @@
             var btn = el("button", "book-row");
             btn.type = "button";
             btn.appendChild(el("span", "b-name", META[bi][0]));
+            /* the quiet "x of y read" note for this book, filled in by
+               refreshReadNotes once the chapters-read record is loaded
+               (and after every new mark) — empty until then */
+            var readNote = el("span", "b-read");
+            readNote.id = "bread-" + bi;
+            btn.appendChild(readNote);
             btn.appendChild(el("span", "b-count", META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters")));
             btn.appendChild(el("span", "b-arrow", "›"));
             btn.addEventListener("click", function () { openChapters(bi); });
@@ -1053,6 +1173,158 @@
         return copy;
       }
       try { loadSaved(); } catch (e) { savedStore = {}; }
+
+      /* ---- start here: a first road through the Bible (home) ----
+         Six steps for a brand-new reader, in the order they stand on
+         the home view; tapping one opens its book at chapter 1. The
+         steps are plain buttons in the markup, wired here like
+         everything else. */
+      try {
+        var shSteps = document.querySelectorAll(".sh-step");
+        for (var shi = 0; shi < shSteps.length; shi++) {
+          (function (btn) {
+            btn.addEventListener("click", function () {
+              var bi = parseInt(btn.getAttribute("data-book"), 10);
+              if (bi >= 0 && bi < 66) openChapter(bi, 0, 0);
+            });
+          })(shSteps[shi]);
+        }
+      } catch (e) {}
+
+      /* ---- reading text size (this device only) ----
+         Five steps from small to very large; the middle one is the
+         size the chapter text has always worn (20px). The pick drives
+         the --reader-size custom property the .chapter-text rule
+         reads, so it applies to every chapter the moment it is chosen,
+         and it is remembered on the device the same guarded way as the
+         saved verses: storage trouble can never break reading. */
+      var TEXT_KEY = "web-bible:text-size";
+      var TEXT_SIZES = [16, 18, 20, 23, 26];
+      var textSizeIdx = 2;   /* the long-standing 20px */
+      try {
+        var storedSize = parseInt(window.localStorage.getItem(TEXT_KEY) || "", 10);
+        if (storedSize >= 0 && storedSize < TEXT_SIZES.length) textSizeIdx = storedSize;
+      } catch (e) {}
+      function applyTextSize() {
+        try {
+          document.documentElement.style.setProperty("--reader-size", TEXT_SIZES[textSizeIdx] + "px");
+          var dn = $("ts-down"), up = $("ts-up");
+          if (dn) dn.disabled = textSizeIdx <= 0;
+          if (up) up.disabled = textSizeIdx >= TEXT_SIZES.length - 1;
+        } catch (e) {}
+      }
+      function stepTextSize(delta) {
+        var n = textSizeIdx + delta;
+        if (n < 0 || n >= TEXT_SIZES.length) return;
+        textSizeIdx = n;
+        try { window.localStorage.setItem(TEXT_KEY, String(n)); } catch (e) {}
+        applyTextSize();
+      }
+      try { $("ts-down").addEventListener("click", function () { stepTextSize(-1); }); } catch (e) {}
+      try { $("ts-up").addEventListener("click", function () { stepTextSize(1); }); } catch (e) {}
+      try { applyTextSize(); } catch (e) {}
+
+      /* ---- chapters read (this device only) ----
+         A quiet record of the chapters a reader has finished, kept on
+         their own device in the same guarded pattern as everything
+         personal here: the working copy lives in memory, every storage
+         touch is wrapped, and a failure can never disturb reading,
+         listening, or scrolling. A chapter counts when the reader
+         reaches its end in the reader — the bottom chapter buttons
+         coming into view, watched by an IntersectionObserver whose
+         only job is this record — or when Listen speaks it to its end
+         (see chapterPlaybackEnded). Marking is idempotent: reaching
+         the end again changes nothing. On the home view, a book with
+         any finished chapters shows a soft "x of y read" note, and a
+         total line counts the whole road, with a small Start over
+         that clears the record. No streaks, no scores. */
+      var READ_KEY = "web-bible:read";
+      var READ_TOTAL = 0;
+      META.forEach(function (m) { READ_TOTAL += m[1]; });
+      var readStore = {};   /* { "book:chapter" (both 0-based): 1 } */
+      function loadRead() {
+        try {
+          var raw = window.localStorage.getItem(READ_KEY);
+          if (!raw) return;
+          var parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return;
+          for (var k in parsed) {
+            var mm = /^(\d+):(\d+)$/.exec(k);
+            if (!mm || !parsed[k]) continue;
+            var b = +mm[1], c = +mm[2];
+            if (b >= 0 && b < 66 && c >= 0 && c < META[b][1]) readStore[b + ":" + c] = 1;
+          }
+        } catch (err) { readStore = {}; }
+      }
+      function persistRead() {
+        try { window.localStorage.setItem(READ_KEY, JSON.stringify(readStore)); } catch (e) {}
+      }
+      function readCountForBook(bi) {
+        var n = 0, prefix = bi + ":";
+        for (var k in readStore) if (k.indexOf(prefix) === 0) n++;
+        return n;
+      }
+      function refreshReadNotes() {
+        try {
+          for (var bi = 0; bi < 66; bi++) {
+            var span = $("bread-" + bi);
+            if (!span) continue;
+            var n = readCountForBook(bi);
+            span.textContent = n ? n + " of " + META[bi][1] + " read" : "";
+          }
+          var total = 0;
+          for (var k2 in readStore) total++;
+          var line = $("read-total");
+          if (line) {
+            line.hidden = false;
+            $("read-total-text").textContent =
+              "Chapters read: " + total + " of " + READ_TOTAL.toLocaleString("en-US");
+            $("read-reset").hidden = total === 0;
+          }
+        } catch (e) {}
+      }
+      function markChapterRead(bi, ci) {
+        try {
+          if (bi < 0 || bi > 65 || ci < 0 || ci >= META[bi][1]) return;
+          var k = bi + ":" + ci;
+          if (readStore[k]) return;   /* reaching the end again changes nothing */
+          readStore[k] = 1;
+          persistRead();
+          refreshReadNotes();
+        } catch (e) {}
+      }
+      /* The end-of-chapter watch: one observer, re-aimed at the bottom
+         chapter buttons each time a chapter renders. It reports only
+         when those closing controls actually come into view. */
+      var readObserver = null, readPending = null;
+      function armReadObserver(bi, ci) {
+        readPending = { b: bi, c: ci };
+        try {
+          if (typeof IntersectionObserver !== "function") return;
+          if (!readObserver) {
+            readObserver = new IntersectionObserver(function (entries) {
+              for (var i = 0; i < entries.length; i++) {
+                if (entries[i].isIntersecting && readPending) {
+                  markChapterRead(readPending.b, readPending.c);
+                }
+              }
+            }, { threshold: 0.1 });
+          }
+          readObserver.disconnect();
+          var nav = $("chap-nav");
+          if (nav) readObserver.observe(nav);
+        } catch (e) {}
+      }
+      try { loadRead(); } catch (e) { readStore = {}; }
+      try { refreshReadNotes(); } catch (e) {}
+      try {
+        $("read-reset").addEventListener("click", function () {
+          readStore = {};
+          persistRead();
+          refreshReadNotes();
+          showToast("Reading record cleared — a fresh start");
+        });
+      } catch (e) {}
 
       /* ---- how a saved verse looks in the chapter ----
          A highlighted verse wears the soft wash (.marked) in its own
@@ -1819,6 +2091,10 @@
       var readerToken = 0;
       var current = { b: 0, c: 0 };
       function openChapter(bi, ci, highlightVerse) {
+        /* Any navigation of the reader's own cancels a pending
+           auto-continue start; the roll itself sets the flag again
+           after this call returns (see chapterPlaybackEnded). */
+        pendingAutoListen = false;
         current = { b: bi, c: ci };
         dismissSelection();
         setPageMeta(refName(bi, ci) + " — World English Bible", DEFAULT_DESC);
@@ -1902,7 +2178,7 @@
         var bk = bookData(bi);
         var body = $("reader-body");
         body.textContent = "";
-        if (!bk) { body.appendChild(el("p", "loading-note", "Text unavailable.")); return; }
+        if (!bk) { pendingAutoListen = false; body.appendChild(el("p", "loading-note", "Text unavailable.")); return; }
         var verses = bk.c[ci].split("\n");
         var woc = window.__WEB_NT_WOC__ || null;
         var hlSet = {};
@@ -1951,6 +2227,15 @@
         if (hlEl) {
           setTimeout(function () { hlEl.scrollIntoView({ block: "center" }); }, 60);
         }
+
+        /* Arm the chapters-read watch on this chapter's closing
+           controls, and, if an auto-continue roll brought us here,
+           start listening to the new chapter (intro and all). */
+        try { armReadObserver(bi, ci); } catch (e) {}
+        if (pendingAutoListen) {
+          pendingAutoListen = false;
+          try { startListening(); } catch (e) {}
+        }
       }
       $("reader-to-chapters").addEventListener("click", function () { openChapters(current.b); });
       $("reader-to-books").addEventListener("click", function () { showView("view-home"); });
@@ -1979,16 +2264,44 @@
          into view. While speaking, the button area shows Pause (which
          toggles to Resume) and Stop; Pause freezes the speech and the
          watchdog together, and Resume picks the same verse back up.
-         Listening ends when Stop is tapped, when the chapter finishes,
-         or when the reader navigates anywhere — every move passes
-         through showView, which calls stopListening above. If the
+         The Listen bar also carries a speaking-rate picker (0.75× to
+         1.5×, remembered on the device, applying from the next verse
+         onward), a sleep timer that stops the speech when its minutes
+         run out, and an auto-continue toggle: with auto-continue on
+         (the default), a chapter spoken to its end rolls into the
+         next chapter — rendered, announced with the usual intro, and
+         spoken — stopping only at the end of Revelation 22; with it
+         off, the chapter end ends listening as it always has. A
+         chapter spoken to its end also counts as read. The verse
+         bar's "Listen from here" starts a chapter at a chosen verse.
+         Listening ends when Stop is tapped, when the sleep timer runs
+         out, at the last chapter's end, or when the reader navigates
+         anywhere — every move passes through showView, which calls
+         stopListening above. If the
          browser has no speechSynthesis the button never appears at all,
          and everything here is wrapped the way the rest of the boot is:
          any speech error, missing voice, or unsupported API must never
          break reading, searching, or anything else on the page. */
-      var listenState = null;   /* { id, paused, spokenEl, queue, step, token, voice, timer, deadline, remaining } while speaking */
+      var listenState = null;   /* { id, paused, spokenEl, b, c, queue, step, token, voice, timer, deadline, remaining, cumMs, totalMs } while speaking */
       var listenSession = 0;    /* bumped on every stop, so stale utterance events no-op */
-      var SPEECH_RATE = 0.95;   /* natural, unhurried; also feeds the watchdog estimate */
+      var autoContinue = true;  /* roll into the next chapter when one finishes (the default) */
+      var pendingAutoListen = false; /* an auto-continue roll is rendering; start listening when it lands */
+      var sleepTimerId = null;  /* the sleep timer's timeout id, while one is counting */
+      /* The reader's speaking rate: one of RATE_CHOICES, remembered on
+         the device the same guarded way as the voice pick. It feeds
+         every utterance from the next verse onward, the watchdog
+         estimate, and the seek row's estimated times. Until the reader
+         picks one, speech runs at 1×. */
+      var RATE_KEY = "web-bible:rate";
+      var RATE_CHOICES = [0.75, 1, 1.25, 1.5];
+      var speechRate = 1;
+      try {
+        var savedRate = parseFloat(window.localStorage.getItem(RATE_KEY) || "");
+        if (RATE_CHOICES.indexOf(savedRate) >= 0) speechRate = savedRate;
+      } catch (e) {}
+      function saveRate() {
+        try { window.localStorage.setItem(RATE_KEY, String(speechRate)); } catch (e) {}
+      }
       function speechOK() {
         try {
           return !!(window.speechSynthesis &&
@@ -2010,6 +2323,10 @@
           $("listen-controls").hidden = !listenState;
           $("listen-pause-btn").textContent =
             listenState && listenState.paused ? "▶ Resume" : "⏸ Pause";
+          var opts = $("listen-opts");
+          if (opts) opts.hidden = !speechOK();
+          var lf = $("sharebar-listen");
+          if (lf) lf.hidden = !speechOK();
           syncSeekUI();
         } catch (e) {}
       }
@@ -2034,6 +2351,81 @@
         clearSpoken();
         listenState = null;
         resetListenUI();
+      }
+      /* A chapter has been spoken to its very end: it counts as read,
+         and then either the reading rolls into the next chapter — the
+         next book's chapter 1 at a book boundary, stopping only at
+         the end of Revelation 22 — or, with auto-continue off,
+         listening simply ends the way it always has. The roll goes
+         through openChapter like any navigation (which stops this
+         state on its way through showView) and flags the render to
+         start listening again when the new chapter lands, intro and
+         all. The sleep timer is deliberately untouched here: it
+         counts real elapsed time straight across rollovers. */
+      function chapterPlaybackEnded(st) {
+        try { markChapterRead(st.b, st.c); } catch (e) {}
+        var lin = CHAP_START[st.b] + st.c;
+        if (autoContinue && lin < 1188) {
+          var next = fromLinear(lin + 1);
+          try {
+            openChapter(next.b, next.c, 0);
+            pendingAutoListen = true;
+            return;
+          } catch (e) { pendingAutoListen = false; }
+        }
+        finishListening();
+      }
+      /* (Re)figure a queue's cumulative speaking-time estimates at the
+         current rate: cumMs[k] is the estimated time before queue item
+         k (verses only — the intro is not timed) and totalMs the whole
+         queue's estimate. Run when listening starts and again whenever
+         the rate changes mid-chapter, so the seek row's slider
+         position and its ~m:ss labels always speak for the rate in
+         use. The watchdog re-estimates each verse as it is spoken. */
+      function refreshListenEstimates(st) {
+        var cumMs = [0], totalMs = 0;
+        for (var qi = 1; qi < st.queue.length; qi++) {
+          cumMs[qi] = totalMs;
+          totalMs += estimateSpeechMs(st.queue[qi].text);
+        }
+        cumMs[st.queue.length] = totalMs;
+        st.cumMs = cumMs;
+        st.totalMs = totalMs;
+      }
+      /* ---- the sleep timer ----
+         A plain real-time countdown chosen in the Listen bar (Off,
+         15, 30, or 60 minutes). Picking a length arms it from that
+         moment — it is not tied to any one chapter, so it keeps
+         counting across auto-continue rollovers — and when it runs
+         out the speech stops with exactly Stop's cleanup and the
+         control falls back to Off. */
+      function clearSleepTimer() {
+        try { if (sleepTimerId) clearTimeout(sleepTimerId); } catch (e) {}
+        sleepTimerId = null;
+      }
+      function sleepTimerFired() {
+        sleepTimerId = null;
+        try {
+          var sel = $("listen-sleep-select");
+          if (sel) sel.value = "0";
+        } catch (e) {}
+        try { stopListening(); } catch (e) {}
+        try { showToast("Sleep timer — listening stopped"); } catch (e) {}
+      }
+      function setSleepTimer(mins) {
+        clearSleepTimer();
+        if (mins > 0) {
+          try { sleepTimerId = setTimeout(sleepTimerFired, mins * 60000); } catch (e) {}
+        }
+      }
+      function refreshAutoContUI() {
+        try {
+          var b = $("listen-autocont");
+          if (!b) return;
+          b.textContent = "Auto-continue: " + (autoContinue ? "On" : "Off");
+          b.setAttribute("aria-pressed", autoContinue ? "true" : "false");
+          b.classList.toggle("on", autoContinue);
+        } catch (e) {}
       }
       /* The English voices the device offers, in the order it offers them. */
       function englishVoices() {
@@ -2151,7 +2543,7 @@
         try { u = new SpeechSynthesisUtterance(text); }
         catch (e) { u = { text: text }; }
         try {
-          u.rate = SPEECH_RATE;
+          u.rate = speechRate;
           u.pitch = 1;
           if (voice) u.voice = voice;
           if (voice && voice.lang) u.lang = voice.lang;
@@ -2181,7 +2573,7 @@
           var t = String(text || "").replace(/^\s+|\s+$/g, "");
           if (t) words = t.split(/\s+/).length;
         } catch (e) {}
-        return Math.round(words * 445 / SPEECH_RATE) + 2500;
+        return Math.round(words * 445 / speechRate) + 2500;
       }
       /* Arm (or re-arm) the watchdog for the verse now being spoken.
          token is the guard captured for that verse: when the timer
@@ -2222,10 +2614,10 @@
         try { if (st.timer) clearTimeout(st.timer); } catch (e) {}
         st.timer = null;
         st.step++;
-        if (st.step >= st.queue.length) { finishListening(); return; }
+        if (st.step >= st.queue.length) { chapterPlaybackEnded(st); return; }
         speakStep(st);
       }
-      function startListening() {
+      function startListening(fromVerse) {
         try {
           if (!speechOK()) return;
           var bi = current.b, ci = current.c;
@@ -2234,10 +2626,12 @@
           /* The spoken queue: the intro line first (v: 0 — spoken but
              never highlighted), then every non-empty verse in order,
              without verse numbers. Only one of these is ever in the
-             speech queue at a time; speakStep walks the list. */
+             speech queue at a time; speakStep walks the list. With
+             fromVerse set ("Listen from here"), the verses before it
+             are left out and the reading begins there instead. */
           var queue = [{ v: 0, text: META[bi][0] + " chapter " + (ci + 1) + "." }];
           bk.c[ci].split("\n").forEach(function (text, vi) {
-            if (text) queue.push({ v: vi + 1, text: text });
+            if (text && (!fromVerse || vi + 1 >= fromVerse)) queue.push({ v: vi + 1, text: text });
           });
           if (queue.length < 2) return;
           stopListening();
@@ -2247,23 +2641,18 @@
             var lit = document.querySelectorAll("#reader-body .verse.hl");
             for (var s = 0; s < lit.length; s++) lit[s].classList.remove("hl");
           } catch (e) {}
-          /* Per-verse speaking-time estimates from the same estimator
-             the watchdog uses, cumulated: cumMs[k] is the estimated
-             time before queue item k (verses only — the intro is not
-             timed), and totalMs is the whole chapter's estimate. These
-             feed the seek row's slider position and its ~m:ss labels. */
-          var cumMs = [0], totalMs = 0;
-          for (var qi = 1; qi < queue.length; qi++) {
-            cumMs[qi] = totalMs;
-            totalMs += estimateSpeechMs(queue[qi].text);
-          }
-          cumMs[queue.length] = totalMs;
           var st = {
             id: ++listenSession, paused: false, spokenEl: null,
+            b: bi, c: ci,
             queue: queue, step: 0, token: 0, voice: chosenVoice(),
             timer: null, deadline: 0, remaining: 0,
-            cumMs: cumMs, totalMs: totalMs, restartOnResume: false
+            cumMs: [0], totalMs: 0, restartOnResume: false
           };
+          /* Per-verse speaking-time estimates from the same estimator
+             the watchdog uses, cumulated across the queue at the
+             current rate; they feed the seek row's slider position
+             and its ~m:ss labels. */
+          refreshListenEstimates(st);
           listenState = st;
           resetListenUI();
           speakStep(st);
@@ -2395,12 +2784,57 @@
         });
         sliderEl.addEventListener("pointercancel", function () { seekDragging = false; });
       } catch (e) {}
-      try { $("listen-btn").addEventListener("click", startListening); } catch (e) {}
+      try { $("listen-btn").addEventListener("click", function () { startListening(); }); } catch (e) {}
       try { $("listen-pause-btn").addEventListener("click", toggleListenPause); } catch (e) {}
       try { $("listen-stop-btn").addEventListener("click", function () { stopListening(); }); } catch (e) {}
       try {
         $("listen-voice-select").addEventListener("change", function () {
           try { saveVoiceId($("listen-voice-select").value); } catch (e) {}
+        });
+      } catch (e) {}
+      /* Speed: the picker opens on the remembered rate; a change is
+         saved at once and, mid-chapter, re-figures the seek row's
+         estimates — the speech itself takes the new rate from the
+         next verse onward, since each verse's utterance is made when
+         it starts. */
+      try {
+        var rateSel = $("listen-rate-select");
+        if (rateSel) {
+          rateSel.value = String(speechRate);
+          rateSel.addEventListener("change", function () {
+            var v = parseFloat(rateSel.value);
+            if (RATE_CHOICES.indexOf(v) < 0) return;
+            speechRate = v;
+            saveRate();
+            if (listenState) { refreshListenEstimates(listenState); syncSeekUI(); }
+          });
+        }
+      } catch (e) {}
+      /* Sleep timer: choosing a length arms the countdown from that
+         moment; Off disarms it. */
+      try {
+        var sleepSel = $("listen-sleep-select");
+        if (sleepSel) {
+          sleepSel.addEventListener("change", function () {
+            setSleepTimer(parseInt(sleepSel.value, 10) || 0);
+          });
+        }
+      } catch (e) {}
+      try {
+        $("listen-autocont").addEventListener("click", function () {
+          autoContinue = !autoContinue;
+          refreshAutoContUI();
+        });
+      } catch (e) {}
+      try { refreshAutoContUI(); } catch (e) {}
+      /* "Listen from here" in the verse action bar: speak the open
+         chapter starting at the first selected verse, with the chosen
+         voice and speed. startListening clears the selection itself,
+         the way the Listen button does. */
+      try {
+        $("sharebar-listen").addEventListener("click", function () {
+          if (!selection || !selection.verses.length) return;
+          startListening(selection.verses[0]);
         });
       } catch (e) {}
       /* "Want a nicer voice?" — a quiet toggle under the Voice picker
