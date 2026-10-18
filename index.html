@@ -708,7 +708,6 @@
                 <option value="0.75">0.75×</option>
                 <option value="1" selected>1×</option>
                 <option value="1.25">1.25×</option>
-                <option value="1.5">1.5×</option>
               </select>
             </span>
             <span class="lo-group">
@@ -2283,7 +2282,7 @@
          toggles to Resume) and Stop; Pause freezes the speech and the
          watchdog together, and Resume picks the same verse back up.
          The Listen bar also carries a speaking-rate picker (0.75× to
-         1.5×, remembered on the device, applying from the next verse
+         1.25×, remembered on the device, applying from the next verse
          onward), a sleep timer that stops the speech when its minutes
          run out, and an auto-continue toggle: with auto-continue on
          (the default), a chapter spoken to its end rolls into the
@@ -2311,7 +2310,7 @@
          estimate, and the seek row's estimated times. Until the reader
          picks one, speech runs at 1×. */
       var RATE_KEY = "web-bible:rate";
-      var RATE_CHOICES = [0.75, 1, 1.25, 1.5];
+      var RATE_CHOICES = [0.75, 1, 1.25];
       var speechRate = 1;
       try {
         var savedRate = parseFloat(window.localStorage.getItem(RATE_KEY) || "");
