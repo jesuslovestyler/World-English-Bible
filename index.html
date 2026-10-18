@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1727,6 +1727,18 @@
           2: "In Christ are hidden all the treasures of wisdom and knowledge; walk in Him, rooted and built up — and do not be taken captive by human philosophy and empty rules.",
           3: "Set your minds on things above, where Christ is; put to death what is earthly, put on the new self, and let the word of Christ dwell in you richly.",
           4: "Devote yourselves to prayer, walk in wisdom toward outsiders, and let your speech be gracious — with final greetings from the fellow workers."
+        },
+        "1 Thessalonians": {
+          1: "Paul thanks God for their work of faith, labor of love, and patience of hope: they received the word in much affliction with joy, and became an example to all Macedonia.",
+          2: "Paul recalls his gentle ministry among them — like a nursing mother, laboring night and day — and how they received his word not as men's, but as God's word.",
+          3: "Paul sends Timothy to strengthen them, rejoices at the good news of their faith and love, and prays their hearts be established blameless at the Lord's coming.",
+          4: "Walk to please God: sanctification and brotherly love; live quietly and work with your hands; and comfort one another about the dead in Christ — the Lord Himself will descend, and we will be caught up to meet Him.",
+          5: "The day of the Lord comes like a thief: be awake and sober, children of light; rejoice always, pray without ceasing, give thanks in everything, and do not quench the Spirit."
+        },
+        "2 Thessalonians": {
+          1: "Their faith grows and their love abounds amid persecutions; God will grant relief to the afflicted when the Lord Jesus is revealed from heaven in flaming fire.",
+          2: "Do not be shaken: that day will not come until the rebellion and the man of lawlessness come first; God chose you from the beginning for salvation — stand firm and hold the traditions.",
+          3: "Pray for us; the Lord is faithful and will guard you; a plain warning against idleness — do not grow weary in doing good, and may the Lord of peace give you peace always."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1743,7 +1755,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1950,6 +1962,18 @@
           2: { 1: "Paul's struggle for the churches", 6: "Walk in Christ, rooted and built up", 8: "Do not be taken captive by empty philosophy", 16: "Do not let anyone judge you in these things", 20: "Rules that perish with use" },
           3: { 1: "Set your minds on things above", 5: "Put to death what is earthly", 9: "Put on the new self", 16: "Let the word of Christ dwell in you richly", 18: "Wives, husbands, children, and servants" },
           4: { 1: "Masters: be just and fair", 2: "Devote yourselves to prayer", 5: "Walk in wisdom toward outsiders", 7: "Final greetings" }
+        },
+        "1 Thessalonians": {
+          1: { 1: "Paul greets the church in Thessalonica", 2: "Thanksgiving for their work of faith", 6: "You received the word with joy", 8: "Your faith has gone out everywhere" },
+          2: { 1: "Paul's ministry among them", 7: "Gentle, like a nursing mother", 13: "You received it as the word of God", 17: "Satan hindered us" },
+          3: { 1: "Timothy is sent to strengthen them", 6: "Timothy brings good news", 11: "Paul prays to see them again" },
+          4: { 1: "Walk to please God", 3: "Sanctification: abstain from sexual immorality", 9: "Love one another more and more", 11: "Work with your own hands", 13: "Comfort about those who have fallen asleep" },
+          5: { 1: "The day of the Lord", 4: "You are children of light", 12: "Final instructions for the church", 16: "Rejoice always, pray without ceasing", 19: "Do not quench the Spirit", 23: "May the God of peace sanctify you completely" }
+        },
+        "2 Thessalonians": {
+          1: { 1: "Paul greets the church", 3: "Thanksgiving for growing faith and love", 6: "God's righteous judgment", 11: "Paul prays for them" },
+          2: { 1: "Do not be shaken about the day of Christ", 3: "The man of lawlessness revealed", 9: "The working of Satan, with deception", 13: "Chosen from the beginning: stand firm" },
+          3: { 1: "Pray for us", 6: "Withdraw from the disorderly", 13: "Do not grow weary in doing good", 16: "The Lord of peace give you peace" }
         }
       };
       function chapterHeadings(bi, ci) {
