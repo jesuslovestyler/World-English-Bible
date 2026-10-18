@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1666,6 +1666,24 @@
           14: "Welcome the brother whose faith is weak; don't judge him over food or days, for the kingdom of God is righteousness, peace, and joy in the Holy Spirit.",
           15: "Bear with the weak as Christ welcomed us; Paul plans Rome on his way to Spain and carries a gift to Jerusalem's poor saints.",
           16: "Paul greets the beloved saints of Rome by name, warns against dividers, and closes: the mystery is now revealed to all the nations."
+        },
+        "1 Corinthians": {
+          1: "Paul greets a divided church: Christ is not divided; the cross is God's wisdom, and He chose the weak and foolish things of the world.",
+          2: "God's wisdom is not human eloquence but the Spirit's revelation — we have received the Spirit, and we have the mind of Christ.",
+          3: "The church is God's field and God's temple; Paul and Apollos are only servants, and the fire will test every builder's work.",
+          4: "The apostles are stewards and fools for Christ's sake; Paul, their father in the gospel, sends Timothy and warns: the Kingdom is not talk, but power.",
+          5: "Shameful immorality is tolerated in the church; Paul commands discipline — purge out the old yeast, and judge those inside.",
+          6: "Believers are shamed for suing each other; the body is for the Lord, a temple of the Holy Spirit — flee sexual immorality.",
+          7: "Paul teaches on marriage and singleness: each gift is from God, remain in the calling you were called in, and serve the Lord without distraction.",
+          8: "Food offered to idols: knowledge puffs up, but love builds up — never let your freedom destroy a brother for whom Christ died.",
+          9: "Paul defends his apostleship yet surrenders his rights, becoming all things to all people so that by all means he might save some.",
+          10: "Israel's wilderness story warns against idolatry and grumbling; flee idolatry, and do all to the glory of God, seeking the good of others.",
+          11: "Paul corrects disorder at the Lord's Table: examine yourself, discern the body, and remember the Lord's death until He comes.",
+          12: "One Spirit gives many gifts to one body; every member is needed, and Paul points to a still more excellent way.",
+          13: "Without love, every gift is nothing; love is patient and kind, it never fails — now we see dimly, but then face to face.",
+          14: "In the assembly let everything be intelligible and in good order, prophecy above tongues, for God is not a God of confusion but of peace.",
+          15: "The resurrection stands at the gospel's heart: Christ died, was buried, rose, and appeared; if He has not been raised, faith is empty — but He has, the first fruits!",
+          16: "The collection for the saints, Paul's travel plans, and final counsel: watch, stand firm in the faith, be strong, and let all you do be done in love."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1682,7 +1700,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1828,6 +1846,24 @@
           14: { 1: "Welcome the one weak in faith", 5: "Each one fully convinced in his own mind", 10: "We will all stand before God", 13: "Do not make your brother stumble", 19: "Pursue peace and building up" },
           15: { 1: "Bear with the weak", 7: "Christ: servant to the Jews, hope for the Gentiles", 14: "Paul's ministry to the Gentiles", 22: "Plans for Rome and Spain", 25: "A gift for Jerusalem's poor", 30: "Pray for me" },
           16: { 1: "Greetings to the saints in Rome", 17: "Beware those who cause divisions", 21: "Greetings from Paul's companions", 24: "The mystery now revealed" }
+        },
+        "1 Corinthians": {
+          1: { 1: "Paul greets the church in Corinth", 10: "Divisions in the church", 18: "The foolishness of the cross", 26: "God chose the weak" },
+          2: { 1: "Not with lofty words", 6: "God's hidden wisdom", 14: "The natural person and the spiritual" },
+          3: { 1: "Milk, not solid food", 5: "God's field, God's building", 10: "Build on the one foundation", 16: "You are God's temple", 18: "Let no one boast in men" },
+          4: { 1: "Stewards of God's mysteries", 6: "Do not boast beyond what is written", 9: "Fools for Christ's sake", 14: "Paul, their father in the gospel", 18: "Not in word, but in power" },
+          5: { 1: "A shameful sin in the church", 6: "Purge out the old yeast", 9: "Do not keep company with the immoral" },
+          6: { 1: "Lawsuits between believers", 9: "The unrighteous will not inherit the kingdom", 12: "The body is for the Lord" },
+          7: { 1: "Concerning marriage", 8: "To the unmarried and to widows", 17: "Remain as you were called", 25: "Concerning those who have never married", 32: "Undistracted devotion to the Lord" },
+          8: { 1: "Food offered to idols", 4: "An idol is nothing", 7: "Do not destroy the weak brother" },
+          9: { 1: "Paul's rights as an apostle", 15: "Paul surrenders his rights", 19: "All things to all people", 24: "Run to win the prize" },
+          10: { 1: "Warnings from Israel's history", 11: "Take heed, lest you fall", 14: "Flee from idolatry", 16: "The cup and the table of the Lord", 23: "Do all to the glory of God" },
+          11: { 2: "Concerning head coverings", 17: "Disorder at the Lord's Table", 23: "The words of institution", 27: "Examine yourself" },
+          12: { 1: "Concerning spiritual gifts", 4: "One Spirit, many gifts", 12: "One body, many members", 27: "You are the body of Christ", 31: "Desire the greater gifts" },
+          13: { 1: "Without love, I am nothing", 4: "What love is", 8: "Love never fails", 12: "Now dimly, then face to face" },
+          14: { 1: "Desire especially to prophesy", 6: "Speech that builds up", 20: "Be mature in your thinking", 26: "Let all things be done in order" },
+          15: { 1: "The gospel I preached to you", 12: "If Christ has not been raised", 20: "Christ, the first fruits", 35: "The resurrection body", 50: "We shall not all sleep" },
+          16: { 1: "The collection for the saints", 5: "Paul's travel plans", 10: "Receive Timothy and Apollos kindly", 13: "Watch, stand firm, be strong", 19: "Final greetings" }
         }
       };
       function chapterHeadings(bi, ci) {
