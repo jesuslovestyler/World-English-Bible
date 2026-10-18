@@ -34,6 +34,20 @@
         --hl-edge: #d9a92c;
         --mark: #ffe89e;
         --wash: #fbeecd;
+        /* reader-chosen highlight washes: soft highlighter colors that
+           sit behind the text, thin enough that black text and the
+           red-letter words stay fully readable, plus the stronger
+           swatch tones the palette dots wear */
+        --wash-y: #fbeecd;
+        --wash-g: #dff0d4;
+        --wash-b: #dbe9f7;
+        --wash-p: #f9dde4;
+        --wash-v: #e9def5;
+        --dot-y: #f0cd54;
+        --dot-g: #97c984;
+        --dot-b: #8db8de;
+        --dot-p: #eda9bc;
+        --dot-v: #bd9ede;
         --shadow: 0 1px 3px rgba(80, 62, 20, 0.10);
       }
       @media (prefers-color-scheme: dark) {
@@ -51,6 +65,16 @@
           --hl-edge: #d9ab5e;
           --mark: #57451a;
           --wash: #453613;
+          --wash-y: #453613;
+          --wash-g: #2c4530;
+          --wash-b: #264156;
+          --wash-p: #4c2a37;
+          --wash-v: #3a2b50;
+          --dot-y: #d9a92c;
+          --dot-g: #6fae6a;
+          --dot-b: #5f97c4;
+          --dot-p: #d98aa5;
+          --dot-v: #9d7fc9;
           --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
       }
@@ -253,9 +277,17 @@
       }
       .chapter-text .verse:first-child sup.vn { margin-left: 0; }
       .chapter-text .verse.hl { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); outline: 1px solid var(--hl-edge); }
-      /* a reader's own highlight: a soft, warm wash that sits quietly
-         behind the text and never touches the red-letter coloring */
-      .chapter-text .verse.marked { background: var(--wash); box-shadow: 0 0 0 2px var(--wash); }
+      /* a reader's own highlight: a soft wash in the color the reader
+         chose, sitting quietly behind the text and never touching the
+         red-letter coloring. The plain .marked wash is the default warm
+         yellow — also what a highlight saved before colors existed
+         still wears. */
+      .chapter-text .verse.marked { background: var(--wash-y); box-shadow: 0 0 0 2px var(--wash-y); }
+      .chapter-text .verse.marked.hl-y { background: var(--wash-y); box-shadow: 0 0 0 2px var(--wash-y); }
+      .chapter-text .verse.marked.hl-g { background: var(--wash-g); box-shadow: 0 0 0 2px var(--wash-g); }
+      .chapter-text .verse.marked.hl-b { background: var(--wash-b); box-shadow: 0 0 0 2px var(--wash-b); }
+      .chapter-text .verse.marked.hl-p { background: var(--wash-p); box-shadow: 0 0 0 2px var(--wash-p); }
+      .chapter-text .verse.marked.hl-v { background: var(--wash-v); box-shadow: 0 0 0 2px var(--wash-v); }
       .chapter-text .verse.marked.hl { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); }
       /* small saved-verse markers (bookmark / note), tucked after the text */
       .chapter-text .vmark { display: inline-block; width: 11px; margin-left: 5px; vertical-align: -1px; color: var(--accent); opacity: 0.8; }
@@ -316,6 +348,21 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       }
       .sharebar .sb-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      /* highlight color palette: a row of soft highlighter dots under
+         the reference, opened by the Highlight action */
+      .sb-palette { display: flex; gap: 12px; justify-content: center; align-items: center; padding: 4px 0 2px; }
+      .sb-palette[hidden] { display: none; }
+      .sharebar button.hl-dot {
+        width: 36px; height: 36px; min-height: 36px; padding: 0; flex: 0 0 auto;
+        border-radius: 50%; border: 1.5px solid rgba(120, 95, 40, 0.35);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+      }
+      .sharebar button.hl-dot[data-hlc="y"] { background: var(--dot-y); }
+      .sharebar button.hl-dot[data-hlc="g"] { background: var(--dot-g); }
+      .sharebar button.hl-dot[data-hlc="b"] { background: var(--dot-b); }
+      .sharebar button.hl-dot[data-hlc="p"] { background: var(--dot-p); }
+      .sharebar button.hl-dot[data-hlc="v"] { background: var(--dot-v); }
+      .sharebar button.hl-dot.on { outline: 2.5px solid var(--accent); outline-offset: 2px; }
       .sharebar button {
         font: inherit; font-size: 15.5px; font-weight: 600; cursor: pointer;
         background: var(--accent); color: var(--accent-ink);
@@ -400,6 +447,17 @@
       }
       .sv-main:active { background: var(--accent-soft); }
       .sv-ref { display: block; font-weight: 700; font-size: 14px; color: var(--accent); margin-bottom: 3px; }
+      /* the dot of highlight color beside a shelf entry's reference */
+      .sv-hldot {
+        display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+        margin-left: 7px; vertical-align: -1px;
+        border: 1px solid rgba(120, 95, 40, 0.35);
+      }
+      .sv-hldot[data-hlc="y"] { background: var(--dot-y); }
+      .sv-hldot[data-hlc="g"] { background: var(--dot-g); }
+      .sv-hldot[data-hlc="b"] { background: var(--dot-b); }
+      .sv-hldot[data-hlc="p"] { background: var(--dot-p); }
+      .sv-hldot[data-hlc="v"] { background: var(--dot-v); }
       .sv-text { display: block; font-family: "Newsreader", Georgia, serif; font-size: 17.5px; line-height: 1.55; }
       .sv-note {
         display: block; margin-top: 8px;
@@ -571,9 +629,16 @@
     <!-- verse action bar: appears while verses are selected in the reader -->
     <div class="sharebar" id="sharebar" hidden>
       <span class="sb-ref" id="sharebar-ref"></span>
+      <div class="sb-palette" id="hl-palette" hidden role="group" aria-label="Highlight color">
+        <button type="button" class="hl-dot" data-hlc="y" aria-label="Yellow highlight" aria-pressed="false"></button>
+        <button type="button" class="hl-dot" data-hlc="g" aria-label="Green highlight" aria-pressed="false"></button>
+        <button type="button" class="hl-dot" data-hlc="b" aria-label="Blue highlight" aria-pressed="false"></button>
+        <button type="button" class="hl-dot" data-hlc="p" aria-label="Pink highlight" aria-pressed="false"></button>
+        <button type="button" class="hl-dot" data-hlc="v" aria-label="Purple highlight" aria-pressed="false"></button>
+      </div>
       <div class="sb-actions">
         <button type="button" class="sb-ghost" id="sharebar-save" aria-pressed="false">Save</button>
-        <button type="button" class="sb-ghost" id="sharebar-hl" aria-pressed="false">Highlight</button>
+        <button type="button" class="sb-ghost" id="sharebar-hl" aria-pressed="false" aria-expanded="false" aria-controls="hl-palette">Highlight</button>
         <button type="button" class="sb-ghost" id="sharebar-note">Note</button>
         <button type="button" id="sharebar-btn">Share this verse</button>
       </div>
@@ -780,6 +845,7 @@
           sbHl.classList.toggle("on", allH);
           sbHl.setAttribute("aria-pressed", allH ? "true" : "false");
           sbNote.textContent = selectionNoteText() ? "Edit note" : "Note";
+          refreshPaletteDots();
         } catch (e) {}
         $("sharebar").hidden = false;
         document.body.classList.add("share-open");
@@ -796,6 +862,7 @@
         $("sharebar").hidden = true;
         document.body.classList.remove("share-open");
         try { var np = $("note-panel"); if (np) np.hidden = true; } catch (e) {}
+        try { closeHlPalette(); } catch (e) {}
       }
       var toastTimer = null;
       function showToast(msg) {
@@ -884,12 +951,32 @@
          disk, a private window, a viewer that throws — can never break
          reading, searching, or listening. Nothing saved here is ever
          sent anywhere. One entry per verse:
-           { "book:chapter:verse": { b: 1, h: 1, n: "note text" } }
+           { "book:chapter:verse": { b: 1, h: "y", n: "note text" } }
          with book and chapter 0-based and the verse 1-based, and only
-         the fields that are set. b = bookmarked, h = highlighted,
-         n = the reader's note. An entry with nothing left is deleted. */
+         the fields that are set. b = bookmarked, h = the highlight
+         color the reader chose (a HL_COLORS id), n = the reader's
+         note. An entry with nothing left is deleted. */
       var SAVED_KEY = "web-bible:saved";
       var savedStore = {};
+      /* The highlighter colors a reader can choose, as [id, name]. The
+         first is the default warm yellow — the color every highlight
+         wore before colors existed, so an old stored highlight
+         (h: 1, from the single-color build) migrates to it and loses
+         nothing. */
+      var HL_COLORS = [
+        ["y", "yellow"], ["g", "green"], ["b", "blue"],
+        ["p", "pink"], ["v", "purple"]
+      ];
+      var HL_DEFAULT = "y";
+      function isHlColor(v) {
+        if (typeof v !== "string") return false;
+        for (var i = 0; i < HL_COLORS.length; i++) if (HL_COLORS[i][0] === v) return true;
+        return false;
+      }
+      function hlColorName(id) {
+        for (var i = 0; i < HL_COLORS.length; i++) if (HL_COLORS[i][0] === id) return HL_COLORS[i][1];
+        return "yellow";
+      }
       function savedKeyFor(bi, ci, v) { return bi + ":" + ci + ":" + v; }
       function loadSaved() {
         try {
@@ -903,7 +990,10 @@
             if (!e || typeof e !== "object") continue;
             var clean = {};
             if (e.b) clean.b = 1;
-            if (e.h) clean.h = 1;
+            /* h as a color id is the current form; any other truthy h
+               (the old single-color build stored 1) still means the
+               verse is highlighted, in the default warm yellow. */
+            if (e.h) clean.h = isHlColor(e.h) ? e.h : HL_DEFAULT;
             if (typeof e.n === "string" && e.n) clean.n = e.n.slice(0, 2000);
             if (clean.b || clean.h || clean.n) savedStore[k] = clean;
           }
@@ -922,7 +1012,7 @@
         var copy = {};
         if (e) {
           if (e.b) copy.b = 1;
-          if (e.h) copy.h = 1;
+          if (e.h) copy.h = e.h;
           if (e.n) copy.n = e.n;
         }
         return copy;
@@ -930,11 +1020,12 @@
       try { loadSaved(); } catch (e) { savedStore = {}; }
 
       /* ---- how a saved verse looks in the chapter ----
-         A highlighted verse wears the soft warm wash (.marked); a
-         bookmarked verse and a noted verse each get one small marker
-         after the text — a ribbon, a note bubble — drawn in the accent
-         color at half strength, so the words (and their red letters)
-         are never disturbed. */
+         A highlighted verse wears the soft wash (.marked) in its own
+         chosen color (.hl-y / .hl-g / …); a bookmarked verse and a
+         noted verse each get one small marker after the text — a
+         ribbon, a note bubble — drawn in the accent color at half
+         strength, so the words (and their red letters) are never
+         disturbed. */
       var BM_SVG = '<svg viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 0.8h8V12.2L5 9.2 1 12.2z" fill="currentColor"/></svg>';
       var NT_SVG = '<svg viewBox="0 0 12 11" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 0.8h10v6.9H6.2L3 10.4V7.7H1z" fill="currentColor"/></svg>';
       function markerEl(kind) {
@@ -946,7 +1037,11 @@
       function applyDecor(span, bi, ci, v) {
         try {
           var e = getSaved(bi, ci, v);
-          span.classList.toggle("marked", !!(e && e.h));
+          var hlc = e && e.h ? e.h : null;
+          span.classList.toggle("marked", !!hlc);
+          for (var ci2 = 0; ci2 < HL_COLORS.length; ci2++) {
+            span.classList.toggle("hl-" + HL_COLORS[ci2][0], hlc === HL_COLORS[ci2][0]);
+          }
           var old = span.querySelectorAll(".vmark");
           for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
           if (e && e.b) span.appendChild(markerEl("b"));
@@ -980,9 +1075,10 @@
         }
         return "";
       }
-      /* Save and Highlight are toggles over the whole selection: if
-         every selected verse already has the mark, the tap takes it
-         away; otherwise the tap gives it to them all. */
+      /* Save is a toggle over the whole selection: if every selected
+         verse is already saved, the tap takes it away; otherwise the
+         tap gives it to them all. (Highlight works the same way, one
+         color at a time — see applyHlColor below.) */
       function toggleSelectionFlag(flag) {
         if (!selection) return;
         var target = !selectionAll(flag);
@@ -999,6 +1095,70 @@
         showToast(flag === "b"
           ? (target ? "Saved — find it in Saved Verses" : "Removed from Saved Verses")
           : (target ? "Highlight added" : "Highlight removed"));
+      }
+
+      /* ---- highlight colors ----
+         The Highlight action opens a small palette of color dots in
+         the action bar rather than toggling directly, because the
+         reader now chooses the color. Tapping a dot paints the whole
+         current selection in that color; tapping the dot whose color
+         the selection already wears — every verse of it, in that one
+         color — lifts the highlight off again. The palette closes
+         after a choice; the selection itself stays, so the reader can
+         reopen the palette and switch colors. */
+      function selectionHlColor() {
+        if (!selection || !selection.verses.length) return null;
+        var col = null;
+        for (var i = 0; i < selection.verses.length; i++) {
+          var e = getSaved(selection.b, selection.c, selection.verses[i]);
+          if (!e || !e.h) return null;
+          if (col === null) col = e.h;
+          else if (col !== e.h) return null;
+        }
+        return col;
+      }
+      function refreshPaletteDots() {
+        try {
+          var active = selectionHlColor();
+          var dots = document.querySelectorAll("#hl-palette .hl-dot");
+          for (var i = 0; i < dots.length; i++) {
+            var on = dots[i].getAttribute("data-hlc") === active;
+            dots[i].classList.toggle("on", on);
+            dots[i].setAttribute("aria-pressed", on ? "true" : "false");
+          }
+        } catch (e) {}
+      }
+      function closeHlPalette() {
+        try {
+          $("hl-palette").hidden = true;
+          $("sharebar-hl").setAttribute("aria-expanded", "false");
+        } catch (e) {}
+      }
+      function toggleHlPalette() {
+        if (!selection) return;
+        try {
+          var p = $("hl-palette");
+          var opening = p.hidden;
+          p.hidden = !opening;
+          $("sharebar-hl").setAttribute("aria-expanded", opening ? "true" : "false");
+          if (opening) refreshPaletteDots();
+        } catch (e) {}
+      }
+      function applyHlColor(colorId) {
+        if (!selection || !isHlColor(colorId)) return;
+        var clearing = selectionHlColor() === colorId;
+        var b = selection.b, c = selection.c;
+        selection.verses.forEach(function (v) {
+          var copy = entryCopy(getSaved(b, c, v));
+          if (clearing) delete copy.h; else copy.h = colorId;
+          putSaved(b, c, v, copy);
+        });
+        persistSaved();
+        refreshChapterDecor();
+        refreshSelectionUI();
+        updateSavedCount();
+        closeHlPalette();
+        showToast(clearing ? "Highlight removed" : "Highlighted in " + hlColorName(colorId));
       }
 
       /* ---- notes ----
@@ -1042,19 +1202,20 @@
       }
 
       /* ---- the Saved Verses shelf ----
-         The home button counts what the shelf holds: bookmarked and
-         noted verses. A verse that is only highlighted keeps its wash
-         in the chapter and stays off the shelf. Entries stand in Bible
-         order; tapping one opens its chapter at that verse, the same
-         way a search result does, and Remove clears the verse's whole
-         saved record — bookmark, note, and highlight alike. */
+         The home button counts what the shelf holds: bookmarked,
+         noted, and highlighted verses — a highlight alone now keeps a
+         verse too, and its entry carries a dot of its highlight
+         color. Entries stand in Bible order; tapping one opens its
+         chapter at that verse, the same way a search result does, and
+         Remove clears the verse's whole saved record — bookmark,
+         note, and highlight alike. */
       function savedShelfEntries() {
         var out = [];
         for (var k in savedStore) {
           var e = savedStore[k];
-          if (!e || (!e.b && !e.n)) continue;
+          if (!e || (!e.b && !e.n && !e.h)) continue;
           var parts = k.split(":");
-          out.push({ b: +parts[0], c: +parts[1], v: +parts[2], note: e.n || "" });
+          out.push({ b: +parts[0], c: +parts[1], v: +parts[2], note: e.n || "", hl: e.h || "" });
         }
         out.sort(function (a, b) { return (a.b - b.b) || (a.c - b.c) || (a.v - b.v); });
         return out;
@@ -1076,7 +1237,7 @@
           var nr = el("div", "noresults");
           nr.appendChild(el("p", "nr-big", "Nothing saved yet."));
           nr.appendChild(el("p", null,
-            "Open any chapter, tap a verse, and choose Save or Note — it will wait for you here."));
+            "Open any chapter, tap a verse, and choose Save, Highlight, or Note — it will wait for you here."));
           body.appendChild(nr);
           return;
         }
@@ -1087,7 +1248,14 @@
           var ref = META[en.b][0] + " " + (en.c + 1) + ":" + en.v;
           var main = el("button", "sv-main");
           main.type = "button";
-          main.appendChild(el("span", "sv-ref", ref));
+          var refSpan = el("span", "sv-ref", ref);
+          if (en.hl) {
+            var dot = el("span", "sv-hldot");
+            dot.setAttribute("data-hlc", en.hl);
+            dot.setAttribute("title", "Highlighted in " + hlColorName(en.hl));
+            refSpan.appendChild(dot);
+          }
+          main.appendChild(refSpan);
           main.appendChild(el("span", "sv-text", verseText(en.b, en.c, en.v - 1)));
           if (en.note) main.appendChild(el("span", "sv-note", en.note));
           main.addEventListener("click", function () { openChapter(en.b, en.c, en.v); });
@@ -1227,7 +1395,15 @@
 
       /* ---- wiring: action bar, note panel, shelf, verse of the day ---- */
       try { $("sharebar-save").addEventListener("click", function () { toggleSelectionFlag("b"); }); } catch (e) {}
-      try { $("sharebar-hl").addEventListener("click", function () { toggleSelectionFlag("h"); }); } catch (e) {}
+      try { $("sharebar-hl").addEventListener("click", toggleHlPalette); } catch (e) {}
+      try {
+        var hlDots = document.querySelectorAll("#hl-palette .hl-dot");
+        for (var di = 0; di < hlDots.length; di++) {
+          (function (dot) {
+            dot.addEventListener("click", function () { applyHlColor(dot.getAttribute("data-hlc")); });
+          })(hlDots[di]);
+        }
+      } catch (e) {}
       try { $("sharebar-note").addEventListener("click", openNotePanel); } catch (e) {}
       try { $("note-save").addEventListener("click", saveNoteFromPanel); } catch (e) {}
       try { $("note-cancel").addEventListener("click", closeNotePanel); } catch (e) {}
