@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610181645" />
+    <meta name="app-build" content="202610181705" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -326,6 +326,14 @@
       /* the chapter's reading-time estimate: a quiet line under the
          chapter heading, in the soft ink — guidance, never a claim */
       .reader-time { color: var(--ink-soft); font-size: 14.5px; margin: -8px 0 16px; }
+      /* a chapter's big-idea line: one quiet sentence under the
+         heading, in the reading serif, for the chapters that have
+         one written (see CHAPTER_IDEAS); all others show nothing */
+      .reader-idea {
+        font-family: "Newsreader", Georgia, serif; font-style: italic;
+        font-size: 17.5px; line-height: 1.5; color: var(--ink-soft);
+        margin: -6px auto 16px; max-width: 32em;
+      }
 
       /* ---------- listen (audio Bible) ---------- */
       .listenbar { margin: 0 0 18px; text-align: center; }
@@ -385,6 +393,20 @@
         font-size: var(--reader-size, 20px); line-height: var(--reader-lh, 1.78); font-weight: 400;
       }
       .chapter-text .verse { border-radius: 4px; }
+      /* a section heading inside a chapter (see SECTION_HEADINGS):
+         a quiet heading line standing on its own line immediately
+         above its section's first verse. Display only — it carries
+         no verse number, is not a verse (no tap, no selection), and
+         never enters the Listen queue, which is built from the
+         chapter's verse text alone. */
+      .chapter-text .sec-head {
+        display: block;
+        font-weight: 600; font-size: 0.84em; line-height: 1.4;
+        color: var(--accent);
+        margin: 1.15em 0 0.3em;
+      }
+      .chapter-text .sec-head:first-child { margin-top: 0.15em; }
+      .chapter-text .sec-head + .verse sup.vn { margin-left: 0; }
       .chapter-text .wj { color: var(--redletter); }
       .chapter-text sup.vn {
         font-size: 11.5px; font-weight: 600; color: var(--accent);
@@ -543,6 +565,20 @@
       }
       .notepanel .np-actions .np-save { margin-left: auto; background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
       .notepanel .np-actions .np-remove { color: var(--redletter); }
+
+      /* ---------- today (home) ----------
+         The home view's daily things gathered into one cluster
+         under the title and search: the Verse of the Day, Continue
+         Reading, the reading-plan card, and any My Places chips.
+         The cluster is arrangement only — every item inside keeps
+         its own show/hide behavior and data, exactly as before. */
+      .today { margin: 22px 0 4px; }
+      .today-title {
+        font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--ink-soft); margin: 0;
+      }
+      .today .votd-card { margin-top: 10px; }
+      .today .continue-card, .today .plan-card, .today .places-row { margin-top: 12px; }
 
       /* ---------- verse of the day & saved verses (home) ---------- */
       .votd-card {
@@ -927,7 +963,9 @@
                    placeholder="Search the whole Bible…" aria-label="Search the whole Bible" />
             <button class="btn" type="submit">Search</button>
           </form>
-          <div class="votd-card" id="votd-card" hidden>
+          <div class="today" id="today">
+            <h2 class="today-title">Today</h2>
+            <div class="votd-card" id="votd-card" hidden>
             <div class="votd-head">
               <span class="votd-label">Verse of the Day</span>
               <button class="votd-share" id="votd-share" type="button">Share</button>
@@ -936,6 +974,28 @@
               <span class="votd-text" id="votd-text"></span>
               <span class="votd-ref" id="votd-ref"></span>
             </button>
+            </div>
+            <button class="continue-card" id="continue-card" hidden>
+              <span>
+                <span class="cc-label">Continue reading</span>
+                <span class="cc-where" id="continue-where"></span>
+              </span>
+              <span class="cc-arrow" aria-hidden="true">→</span>
+            </button>
+            <div class="plan-card" id="plan-card" hidden>
+              <span class="pc-label" id="plan-card-label">Your reading plan</span>
+              <span class="pc-title" id="plan-card-title"></span>
+              <span class="pc-next" id="plan-card-next"></span>
+              <div class="pc-actions">
+                <button type="button" class="pc-btn" id="plan-card-read">Read</button>
+                <button type="button" class="pc-btn ghost" id="plan-card-listen">▶ Listen</button>
+                <button type="button" class="pc-btn" id="plan-card-start" hidden>Start a reading plan</button>
+              </div>
+            </div>
+            <div class="places-row" id="places-row" hidden>
+              <span class="places-label">My Places</span>
+              <span class="places-chips" id="places-chips"></span>
+            </div>
           </div>
           <div class="saved-box">
             <button class="btn saved-btn" id="saved-btn" type="button">🔖 Saved Verses</button>
@@ -972,30 +1032,6 @@
             </div>
             <p class="passiton-line">Show this code to a friend — they scan it, and the Bible opens for them. Free, like it was for you.</p>
           </div>
-        </div>
-
-        <button class="continue-card" id="continue-card" hidden>
-          <span>
-            <span class="cc-label">Continue reading</span>
-            <span class="cc-where" id="continue-where"></span>
-          </span>
-          <span class="cc-arrow" aria-hidden="true">→</span>
-        </button>
-
-        <div class="plan-card" id="plan-card" hidden>
-          <span class="pc-label" id="plan-card-label">Your reading plan</span>
-          <span class="pc-title" id="plan-card-title"></span>
-          <span class="pc-next" id="plan-card-next"></span>
-          <div class="pc-actions">
-            <button type="button" class="pc-btn" id="plan-card-read">Read</button>
-            <button type="button" class="pc-btn ghost" id="plan-card-listen">▶ Listen</button>
-            <button type="button" class="pc-btn" id="plan-card-start" hidden>Start a reading plan</button>
-          </div>
-        </div>
-
-        <div class="places-row" id="places-row" hidden>
-          <span class="places-label">My Places</span>
-          <span class="places-chips" id="places-chips"></span>
         </div>
 
         <div class="starthere" id="starthere">
@@ -1054,6 +1090,7 @@
           <p class="r-book" id="reader-book"></p>
           <h2 id="reader-chapter"></h2>
           <p class="reader-time" id="reader-time" hidden></p>
+          <p class="reader-idea" id="reader-idea" hidden></p>
         </div>
         <div class="textsize-row">
           <span class="ts-label">Text size</span>
@@ -1475,6 +1512,97 @@
           total += w;
         }
         return total;
+      }
+
+      /* ---- chapter big-idea lines ----
+         One quiet sentence per chapter saying what the chapter is
+         about, shown in the reader under the chapter heading, near
+         the reading-time line. Keyed by book name, then chapter
+         number (1-based), so future batches extend this same table
+         book by book. A chapter with no line yet shows nothing.
+         Batch 1: Matthew. */
+      var CHAPTER_IDEAS = {
+        "Matthew": {
+          1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
+          2: "Wise men worship the child King, Herod rages, and God protects Jesus in Egypt.",
+          3: "John the Baptist prepares the way, and Jesus is baptized, affirmed by the Father's voice.",
+          4: "Jesus defeats temptation in the wilderness, calls His first disciples, and begins preaching the kingdom.",
+          5: "The Sermon on the Mount begins: the blessings of the kingdom, and a righteousness that starts in the heart.",
+          6: "Jesus teaches true prayer, treasure in heaven, and freedom from worry.",
+          7: "The Sermon ends: the narrow gate, good fruit, and the house built on the rock.",
+          8: "Jesus heals the sick and casts out demons — bearing our weaknesses with compassion.",
+          9: "Jesus forgives a paralytic, calls Matthew the tax collector, and aches over the shepherdless crowds.",
+          10: "Jesus sends out the Twelve with authority, warning them that persecution will come.",
+          11: "Jesus invites the weary and burdened to come to Him and find rest.",
+          12: "Jesus, Lord of the Sabbath, heals on the day of rest and draws the Pharisees' anger.",
+          13: "Jesus teaches in parables — the sower, the seeds, and the treasure hidden in a field.",
+          14: "Jesus feeds the five thousand, walks on the water, and Peter steps out in faith.",
+          15: "Jesus teaches that the heart, not food, makes a person unclean — and feeds four thousand more.",
+          16: "Peter confesses Jesus is the Christ; Jesus foretells His death and calls us to take up the cross.",
+          17: "The Transfiguration: Jesus shines with heaven's glory, and the Father says, 'Listen to him.'",
+          18: "Jesus teaches humility, forgiveness, and the shepherd who leaves the ninety-nine for the one.",
+          19: "Jesus teaches on marriage, riches, and the last who will be first.",
+          20: "Jesus heals blind men at Jericho and rides into Jerusalem as the humble King.",
+          21: "Jesus cleanses the temple and teaches parables of warning to Israel's leaders.",
+          22: "Jesus answers His critics' hard questions, gives the greatest commandment, and warns against the teachers of the law.",
+          23: "Jesus pronounces seven woes on the scribes and Pharisees and laments over Jerusalem.",
+          24: "Jesus foretells the temple's fall, the troubles ahead, and His glorious return.",
+          25: "Jesus teaches watchfulness — the ten virgins, the talents, and the judgment of the nations.",
+          26: "The plot against Jesus, the Last Supper, the agony in Gethsemane, the arrest, and Peter's denial.",
+          27: "Jesus is tried before Pilate, crucified, and buried — the King gives His life on the cross.",
+          28: "The tomb is empty, Jesus appears to His disciples, and He sends them to all nations."
+        }
+      };
+      function chapterIdea(bi, ci) {
+        var byBook = CHAPTER_IDEAS[META[bi][0]];
+        return byBook ? (byBook[ci + 1] || null) : null;
+      }
+
+      /* ---- section headings inside chapters ----
+         A quiet heading line above the first verse of each section
+         of a chapter, in the same spirit as the big-idea lines.
+         Keyed by book name, then chapter number (1-based), then the
+         verse number (1-based) the section starts at, so later
+         books' batches extend this same table. Headings are display
+         only: they render as their own line in the reader, never as
+         verse text, and the Listen queue — built from the chapter's
+         verses alone — never speaks them. A chapter with no
+         headings yet shows none. Batch 1: Matthew. */
+      var SECTION_HEADINGS = {
+        "Matthew": {
+          1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
+          2: { 1: "Wise men from the east worship the child", 13: "The escape to Egypt and the return home" },
+          3: { 1: "John the Baptist prepares the way", 13: "Jesus is baptized" },
+          4: { 1: "Jesus is tempted in the wilderness", 12: "Jesus begins preaching in Galilee", 18: "Jesus calls the first disciples", 23: "Crowds follow Jesus as He heals" },
+          5: { 1: "The Sermon on the Mount: who is blessed", 13: "Salt and light", 17: "Jesus fulfills the Law", 21: "Anger begins in the heart", 27: "Adultery begins in the heart", 33: "Tell the truth", 38: "Go the second mile", 43: "Love your enemies" },
+          6: { 1: "Giving without show", 5: "How to pray: the prayer Jesus taught", 16: "Fasting in secret", 19: "Treasure in heaven", 25: "Do not worry" },
+          7: { 1: "Do not judge others", 7: "Ask, seek, knock", 12: "The golden rule", 13: "The narrow gate", 15: "Known by their fruit", 21: "Not everyone who calls Him Lord", 24: "The wise and foolish builders", 28: "The crowds are amazed" },
+          8: { 1: "Jesus heals a man with leprosy", 5: "The faith of the Roman officer", 14: "Jesus heals many people", 18: "The cost of following Jesus", 23: "Jesus calms the storm", 28: "Jesus frees two men from demons" },
+          9: { 1: "Jesus forgives and heals a paralyzed man", 9: "Jesus calls Matthew", 14: "Questions about fasting", 18: "A dead girl and a sick woman are healed", 27: "Jesus heals two blind men", 32: "Jesus heals a man who could not speak", 35: "The harvest is great" },
+          10: { 1: "Jesus sends out the twelve apostles", 5: "Instructions for the journey", 16: "Persecution will come", 26: "Fear God, not people", 34: "Jesus brings division", 40: "Receiving His messengers" },
+          11: { 1: "Jesus answers John the Baptist", 7: "Jesus speaks about John", 20: "Woe to the towns that would not repent", 25: "Rest for the weary" },
+          12: { 1: "Jesus, Lord of the Sabbath", 9: "Jesus heals on the Sabbath", 15: "God's chosen Servant", 22: "Jesus and the prince of demons", 31: "A warning about words against the Spirit", 33: "A tree is known by its fruit", 38: "The sign of Jonah", 43: "An evil spirit returns", 46: "Jesus' true family" },
+          13: { 1: "The parable of the sower", 10: "Why Jesus teaches in parables", 18: "The sower explained", 24: "The parable of the wheat and the weeds", 31: "The mustard seed and the yeast", 36: "The wheat and the weeds explained", 44: "A hidden treasure and a priceless pearl", 47: "The parable of the fishing net", 53: "Jesus is rejected at Nazareth" },
+          14: { 1: "Herod kills John the Baptist", 13: "Jesus feeds five thousand", 22: "Jesus walks on the water", 34: "All who touch Him are healed" },
+          15: { 1: "Traditions versus God's commands", 10: "What truly makes a person unclean", 21: "A Gentile woman's great faith", 29: "Jesus heals many on the mountain", 32: "Jesus feeds four thousand" },
+          16: { 1: "The leaders demand a sign", 5: "The yeast of the Pharisees and Sadducees", 13: "Peter declares Jesus is the Christ", 21: "Jesus foretells His death", 24: "Take up your cross" },
+          17: { 1: "The Transfiguration", 9: "Questions about Elijah", 14: "Jesus heals a boy tormented by a demon", 21: "Jesus foretells His death again", 24: "Paying the temple tax" },
+          18: { 1: "Who is the greatest?", 6: "Warnings about causing others to sin", 10: "The parable of the lost sheep", 15: "When a believer sins against you", 21: "The parable of the unforgiving servant" },
+          19: { 1: "Jesus teaches about marriage and divorce", 10: "Single for the sake of the kingdom", 13: "Jesus blesses the little children", 16: "The rich young man", 27: "The last will be first" },
+          20: { 1: "The parable of the vineyard workers", 17: "Jesus foretells His death a third time", 20: "Greatness means serving", 29: "Jesus heals two blind men at Jericho" },
+          21: { 1: "Jesus enters Jerusalem as King", 12: "Jesus clears the temple", 18: "The fig tree withers", 23: "The leaders question Jesus' authority", 28: "The parable of the two sons", 33: "The parable of the wicked tenants" },
+          22: { 1: "The parable of the wedding feast", 15: "Taxes for Caesar", 23: "Questions about the resurrection", 34: "The most important commandment", 41: "Whose son is the Messiah?" },
+          23: { 1: "Jesus warns against the religious leaders", 13: "Seven woes", 37: "Jesus grieves over Jerusalem" },
+          24: { 1: "Jesus foretells the temple's destruction", 3: "Signs of the end of the age", 15: "The great tribulation", 29: "The coming of the Son of Man", 32: "The lesson of the fig tree", 36: "No one knows the day or hour", 45: "Faithful and wicked servants" },
+          25: { 1: "The parable of the ten virgins", 14: "The parable of the talents", 31: "The final judgment" },
+          26: { 1: "The plot to kill Jesus", 6: "Jesus is anointed at Bethany", 14: "Judas agrees to betray Jesus", 17: "The Last Supper", 31: "Peter's denial is foretold", 36: "Jesus prays in Gethsemane", 47: "Jesus is arrested", 57: "Jesus before the council", 69: "Peter denies Jesus" },
+          27: { 1: "Jesus is handed over to Pilate", 3: "Judas hangs himself", 11: "Jesus before Pilate", 27: "The soldiers mock Jesus", 32: "The crucifixion", 45: "The death of Jesus", 57: "Jesus is buried", 62: "Guards at the tomb" },
+          28: { 1: "He is risen!", 11: "The guards spread a lie", 16: "Jesus sends His disciples to all nations" }
+        }
+      };
+      function chapterHeadings(bi, ci) {
+        var byBook = SECTION_HEADINGS[META[bi][0]];
+        return byBook ? (byBook[ci + 1] || null) : null;
       }
 
       /* ---- helpers ---- */
@@ -3969,6 +4097,8 @@
            fills it in), so a slow fetch never shows a stale number. */
         $("reader-time").textContent = "";
         $("reader-time").hidden = true;
+        $("reader-idea").textContent = "";
+        $("reader-idea").hidden = true;
         $("chap-nav").hidden = true;
         $("chap-nav-top").hidden = true;
         var body = $("reader-body");
@@ -4053,14 +4183,26 @@
           rtEl.textContent = readingTimeLabel(rtWords);
           rtEl.hidden = false;
         }
+        /* The chapter's big-idea line, for the chapters that have one. */
+        var ideaEl = $("reader-idea");
+        if (ideaEl) {
+          var idea = chapterIdea(bi, ci);
+          if (idea) { ideaEl.textContent = idea; ideaEl.hidden = false; }
+          else { ideaEl.textContent = ""; ideaEl.hidden = true; }
+        }
         var woc = window.__WEB_NT_WOC__ || null;
         var hlSet = {};
         if (typeof highlight === "number" && highlight > 0) hlSet[highlight] = true;
         else if (highlight) { for (var hv = highlight[0]; hv <= highlight[1]; hv++) hlSet[hv] = true; }
         var p = el("p", "chapter-text");
+        var secHeads = chapterHeadings(bi, ci);
         var hlEl = null, hlVerses = [];
         verses.forEach(function (text, vi) {
           if (!text) return; /* a verse the WEB leaves unnumbered-empty (see note in data) */
+          /* A section heading stands on its own line immediately
+             above its section's first verse — display only, never
+             a verse itself. */
+          if (secHeads && secHeads[vi + 1]) p.appendChild(el("span", "sec-head", secHeads[vi + 1]));
           var span = el("span", "verse");
           span.id = "v" + (vi + 1);
           var sup = el("sup", "vn", String(vi + 1));
@@ -5292,7 +5434,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610181645";
+      var APP_BUILD_STAMP = "202610181705";
       (function () {
         try {
           var btn = $("update-btn");
