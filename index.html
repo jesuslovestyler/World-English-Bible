@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1699,6 +1699,14 @@
           11: "Paul speaks as a fool to protect his children from false apostles, and catalogues his sufferings: beatings, shipwrecks, dangers — his boast is in weakness.",
           12: "A man caught up to the third heaven; a thorn in the flesh; and the Lord's answer stands forever: 'My grace is sufficient for you, for my power is made perfect in weakness.'",
           13: "Final warnings: examine yourselves, restore one another, live in peace — and the grace of the Lord Jesus, the love of God, and the fellowship of the Holy Spirit be with you all."
+        },
+        "Galatians": {
+          1: "Paul is astonished: the Galatians are deserting the true gospel for a distorted one — and his gospel came not from men, but by revelation of Jesus Christ.",
+          2: "In Jerusalem the pillars recognize Paul's calling; at Antioch he opposes Peter to his face, and declares: a person is justified by faith in Christ, not by works of the law.",
+          3: "Faith, not law-keeping, justifies — Abraham believed and was counted righteous; the law was our guardian until Christ came, and in Him you are all children of God and heirs.",
+          4: "No longer slaves but sons: God sent His Son to redeem us, and the Spirit of His Son into our hearts; Hagar and Sarah picture slavery and freedom.",
+          5: "Stand firm in the freedom Christ won; walk in the Spirit, and His fruit will grow — love, joy, peace — against which there is no law.",
+          6: "Restore the fallen gently, bear one another's burdens, sow to the Spirit — and boast in nothing except the cross of our Lord Jesus Christ."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1715,7 +1723,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1894,6 +1902,14 @@
           11: { 1: "Paul's jealous concern for the church", 5: "The so-called super-apostles", 16: "Paul's fool's speech", 22: "Paul's catalogue of sufferings", 30: "Boasting in weakness" },
           12: { 1: "Caught up to the third heaven", 7: "A thorn in the flesh", 9: "My grace is sufficient for you", 11: "The signs of an apostle", 14: "Paul plans a third visit" },
           13: { 1: "Final warnings", 5: "Examine yourselves", 11: "Rejoice, be restored, live in peace" }
+        },
+        "Galatians": {
+          1: { 1: "Paul greets the churches of Galatia", 6: "A different gospel is no gospel", 11: "The gospel Paul received by revelation", 18: "Paul's early years after his conversion" },
+          2: { 1: "Paul returns to Jerusalem", 6: "The pillars recognize Paul's calling", 11: "Paul opposes Peter at Antioch", 15: "Justified by faith in Christ" },
+          3: { 1: "O foolish Galatians, who has bewitched you?", 6: "Abraham believed God", 10: "All who rely on the law are under a curse", 15: "The promise to Abraham stands", 19: "Why then the law?", 23: "The law, our guardian until Christ came", 26: "Children of God through faith" },
+          4: { 1: "Sons and heirs, no longer slaves", 8: "Do not turn back to slavery", 12: "Paul pleads with them from the heart", 21: "The allegory of Hagar and Sarah" },
+          5: { 1: "Stand firm in Christ's freedom", 7: "A little yeast works through the whole lump", 13: "Called to freedom: serve one another in love", 16: "Walk in the Spirit", 19: "The works of the flesh", 22: "The fruit of the Spirit" },
+          6: { 1: "Restore those caught in sin", 3: "Bear one another's burdens", 7: "Sowing and reaping", 9: "Do good to all", 11: "Boast only in the cross" }
         }
       };
       function chapterHeadings(bi, ci) {
