@@ -1206,23 +1206,37 @@
       /* ---- listen to this chapter (optional audio Bible) ----
          Reads the open chapter aloud with the device's own speech (the
          Web Speech API): no audio files, no network, and nothing plays
-         until the reader taps Listen. On tap, an intro ("John chapter 3.")
-         is spoken, then the chapter's verses in order, WITHOUT verse
-         numbers, as one small utterance per verse queued in order — small
-         utterances, so a long chapter is not cut off mid-way the way one
-         giant utterance can be. The verse currently being spoken wears
-         the chapter's usual highlight (.hl, the same styling a tap gives
-         it) and is kept scrolled into view. While speaking, the button
-         area shows Pause (which toggles to Resume) and Stop. Listening
-         ends when Stop is tapped, when the chapter finishes, or when the
-         reader navigates anywhere — every move passes through showView,
-         which calls stopListening above. If the browser has no
-         speechSynthesis the button never appears at all, and everything
-         here is wrapped the way the rest of the boot is: any speech
-         error, missing voice, or unsupported API must never break
-         reading, searching, or anything else on the page. */
-      var listenState = null;   /* { id, paused, spokenEl, left } while speaking */
+         until the reader taps Listen. An intro ("John chapter 3.") is
+         spoken first, then the chapter's verses in order, WITHOUT verse
+         numbers, ONE utterance at a time: the app speaks a verse,
+         highlights and scrolls to it the moment it starts speaking it,
+         and only starts the next verse when the current one is done.
+         The app drives that progression itself rather than trusting
+         utterance events, because phone browsers — iOS especially —
+         often stop firing onstart/onend after the first verse or two,
+         which used to strand the highlight mid-chapter. Each verse
+         advances on WHICHEVER comes first: the utterance's own end
+         event, or a watchdog timer estimated from the verse's word
+         count at the speaking rate plus a generous buffer. A per-verse
+         guard token makes double-advancing impossible, so no verse is
+         ever skipped or repeated: when events work, the end event lands
+         first and the speech is never cut short; when they die, the
+         watchdog keeps the reading and the highlight moving on their
+         own. The verse being spoken wears the chapter's usual highlight
+         (.hl, the same styling a tap gives it) and is kept scrolled
+         into view. While speaking, the button area shows Pause (which
+         toggles to Resume) and Stop; Pause freezes the speech and the
+         watchdog together, and Resume picks the same verse back up.
+         Listening ends when Stop is tapped, when the chapter finishes,
+         or when the reader navigates anywhere — every move passes
+         through showView, which calls stopListening above. If the
+         browser has no speechSynthesis the button never appears at all,
+         and everything here is wrapped the way the rest of the boot is:
+         any speech error, missing voice, or unsupported API must never
+         break reading, searching, or anything else on the page. */
+      var listenState = null;   /* { id, paused, spokenEl, queue, step, token, voice, timer, deadline, remaining } while speaking */
       var listenSession = 0;    /* bumped on every stop, so stale utterance events no-op */
+      var SPEECH_RATE = 0.95;   /* natural, unhurried; also feeds the watchdog estimate */
       function speechOK() {
         try {
           return !!(window.speechSynthesis &&
@@ -1246,9 +1260,14 @@
             listenState && listenState.paused ? "▶ Resume" : "⏸ Pause";
         } catch (e) {}
       }
+      function clearListenTimer() {
+        try { if (listenState && listenState.timer) clearTimeout(listenState.timer); } catch (e) {}
+        if (listenState) listenState.timer = null;
+      }
       function stopListening() {
         var wasActive = !!listenState;
         listenSession++;
+        clearListenTimer();
         clearSpoken();
         listenState = null;
         if (wasActive) {
@@ -1258,6 +1277,7 @@
       }
       function finishListening() {
         listenSession++;
+        clearListenTimer();
         clearSpoken();
         listenState = null;
         resetListenUI();
@@ -1378,7 +1398,7 @@
         try { u = new SpeechSynthesisUtterance(text); }
         catch (e) { u = { text: text }; }
         try {
-          u.rate = 0.95;   /* natural, unhurried */
+          u.rate = SPEECH_RATE;
           u.pitch = 1;
           if (voice) u.voice = voice;
           if (voice && voice.lang) u.lang = voice.lang;
@@ -1397,17 +1417,75 @@
           catch (e) { try { span.scrollIntoView(); } catch (e2) {} }
         } catch (e) {}
       }
+      /* How long a verse should take to say aloud, in milliseconds:
+         its word count at the speaking rate (a deliberate ~135 words a
+         minute at rate 1), plus a generous fixed buffer. This only sets
+         the watchdog — when the utterance's own end event fires first,
+         as it normally does, the estimate never matters. */
+      function estimateSpeechMs(text) {
+        var words = 1;
+        try {
+          var t = String(text || "").replace(/^\s+|\s+$/g, "");
+          if (t) words = t.split(/\s+/).length;
+        } catch (e) {}
+        return Math.round(words * 445 / SPEECH_RATE) + 2500;
+      }
+      /* Arm (or re-arm) the watchdog for the verse now being spoken.
+         token is the guard captured for that verse: when the timer
+         fires it tries to advance with that token, and a mismatch —
+         because the end event already advanced, or listening stopped
+         — makes it a no-op. */
+      function armWatchdog(st, token) {
+        try {
+          if (st.timer) clearTimeout(st.timer);
+          st.deadline = Date.now() + st.remaining;
+          st.timer = setTimeout(function () { advanceStep(st, token); }, st.remaining);
+        } catch (e) {}
+      }
+      /* Speak queue[st.step] — the intro first, then one verse at a
+         time — wearing the highlight from the moment the app starts
+         speaking it, and set up so the step after it begins when this
+         one's end event OR the watchdog arrives, whichever is first. */
+      function speakStep(st) {
+        var item = st.queue[st.step];
+        if (!item) { finishListening(); return; }
+        var token = ++st.token;
+        if (item.v) markSpoken(item.v);
+        var u = makeUtterance(item.text, st.voice);
+        u.onend = function () { advanceStep(st, token); };
+        u.onerror = function () { advanceStep(st, token); };
+        st.remaining = estimateSpeechMs(item.text);
+        window.speechSynthesis.speak(u);
+        if (!st.paused) armWatchdog(st, token);
+      }
+      /* Move to the next verse, exactly once per verse: the first
+         caller (end event or watchdog) wins by bumping the guard
+         token, and every later caller for the same verse no-ops. */
+      function advanceStep(st, token) {
+        if (!listenState || listenState !== st || token !== st.token) return;
+        if (st.paused) return;   /* Resume re-arms the watchdog; nothing advances while paused */
+        st.token++;
+        try { if (st.timer) clearTimeout(st.timer); } catch (e) {}
+        st.timer = null;
+        st.step++;
+        if (st.step >= st.queue.length) { finishListening(); return; }
+        speakStep(st);
+      }
       function startListening() {
         try {
           if (!speechOK()) return;
           var bi = current.b, ci = current.c;
           var bk = bookData(bi);
           if (!bk) return;
-          var items = [];
+          /* The spoken queue: the intro line first (v: 0 — spoken but
+             never highlighted), then every non-empty verse in order,
+             without verse numbers. Only one of these is ever in the
+             speech queue at a time; speakStep walks the list. */
+          var queue = [{ v: 0, text: META[bi][0] + " chapter " + (ci + 1) + "." }];
           bk.c[ci].split("\n").forEach(function (text, vi) {
-            if (text) items.push({ v: vi + 1, text: text });
+            if (text) queue.push({ v: vi + 1, text: text });
           });
-          if (!items.length) return;
+          if (queue.length < 2) return;
           stopListening();
           /* While listening, the spoken verse owns the highlight. */
           try { dismissSelection(); } catch (e) {}
@@ -1415,29 +1493,14 @@
             var lit = document.querySelectorAll("#reader-body .verse.hl");
             for (var s = 0; s < lit.length; s++) lit[s].classList.remove("hl");
           } catch (e) {}
-          var id = ++listenSession;
-          var st = { id: id, paused: false, spokenEl: null, left: items.length + 1 };
+          var st = {
+            id: ++listenSession, paused: false, spokenEl: null,
+            queue: queue, step: 0, token: 0, voice: chosenVoice(),
+            timer: null, deadline: 0, remaining: 0
+          };
           listenState = st;
           resetListenUI();
-          var voice = chosenVoice();
-          function done() {
-            if (!listenState || listenState.id !== id) return;
-            st.left--;
-            if (st.left <= 0) finishListening();
-          }
-          var intro = makeUtterance(META[bi][0] + " chapter " + (ci + 1) + ".", voice);
-          intro.onend = done;
-          intro.onerror = done;
-          window.speechSynthesis.speak(intro);
-          items.forEach(function (it) {
-            var u = makeUtterance(it.text, voice);
-            u.onstart = function () {
-              if (listenState && listenState.id === id) markSpoken(it.v);
-            };
-            u.onend = done;
-            u.onerror = done;
-            window.speechSynthesis.speak(u);
-          });
+          speakStep(st);
         } catch (e) {
           try { finishListening(); } catch (e2) {}
         }
@@ -1445,12 +1508,23 @@
       function toggleListenPause() {
         try {
           if (!listenState || !speechOK()) return;
-          if (listenState.paused) {
+          var st = listenState;
+          if (st.paused) {
             if (typeof window.speechSynthesis.resume === "function") window.speechSynthesis.resume();
-            listenState.paused = false;
+            st.paused = false;
+            /* Pick the watchdog back up where Pause froze it: the
+               time left when Pause was tapped, counted from now. */
+            armWatchdog(st, st.token);
           } else {
             if (typeof window.speechSynthesis.pause === "function") window.speechSynthesis.pause();
-            listenState.paused = true;
+            st.paused = true;
+            /* Freeze the watchdog alongside the speech, remembering
+               how much of the verse's allowance was left. */
+            try {
+              if (st.timer) clearTimeout(st.timer);
+              st.timer = null;
+              st.remaining = Math.max(0, st.deadline - Date.now());
+            } catch (e) {}
           }
           resetListenUI();
         } catch (e) {}
