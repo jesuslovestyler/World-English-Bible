@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610181221" />
+    <meta name="app-build" content="202610181310" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -589,13 +589,22 @@
       .plan-desc { color: var(--ink-soft); margin: 0 0 2px; font-size: 15.5px; }
       .plan-progress { color: var(--ink-soft); font-size: 14px; margin: 0 0 10px; }
       .plan-days { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-      .plan-days li { border-bottom: 1px solid var(--line); }
+      .plan-days li { border-bottom: 1px solid var(--line); display: flex; align-items: stretch; }
       .plan-day {
-        display: flex; align-items: center; gap: 12px; width: 100%;
+        display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0;
         background: none; border: 0; cursor: pointer; text-align: left;
         padding: 12px 6px; min-height: 52px; font: inherit; color: var(--ink);
       }
       .plan-day:active { background: var(--accent-soft); }
+      /* the day's Listen button: a small companion to the day row —
+         tapping it reads the whole day aloud, in order, and stops at
+         the day's end. Shown only where the device can speak. */
+      .pd-listen {
+        font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: none; border: 0; white-space: nowrap;
+        padding: 12px 10px 12px 2px; min-height: 52px; flex: 0 0 auto;
+      }
+      .pd-listen:active { background: var(--accent-soft); }
       .pd-day { font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); min-width: 52px; }
       .pd-range { flex: 1 1 auto; min-width: 0; font-family: "Newsreader", Georgia, serif; font-size: 18px; font-weight: 500; }
       .pd-check {
@@ -627,6 +636,34 @@
         padding: 9px 16px; min-height: 44px; box-shadow: var(--shadow);
       }
       .turn-ref:active { background: var(--accent-soft); }
+
+      /* ---------- my journey ---------- */
+      .journey-stat { margin: 28px 0 0; }
+      .journey-stat h3 {
+        font-family: "Newsreader", Georgia, serif; font-size: 21px; font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .journey-big { font-family: "Newsreader", Georgia, serif; font-size: 26px; font-weight: 600; margin: 0 0 4px; }
+      .journey-note { color: var(--ink-soft); font-size: 15.5px; margin: 0; max-width: 34em; }
+      .journey-bar {
+        height: 10px; border-radius: 999px; margin: 10px 0 6px;
+        background: var(--accent-soft); border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .journey-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+      .journey-plans { list-style: none; margin: 4px 0 0; padding: 0; border-top: 1px solid var(--line); }
+      .journey-plans li {
+        display: flex; gap: 12px; align-items: baseline;
+        border-bottom: 1px solid var(--line); padding: 11px 6px;
+      }
+      .journey-plans .jp-name { flex: 1 1 auto; min-width: 0; font-family: "Newsreader", Georgia, serif; font-size: 17.5px; font-weight: 500; }
+      .journey-plans .jp-count { color: var(--ink-soft); font-size: 14.5px; white-space: nowrap; }
+
+      /* ---------- bible words (glossary) ---------- */
+      .glossary-list { border-top: 1px solid var(--line); margin-top: 14px; }
+      .gloss-item { border-bottom: 1px solid var(--line); padding: 15px 6px; }
+      .gloss-term { font-family: "Newsreader", Georgia, serif; font-size: 20px; font-weight: 600; margin: 0 0 3px; }
+      .gloss-def { margin: 0; font-size: 16.5px; line-height: 1.6; max-width: 34em; }
     </style>
   </head>
   <body>
@@ -663,6 +700,12 @@
           </div>
           <div class="saved-box">
             <button class="btn saved-btn" id="turn-btn" type="button">🧭 Where to turn</button>
+          </div>
+          <div class="saved-box">
+            <button class="btn saved-btn" id="journey-btn" type="button">🌱 My Journey</button>
+          </div>
+          <div class="saved-box">
+            <button class="btn saved-btn" id="words-btn" type="button">📚 Bible Words</button>
           </div>
           <div class="download-box">
             <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
@@ -883,6 +926,36 @@
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
 
+      <!-- ============ MY JOURNEY ============ -->
+      <section id="view-journey" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="journey-back">‹ Books</button>
+          <span class="tb-title">My Journey</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>My Journey</h2>
+          <p>The road so far — gathered from what this device already remembers of your reading.</p>
+        </div>
+        <div id="journey-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ BIBLE WORDS ============ -->
+      <section id="view-glossary" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="words-back">‹ Books</button>
+          <span class="tb-title">Bible Words</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Bible Words</h2>
+          <p>Big Bible words, in plain language.</p>
+        </div>
+        <div id="glossary-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
     </div>
 
     <!-- verse action bar: appears while verses are selected in the reader -->
@@ -1044,7 +1117,7 @@
         if (text != null) e.textContent = text;
         return e;
       }
-      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn"];
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-journey", "view-glossary"];
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -1885,6 +1958,10 @@
       function renderPlans() {
         var body = $("plans-body");
         body.textContent = "";
+        /* The day rows offer listening only where the device can
+           speak — the same gate the reader's Listen bar lives by. */
+        var canListen = false;
+        try { canListen = speechOK(); } catch (e) {}
         PLANS.forEach(function (plan, pi) {
           var block = el("div", "plan-block");
           block.appendChild(el("h3", "plan-title", plan.title));
@@ -1913,6 +1990,16 @@
               openChapter(day[0].b, day[0].c, 0, { plan: pi, day: di });
             });
             li.appendChild(btn);
+            if (canListen) {
+              var lbtn = el("button", "pd-listen", "▶ Listen");
+              lbtn.type = "button";
+              lbtn.setAttribute("aria-label",
+                "Listen to Day " + (di + 1) + ": " + planDayLabel(day));
+              lbtn.addEventListener("click", function () {
+                startPlanDayListen(pi, di);
+              });
+              li.appendChild(lbtn);
+            }
             ul.appendChild(li);
           });
           block.appendChild(ul);
@@ -2171,6 +2258,174 @@
       try { renderTurn(); } catch (e) {}
       try { $("turn-btn").addEventListener("click", openTurn); } catch (e) {}
       try { $("turn-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- my journey ----
+         A quiet summary of the road so far, built only from what the
+         app already keeps on this device: the chapters-read record,
+         the reading plans' progress (which is that same record, read
+         day by day), and the Saved Verses shelf. No streaks, no
+         scores, no dates — just where the reader has been. On a
+         fresh device, where nothing stands read or saved yet, a
+         gentle word points to the Start Here path instead. */
+      function renderJourney() {
+        var body = $("journey-body");
+        body.textContent = "";
+        var totalRead = 0;
+        for (var k in readStore) totalRead++;
+        var savedCount = savedShelfEntries().length;
+        if (!totalRead && !savedCount) {
+          var nr = el("div", "noresults");
+          nr.appendChild(el("p", "nr-big", "Your journey is just beginning."));
+          nr.appendChild(el("p", null,
+            "Nothing read or saved yet — and that's fine. When you're ready, the Start Here path on the home page is a gentle way in: Luke first, to meet Jesus, then John, Acts, and Romans. Every chapter you read will quietly take its place here."));
+          body.appendChild(nr);
+          return;
+        }
+        var chapStat = el("div", "journey-stat");
+        chapStat.appendChild(el("h3", null, "Chapters read"));
+        chapStat.appendChild(el("p", "journey-big",
+          totalRead.toLocaleString("en-US") + " of " + READ_TOTAL.toLocaleString("en-US")));
+        var bar = el("div", "journey-bar");
+        bar.setAttribute("role", "img");
+        bar.setAttribute("aria-label",
+          totalRead + " of " + READ_TOTAL + " chapters read");
+        var fill = el("div", "journey-bar-fill");
+        fill.style.width = (READ_TOTAL ? (100 * totalRead / READ_TOTAL) : 0) + "%";
+        bar.appendChild(fill);
+        chapStat.appendChild(bar);
+        chapStat.appendChild(el("p", "journey-note",
+          "Every chapter you've read — or listened all the way through — counts here."));
+        body.appendChild(chapStat);
+
+        var finished = [];
+        for (var bi = 0; bi < 66; bi++) {
+          if (readCountForBook(bi) >= META[bi][1]) finished.push(META[bi][0]);
+        }
+        var bookStat = el("div", "journey-stat");
+        bookStat.appendChild(el("h3", null, "Books finished"));
+        bookStat.appendChild(el("p", "journey-big",
+          finished.length + (finished.length === 1 ? " book" : " books")));
+        bookStat.appendChild(el("p", "journey-note", finished.length
+          ? finished.join(", ")
+          : "A book takes its place here once every one of its chapters is read."));
+        body.appendChild(bookStat);
+
+        var planStat = el("div", "journey-stat");
+        planStat.appendChild(el("h3", null, "Reading plans"));
+        var pul = el("ul", "journey-plans");
+        PLANS.forEach(function (plan) {
+          var done = 0;
+          plan.days.forEach(function (day) { if (planDayDone(day)) done++; });
+          var li = el("li");
+          li.appendChild(el("span", "jp-name", plan.title));
+          li.appendChild(el("span", "jp-count", done + " of " + plan.days.length + " days done"));
+          pul.appendChild(li);
+        });
+        planStat.appendChild(pul);
+        body.appendChild(planStat);
+
+        var savedStat = el("div", "journey-stat");
+        savedStat.appendChild(el("h3", null, "Saved verses"));
+        savedStat.appendChild(el("p", "journey-big",
+          savedCount + (savedCount === 1 ? " verse" : " verses")));
+        savedStat.appendChild(el("p", "journey-note",
+          "Kept on the Saved Verses shelf, on the home page."));
+        body.appendChild(savedStat);
+      }
+      function openJourney() {
+        renderJourney();
+        showView("view-journey");
+        setPageMeta("My Journey — World English Bible", DEFAULT_DESC);
+      }
+      try { $("journey-btn").addEventListener("click", openJourney); } catch (e) {}
+      try { $("journey-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- bible words ----
+         A small glossary: the big words of the faith in plain
+         language, in alphabetical order, for readers meeting them
+         for the first time. The wording below is the glossary's own
+         — kept exactly as written. */
+      var GLOSSARY = [
+        ["Amen", "A Hebrew word meaning 'so be it' or 'truly' — our way of saying, 'Yes, Lord, we agree.'"],
+        ["Angel", "A messenger from God. Angels serve God, carry His words to people, and watch over His children."],
+        ["Apostle", "One sent out by Jesus Himself. The first apostles were the twelve men Jesus chose to witness His resurrection and found the church."],
+        ["Atonement", "The price paid to bring sinners back to God. In the Old Testament it was animal sacrifices; finally and fully, it is Jesus' death on the cross for us."],
+        ["Baptism", "Being washed in water as a sign of new life: buried with Jesus in His death, and raised with Him to walk in newness of life."],
+        ["Believe", "To trust — not just to know facts about Jesus, but to rest your whole weight on Him and what He promised."],
+        ["Blessing", "God's goodness given as a gift. To bless someone is to speak and give God's good over their life."],
+        ["Born again", "Jesus' words for what God does inside a person: giving them a brand-new heart and life by His Spirit."],
+        ["Church", "Not a building — the people who belong to Jesus, gathered to worship Him and love one another, all over the world."],
+        ["Commandment", "Something God tells us to do. His commandments are not burdens; they show us His heart and the shape of a good life."],
+        ["Confess", "To say the same thing God says — to admit our sins honestly to Him, and to say out loud that Jesus is Lord."],
+        ["Covenant", "God's solemn promise-bond with people, like a marriage vow from His side. The old covenant came through Moses; the new covenant comes through Jesus' blood."],
+        ["Cross", "Where Jesus died for our sins. In the Bible 'the cross' often means the whole saving work Jesus did there."],
+        ["Disciple", "A student and follower of Jesus — someone learning His ways and obeying Him, day by day, for life."],
+        ["Eternal life", "Life that never ends — but more than length, it is knowing God Himself, beginning now and lasting forever."],
+        ["Faith", "Trust in God that acts on what He said. Faith receives His promises as gifts; even faith itself is His gift to us."],
+        ["Fellowship", "Sharing life with God and with His people — praying, eating, giving, and walking together as one family in Christ."],
+        ["Forgiveness", "God canceling the debt of our sins completely, for Jesus' sake — not holding them against us anymore, ever."],
+        ["Glory", "The shining weight of who God is — His beauty, power, and worth, seen most fully in Jesus."],
+        ["Gospel", "Good news! The message that Jesus died for our sins, rose again, and that everyone who believes in Him receives eternal life."],
+        ["Grace", "God's kindness to people who deserve the opposite — His gifts given freely because He loves, not because we earned."],
+        ["Heaven", "God's home, where Jesus now is, and where His people will live with Him forever — no more death, tears, or pain."],
+        ["Hell", "The place of final judgment and separation from God for those who refuse His mercy. It is real, and it is why the gospel is urgent."],
+        ["Holy", "Set apart and perfectly pure. God is holy — completely other, completely good — and He makes His people holy too."],
+        ["Holy Spirit", "God the Spirit, who lives in every believer: comforting, teaching, convicting, and making us more like Jesus."],
+        ["Hope", "In the Bible, hope is not a wish — it is a confident expectation of what God has promised and will surely do."],
+        ["Idol", "Anything we love, trust, or serve in God's place. Idolatry is giving God's worship to something smaller."],
+        ["Intercession", "Praying for someone else, pleading their case before God. Jesus Himself intercedes for us, always."],
+        ["Justified", "Declared righteous by God. When you believe in Jesus, God counts you as right with Him — as if you had never sinned — because Jesus paid it all."],
+        ["Kingdom of God", "God's rule and reign — wherever Jesus is King. It came with Jesus, grows now in hearts, and will fill the earth when He returns."],
+        ["Law", "God's instructions given through Moses in the Old Testament. The law shows us God's holiness and our sin, and points us to Jesus."],
+        ["Lord", "Master and ruler. Calling Jesus 'Lord' means He is God, He is in charge, and we gladly belong to Him."],
+        ["Love", "God's own nature — He IS love. Real love gives itself for the good of another, as Jesus did at the cross."],
+        ["Mercy", "God NOT giving us the punishment we deserve. Grace gives us good we don't deserve; mercy withholds the bad we do."],
+        ["Messiah", "Hebrew for 'the Anointed One' — God's promised King and Savior. In Greek the word is 'Christ.' Jesus is the Messiah."],
+        ["Miracle", "An act of God beyond the ordinary course of nature — a sign pointing to who Jesus is and what His kingdom is like."],
+        ["Parable", "A story Jesus told from everyday life — seeds, sheep, lost coins — carrying a truth about God's kingdom inside it."],
+        ["Passover", "The feast remembering how God rescued Israel from Egypt, when the lamb's blood covered His people's homes. Jesus is our Passover Lamb."],
+        ["Peace", "Wholeness and rest with God — the quiet heart of someone whose sins are forgiven and whose life is in God's hands."],
+        ["Prayer", "Talking with God — honestly, about everything, as Jesus taught us: as children to a Father who hears."],
+        ["Prophet", "A person God sends to speak His words to people — calling them back to God and, often, pointing ahead to Jesus."],
+        ["Providence", "God's quiet rule over all things — He works every event, even the hard ones, together for the good of His people and for His purposes."],
+        ["Redeem", "To buy back. Jesus redeemed us — He paid the price (His own life) to free us from sin and make us God's own."],
+        ["Repentance", "Turning around: changing your mind about sin, turning away from it and toward God. Its fruit is a changed life."],
+        ["Resurrection", "Being raised from the dead, body and all. Jesus rose first; everyone who belongs to Him will rise too."],
+        ["Righteousness", "Being right with God and living rightly. We receive righteousness as a gift through Jesus, then grow in it day by day."],
+        ["Sabbath", "The seventh day, set apart by God for rest and worship — a gift reminding us that God, not our work, holds our lives."],
+        ["Sacrifice", "An offering given to God. In the Old Testament, animals died in the sinner's place; Jesus is the final, once-for-all sacrifice."],
+        ["Salvation", "Being rescued by God — from sin, death, and judgment — and brought into His family forever. It is all by grace, through faith in Jesus."],
+        ["Sanctify", "To be set apart for God and made holy over time — the Spirit's daily work of making us more like Jesus."],
+        ["Satan", "God's enemy, a fallen angel called the devil and the tempter. He lies, accuses, and steals — and Jesus has already defeated him."],
+        ["Scripture", "God's written word, the Bible itself — breathed out by God and given to teach us, correct us, and train us in doing right."],
+        ["Sin", "Anything we think, say, or do against God's will — and the bent toward it in every human heart. Sin is why we need a Savior."],
+        ["Soul", "The inner, living you — your mind, heart, and will — the part of you made for God and made to live forever."],
+        ["Temple", "The house of God in Jerusalem, where Israel worshiped and offered sacrifices. Now God's Spirit lives in His people — we are His temple."],
+        ["Temptation", "Being drawn toward sin. God never tempts anyone to evil; when we are tempted, He always makes a way out."],
+        ["Testament", "Another word for covenant. The Old Testament is God's dealings with Israel before Jesus; the New Testament is the good news of Jesus and His church."],
+        ["Trinity", "The one true God is three Persons — Father, Son, and Holy Spirit — one God, forever, in perfect love."],
+        ["Worship", "Giving God the worth He deserves — with songs, prayers, obedience, and our whole lives offered to Him."],
+        ["Wrath", "God's settled, holy anger against evil. It is not a temper tantrum; it is the judgment sin deserves — which Jesus bore for us at the cross."]
+      ];
+      function renderGlossary() {
+        var body = $("glossary-body");
+        body.textContent = "";
+        var list = el("div", "glossary-list");
+        GLOSSARY.forEach(function (pair) {
+          var item = el("div", "gloss-item");
+          item.appendChild(el("h3", "gloss-term", pair[0]));
+          item.appendChild(el("p", "gloss-def", pair[1]));
+          list.appendChild(item);
+        });
+        body.appendChild(list);
+      }
+      function openGlossary() {
+        renderGlossary();
+        showView("view-glossary");
+        setPageMeta("Bible Words — World English Bible", DEFAULT_DESC);
+      }
+      try { $("words-btn").addEventListener("click", openGlossary); } catch (e) {}
+      try { $("words-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
 
       /* ---- verse of the day ----
          A curated shelf of well-loved verses from across the whole
@@ -2826,6 +3081,10 @@
           pendingAutoListen = false;
           try { startListening(); } catch (e) {}
         }
+        if (pendingPlanListen) {
+          pendingPlanListen = false;
+          try { startListening(0, true); } catch (e) {}
+        }
       }
       $("reader-to-chapters").addEventListener("click", function () { openChapters(current.b); });
       $("reader-to-books").addEventListener("click", function () { showView("view-home"); });
@@ -2876,6 +3135,16 @@
       var listenSession = 0;    /* bumped on every stop, so stale utterance events no-op */
       var autoContinue = true;  /* roll into the next chapter when one finishes (the default) */
       var pendingAutoListen = false; /* an auto-continue roll is rendering; start listening when it lands */
+      /* A reading-plan day being read aloud: { chapters: [{b,c}…], idx }
+         — the day's chapters in order, idx the one now playing. While
+         it stands, it overrides the auto-continue setting: playback
+         follows the day's queue and stops at the day's end instead of
+         rolling into whatever chapter comes next in the Bible. Any
+         stop — the Stop button, the sleep timer, navigating away
+         (every move passes through showView → stopListening) — clears
+         it, exactly as it ends ordinary listening. */
+      var planListen = null;
+      var pendingPlanListen = false; /* the next chapter of a plan day is rendering; start listening when it lands */
       var sleepTimerId = null;  /* the sleep timer's timeout id, while one is counting */
       /* The reader's speaking rate: one of RATE_CHOICES, remembered on
          the device the same guarded way as the voice pick. It feeds
@@ -2930,6 +3199,8 @@
         clearListenTimer();
         clearSpoken();
         listenState = null;
+        planListen = null;
+        pendingPlanListen = false;
         if (wasActive) {
           try { if (speechOK()) window.speechSynthesis.cancel(); } catch (e) {}
         }
@@ -2940,6 +3211,8 @@
         clearListenTimer();
         clearSpoken();
         listenState = null;
+        planListen = null;
+        pendingPlanListen = false;
         resetListenUI();
       }
       /* A chapter has been spoken to its very end: it counts as read,
@@ -2954,6 +3227,34 @@
          counts real elapsed time straight across rollovers. */
       function chapterPlaybackEnded(st) {
         try { markChapterRead(st.b, st.c); } catch (e) {}
+        /* A plan day being read aloud follows its own queue, whatever
+           the auto-continue setting says: the day's chapters in order,
+           each rendered and announced with the usual intro, and at the
+           day's last chapter the listening simply ends — it does not
+           roll into the next day. The match on the chapter just spoken
+           keeps a queue left behind by some other listening from ever
+           being picked up by accident. */
+        if (planListen && planListen.chapters[planListen.idx] &&
+            planListen.chapters[planListen.idx].b === st.b &&
+            planListen.chapters[planListen.idx].c === st.c) {
+          if (planListen.idx + 1 < planListen.chapters.length) {
+            var pl = planListen;
+            pl.idx++;
+            var nx = pl.chapters[pl.idx];
+            try {
+              openChapter(nx.b, nx.c, 0, "keep");
+              /* openChapter passed through showView, whose stopListening
+                 cleared the queue — hand it back, and flag the render
+                 to start listening when the chapter lands. */
+              planListen = pl;
+              pendingPlanListen = true;
+              return;
+            } catch (e) { pendingPlanListen = false; }
+          }
+          planListen = null;
+          finishListening();
+          return;
+        }
         var lin = CHAP_START[st.b] + st.c;
         if (autoContinue && lin < 1188) {
           var next = fromLinear(lin + 1);
@@ -3207,7 +3508,30 @@
         if (st.step >= st.queue.length) { chapterPlaybackEnded(st); return; }
         speakStep(st);
       }
-      function startListening(fromVerse) {
+      /* Begin listening to a whole reading-plan day: open its first
+         chapter in the reader (with the way back to the plan riding
+         along, the way a tap on the day itself opens it) and start
+         the day's queue. Playback then follows chapterPlaybackEnded's
+         plan branch from chapter to chapter, with the reader's chosen
+         voice and speed, the usual intros, and the ordinary
+         Pause/Resume/Stop controls — and ends at the day's end. */
+      function startPlanDayListen(pi, di) {
+        try {
+          if (!speechOK()) return;
+          var plan = PLANS[pi];
+          if (!plan || !plan.days[di] || !plan.days[di].length) return;
+          var pl = { chapters: plan.days[di].slice(), idx: 0 };
+          var first = pl.chapters[0];
+          openChapter(first.b, first.c, 0, { plan: pi, day: di });
+          /* openChapter passed through showView, whose stopListening
+             clears any queue — set this day's queue now that the way
+             in is done, and flag the render to start listening when
+             the chapter lands. */
+          planListen = pl;
+          pendingPlanListen = true;
+        } catch (e) { planListen = null; pendingPlanListen = false; }
+      }
+      function startListening(fromVerse, fromPlan) {
         try {
           if (!speechOK()) return;
           var bi = current.b, ci = current.c;
@@ -3224,7 +3548,14 @@
             if (text && (!fromVerse || vi + 1 >= fromVerse)) queue.push({ v: vi + 1, text: text });
           });
           if (queue.length < 2) return;
+          /* Starting over always stops what was playing, and stopping
+             clears any plan-day queue. An ordinary Listen tap means
+             exactly that — the queue is set aside. A plan-day
+             continuation (fromPlan) keeps its queue across the stop,
+             so the day can walk from chapter to chapter. */
+          var keepPlan = fromPlan ? planListen : null;
           stopListening();
+          planListen = keepPlan;
           /* While listening, the spoken verse owns the highlight. */
           try { dismissSelection(); } catch (e) {}
           try {
@@ -3676,7 +4007,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610181221";
+      var APP_BUILD_STAMP = "202610181310";
       (function () {
         try {
           var btn = $("update-btn");
