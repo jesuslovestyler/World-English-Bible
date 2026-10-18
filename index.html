@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1811,6 +1811,30 @@
         },
         "Jude": {
           1: "Contend earnestly for the faith once delivered to the saints, for ungodly men have crept in — but build yourselves up in your most holy faith, and rest in Him who is able to keep you from falling."
+        },
+        "Revelation": {
+          1: "The revelation of Jesus Christ, given to John on Patmos: blessing on all who read it and keep it — and the Son of Man stands among the lampstands, saying, 'I am the first and the last.'",
+          2: "Letters to Ephesus, Smyrna, Pergamum, and Thyatira — the Lord who walks among the lampstands praises, warns, and promises: be faithful to death, and I will give you the crown of life.",
+          3: "Letters to Sardis, Philadelphia, and Laodicea — wake up, hold fast to the open door, and hear the Lord who stands at the door and knocks.",
+          4: "A door stands open in heaven: the throne, the twenty-four elders, and the four living creatures crying without rest, 'Holy, holy, holy, Lord God Almighty.'",
+          5: "No one is worthy to open the sealed scroll — except the Lion of Judah, the Lamb who was slain; heaven answers with a new song: 'Worthy is the Lamb!'",
+          6: "The Lamb opens the seven seals: four horsemen ride, the martyrs cry 'How long?', and the sky shakes as the great day of wrath comes.",
+          7: "God seals His servants, and then John sees a great multitude no one can count, from every nation, washed in the Lamb's blood and sheltered by God forever.",
+          8: "The seventh seal opens in silence; the trumpets sound over the earth — fire, blood, bitter waters, and darkened heavens — and an eagle cries 'Woe!'",
+          9: "The fifth and sixth trumpets: locusts rise from the pit and armies pour from the Euphrates — yet the rest of mankind still does not repent.",
+          10: "A mighty angel with a little book: John eats it, sweet as honey and bitter in the belly, and must prophesy again — for at the seventh trumpet God's mystery will be finished.",
+          11: "The two witnesses prophesy, are slain, rise, and ascend; the seventh trumpet sounds: 'The kingdom of the world has become the Kingdom of our Lord and of His Christ.'",
+          12: "A woman clothed with the sun, a great red dragon, and war in heaven: Michael casts Satan down, and the woman is sheltered in the wilderness.",
+          13: "A beast rises from the sea and another from the earth, demanding worship and marking mankind — here is the endurance and the faith of the saints.",
+          14: "The Lamb stands on Mount Zion with the 144,000; angels proclaim the eternal gospel and warn of judgment; the earth is harvested, and blessed are the dead who die in the Lord.",
+          15: "Seven angels carry the seven last plagues; the victors stand on the sea of glass singing the song of Moses and of the Lamb — just and true are Your ways, King of the nations.",
+          16: "The bowls of God's wrath are poured out; frogs gather the kings at Armageddon — 'Behold, I come like a thief. Blessed is he who watches.'",
+          17: "Babylon the great, drunk with the blood of the saints, rides the scarlet beast — and the beast and the kings will turn on her and burn her with fire.",
+          18: "'Fallen, fallen is Babylon the great!' Heaven calls God's people out of her; her merchants weep, and a millstone sunk in the sea pictures her end.",
+          19: "Hallelujah, for the Lord our God reigns: the marriage supper of the Lamb has come — and heaven opens on a white horse, whose rider is Faithful and True, King of Kings and Lord of Lords.",
+          20: "Satan is bound a thousand years, then released and thrown forever into the lake of fire; the dead stand before the great white throne, and the books are opened.",
+          21: "A new heaven and a new earth: the holy city comes down prepared as a bride, God dwells with His people, and He wipes every tear from their eyes — 'Behold, I make all things new.'",
+          22: "The river of the water of life flows from the throne, and the tree of life heals the nations: 'Behold, I come soon' — the Spirit and the bride say, 'Come, Lord Jesus!'"
         }
       };
       function chapterIdea(bi, ci) {
@@ -1827,7 +1851,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -2118,6 +2142,30 @@
         },
         "Jude": {
           1: { 1: "Jude greets those who are called and kept", 3: "Contend earnestly for the faith", 5: "Examples of judgment long ago", 17: "Remember the words of the apostles", 20: "Build yourselves up in your most holy faith", 24: "To Him who is able to keep you from falling" }
+        },
+        "Revelation": {
+          1: { 1: "The revelation of Jesus Christ", 4: "John greets the seven churches", 9: "A vision of the Son of Man", 17: "I am the First and the Last" },
+          2: { 1: "To Ephesus: you lost your first love", 8: "To Smyrna: be faithful to death", 12: "To Pergamum: where Satan's throne is", 18: "To Thyatira: hold fast what you have" },
+          3: { 1: "To Sardis: wake up, you are dead", 7: "To Philadelphia: an open door", 14: "To Laodicea: neither cold nor hot", 20: "Behold, I stand at the door and knock" },
+          4: { 1: "A throne set in heaven", 6: "The living creatures and the elders worship" },
+          5: { 1: "The scroll with seven seals", 5: "Behold, the Lion of Judah", 8: "The Lamb takes the scroll; heaven sings" },
+          6: { 1: "The Lamb opens the seals", 2: "The four horsemen", 9: "The martyrs cry, How long?", 12: "The sky shakes: the day of wrath has come" },
+          7: { 1: "The servants of God are sealed", 4: "The 144,000 from Israel", 9: "A great multitude from every nation", 13: "Who are these, clothed in white robes?" },
+          8: { 1: "The seventh seal: silence in heaven", 6: "The trumpets begin", 12: "The fourth trumpet: Woe, woe, woe" },
+          9: { 1: "The fifth trumpet: locusts from the pit", 13: "The sixth trumpet: the Euphrates released", 20: "Yet the rest did not repent" },
+          10: { 1: "The mighty angel and the little book", 8: "Take the book and eat it" },
+          11: { 1: "The temple measured; the two witnesses", 7: "The witnesses are slain", 11: "They rise and ascend into heaven", 15: "The seventh trumpet: the Kingdom has come" },
+          12: { 1: "The woman and the dragon", 7: "War in heaven: Michael against the dragon", 10: "Now has come the salvation of our God", 13: "The dragon pursues the woman" },
+          13: { 1: "The beast from the sea", 5: "Blasphemy, and authority for forty-two months", 11: "The beast from the earth", 16: "The mark of the beast" },
+          14: { 1: "The Lamb on Mount Zion", 6: "Three angels with three messages", 9: "The third angel: a solemn warning", 13: "Blessed are the dead who die in the Lord", 14: "The harvest of the earth" },
+          15: { 1: "Seven angels with seven last plagues", 3: "The song of Moses and of the Lamb", 5: "The sanctuary is opened and filled with smoke" },
+          16: { 1: "The bowls of God's wrath", 12: "The sixth bowl: the Euphrates dries up", 16: "They gathered at Armageddon", 17: "The seventh bowl: It is done" },
+          17: { 1: "Babylon the great, mother of prostitutes", 3: "The woman on the scarlet beast", 7: "The mystery of the woman and the beast", 15: "The waters are peoples and nations" },
+          18: { 1: "Fallen, fallen is Babylon the great", 4: "Come out of her, my people", 9: "The kings and merchants weep over her", 21: "A millstone thrown into the sea" },
+          19: { 1: "Hallelujah! The Lord our God reigns", 6: "The marriage supper of the Lamb", 11: "The rider on the white horse", 17: "The great supper of God", 19: "The beast is captured" },
+          20: { 1: "Satan bound for a thousand years", 4: "The first resurrection", 7: "Satan is released and deceives the nations", 11: "The great white throne" },
+          21: { 1: "A new heaven and a new earth", 2: "The holy city comes down from heaven", 5: "Behold, I make all things new", 9: "The bride, the wife of the Lamb", 22: "No temple in it: the Lord and the Lamb are its temple" },
+          22: { 1: "The river of the water of life", 6: "These words are faithful and true", 12: "Behold, I come soon", 17: "The Spirit and the bride say, Come", 20: "Yes, I come quickly: Come, Lord Jesus" }
         }
       };
       function chapterHeadings(bi, ci) {
