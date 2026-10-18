@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke. */
+         Batches: Matthew, Mark, Luke, John. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1595,6 +1595,29 @@
           22: "The plot, the Last Supper, Gethsemane, the arrest, Peter's denial, and Jesus before the council.",
           23: "Jesus is tried before Pilate and Herod, crucified between criminals, and buried in a borrowed tomb.",
           24: "The tomb is empty; Jesus walks with two on the Emmaus road, appears to His disciples, and ascends to heaven."
+        },
+        "John": {
+          1: "The Word was God and became flesh; John testifies to Him, and Jesus calls His first disciples.",
+          2: "Jesus turns water into wine at Cana, then clears the temple and calls His own body the true temple.",
+          3: "Nicodemus hears that he must be born again; God so loved the world; John rejoices as the friend of the bridegroom.",
+          4: "A Samaritan woman hears 'I am He' at the well, her town believes, and Jesus heals an official's son from afar.",
+          5: "Jesus heals a lame man at Bethesda on the Sabbath and declares that the Son does whatever the Father does.",
+          6: "Jesus feeds five thousand, walks on water, and teaches the crowds: 'I am the bread of life.'",
+          7: "Jesus teaches at the feast, promises rivers of living water to believers, and the leaders divide over Him.",
+          8: "Jesus, the light of the world, promises freedom to those who abide in His word: 'Before Abraham was born, I AM.'",
+          9: "Jesus heals a man born blind; the man testifies boldly, is thrown out, and worships the Son of Man.",
+          10: "Jesus the Good Shepherd lays down His life for the sheep: 'My sheep hear my voice, and I know them.'",
+          11: "Jesus raises Lazarus after four days — 'I am the resurrection and the life' — and the plot against Him hardens.",
+          12: "Mary anoints Jesus, He enters Jerusalem as King, and He speaks of His death as a grain of wheat falling.",
+          13: "Jesus washes His disciples' feet, foretells betrayal and Peter's denial, and commands: love one another as I loved you.",
+          14: "Jesus comforts His disciples: 'I am the way, the truth, and the life,' and promises the Helper to be with them forever.",
+          15: "Jesus the true vine calls His friends to abide in Him, warns the world will hate them, and promises the Helper's testimony.",
+          16: "Jesus warns of persecution, promises the Helper will guide them into all truth, and declares: 'I have overcome the world.'",
+          17: "Jesus prays for Himself, for His disciples, and for all who will believe — that they may be one, as He and the Father are one.",
+          18: "Jesus is arrested in the garden, tried before Annas and Pilate, and Peter denies Him three times.",
+          19: "Jesus is crucified — 'It is finished' — His side is pierced, and Joseph and Nicodemus bury Him.",
+          20: "The tomb is empty; Jesus appears to Mary and to the disciples, and Thomas confesses: 'My Lord and my God!'",
+          21: "By the sea, the risen Jesus restores Peter — 'Feed my sheep' — and hints at the beloved disciple's path."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1611,7 +1634,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1686,6 +1709,29 @@
           22: { 1: "The plot to kill Jesus", 3: "Judas agrees to betray Jesus", 7: "The Last Supper", 24: "Who is the greatest?", 31: "Peter's denial is foretold", 39: "Jesus prays on the Mount of Olives", 47: "Jesus is arrested", 54: "Peter denies Jesus", 63: "The guards mock Jesus", 66: "Jesus before the council" },
           23: { 1: "Jesus before Pilate", 6: "Jesus before Herod", 13: "Jesus is sentenced to die", 26: "The road to the cross", 32: "Jesus is crucified", 44: "The death of Jesus", 50: "Jesus is buried" },
           24: { 1: "He is risen!", 13: "On the road to Emmaus", 36: "Jesus appears to His disciples", 44: "Jesus opens the Scriptures", 50: "Jesus ascends to heaven" }
+        },
+        "John": {
+          1: { 1: "The Word became flesh", 19: "John the Baptist's testimony", 29: "Behold, the Lamb of God", 35: "The first disciples follow Jesus", 43: "Jesus calls Philip and Nathanael" },
+          2: { 1: "Jesus turns water into wine", 13: "Jesus clears the temple", 23: "Jesus knows every heart" },
+          3: { 1: "Nicodemus comes at night", 16: "God so loved the world", 22: "Jesus baptizes in Judea", 25: "John exalts Jesus", 31: "The One who comes from above" },
+          4: { 1: "Jesus travels through Samaria", 7: "The woman at the well", 27: "My food is to do the Father's will", 39: "Many Samaritans believe", 43: "Jesus heals an official's son" },
+          5: { 1: "Jesus heals a lame man at Bethesda", 16: "Jesus answers the Sabbath charge", 19: "The Son does the Father's works", 25: "The resurrection of life", 31: "The witnesses to Jesus" },
+          6: { 1: "Jesus feeds five thousand", 16: "Jesus walks on the water", 22: "The crowds seek Jesus", 35: "I am the bread of life", 60: "Many disciples turn back; Peter confesses" },
+          7: { 1: "Jesus' brothers urge Him to show Himself", 10: "Jesus teaches at the feast", 25: "Is this the Christ?", 32: "The leaders try to arrest Jesus", 37: "Rivers of living water", 45: "Divided over Jesus" },
+          8: { 1: "The woman caught in adultery", 12: "I am the light of the world", 21: "Where I go, you cannot come", 31: "The truth will make you free", 39: "Whose children are you?", 51: "Before Abraham was, I AM" },
+          9: { 1: "Jesus heals a man born blind", 13: "The Pharisees question the healed man", 24: "The man testifies again", 35: "Jesus finds the man; he believes and worships", 39: "Sight for the blind, blindness for the seeing" },
+          10: { 1: "The shepherd and his flock", 11: "I am the good shepherd", 22: "At the Feast of Dedication", 39: "Jesus withdraws across the Jordan" },
+          11: { 1: "Lazarus is ill", 17: "Jesus comes to Bethany", 28: "Jesus weeps with Mary", 38: "Lazarus, come out!", 45: "The plot to kill Jesus" },
+          12: { 1: "Mary anoints Jesus' feet", 12: "The triumphal entry", 20: "Greeks seek Jesus", 23: "Jesus speaks of His death", 37: "Unbelief despite the signs", 44: "Jesus' final public words" },
+          13: { 1: "Jesus washes the disciples' feet", 18: "Jesus foretells His betrayal", 31: "A new commandment: love one another" },
+          14: { 1: "Do not let your hearts be troubled", 15: "The promise of the Helper", 25: "Peace I leave with you" },
+          15: { 1: "I am the true vine", 12: "Love one another, as I loved you", 18: "The world will hate you", 26: "The Helper will testify" },
+          16: { 1: "Jesus warns of persecution", 5: "The work of the Helper", 16: "Sorrow will turn to joy", 25: "I have overcome the world" },
+          17: { 1: "Jesus prays for Himself", 6: "Jesus prays for His disciples", 20: "Jesus prays for all believers" },
+          18: { 1: "Jesus is arrested", 12: "Jesus before Annas", 15: "Peter's first denial", 19: "Jesus is questioned", 25: "Peter denies Jesus twice more", 28: "Jesus before Pilate", 38: "Barabbas is chosen instead" },
+          19: { 1: "Jesus is flogged and mocked", 17: "The crucifixion", 25: "The women at the cross", 28: "It is finished", 31: "Jesus' side is pierced", 38: "Jesus is buried" },
+          20: { 1: "The empty tomb", 11: "Jesus appears to Mary Magdalene", 19: "Jesus appears to His disciples", 24: "Thomas believes", 30: "Why this book was written" },
+          21: { 1: "Jesus appears by the Sea of Galilee", 15: "Jesus restores Peter: feed My sheep", 20: "The disciple whom Jesus loved" }
         }
       };
       function chapterHeadings(bi, ci) {
