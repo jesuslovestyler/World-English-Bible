@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batch 1: Matthew. */
+         Batches: Matthew, Mark. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1551,6 +1551,24 @@
           26: "The plot against Jesus, the Last Supper, the agony in Gethsemane, the arrest, and Peter's denial.",
           27: "Jesus is tried before Pilate, crucified, and buried — the King gives His life on the cross.",
           28: "The tomb is empty, Jesus appears to His disciples, and He sends them to all nations."
+        },
+        "Mark": {
+          1: "John prepares the way; Jesus is baptized, tempted, and begins preaching the kingdom of God.",
+          2: "Jesus forgives and heals a paralyzed man, calls Levi, and teaches that new wine needs new wineskins.",
+          3: "Jesus heals on the Sabbath, chooses the Twelve, and warns that a kingdom divided cannot stand.",
+          4: "Jesus teaches the kingdom in parables — the sower, the lamp, the growing seed — then calms the storm.",
+          5: "Jesus frees a man from many demons, heals a suffering woman, and raises Jairus's daughter.",
+          6: "Jesus is rejected at Nazareth, sends out the Twelve, feeds five thousand, and walks on the water.",
+          7: "Jesus teaches that uncleanness comes from the heart, honors a Gentile woman's faith, and heals a deaf man.",
+          8: "Jesus feeds four thousand, warns of the Pharisees' yeast, and Peter confesses Him as the Christ.",
+          9: "Jesus is transfigured, heals a boy His disciples could not, and teaches that the greatest must be servant of all.",
+          10: "Jesus teaches on divorce and riches, foretells His death again, and heals blind Bartimaeus.",
+          11: "Jesus enters Jerusalem as King, cleanses the temple, and teaches about faith and prayer.",
+          12: "Jesus tells the parable of the wicked tenants, gives the greatest commandment, and honors a widow's two coins.",
+          13: "Jesus foretells the temple's destruction, the troubles ahead, and His coming in glory.",
+          14: "The plot, the Last Supper, Gethsemane's agony, the arrest, the trial, and Peter's denial.",
+          15: "Jesus is condemned by Pilate, crucified, and buried.",
+          16: "The tomb is empty: the risen Jesus appears to His followers and sends them into all the world."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1567,7 +1585,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batch 1: Matthew. */
+         headings yet shows none. Batches: Matthew, Mark. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1598,6 +1616,24 @@
           26: { 1: "The plot to kill Jesus", 6: "Jesus is anointed at Bethany", 14: "Judas agrees to betray Jesus", 17: "The Last Supper", 31: "Peter's denial is foretold", 36: "Jesus prays in Gethsemane", 47: "Jesus is arrested", 57: "Jesus before the council", 69: "Peter denies Jesus" },
           27: { 1: "Jesus is handed over to Pilate", 3: "Judas hangs himself", 11: "Jesus before Pilate", 27: "The soldiers mock Jesus", 32: "The crucifixion", 45: "The death of Jesus", 57: "Jesus is buried", 62: "Guards at the tomb" },
           28: { 1: "He is risen!", 11: "The guards spread a lie", 16: "Jesus sends His disciples to all nations" }
+        },
+        "Mark": {
+          1: { 1: "The good news begins", 4: "John the Baptist prepares the way", 9: "Jesus is baptized", 12: "Jesus is tempted in the wilderness", 14: "Jesus begins preaching in Galilee", 16: "Jesus calls the first disciples", 21: "Jesus drives out an evil spirit", 29: "Jesus heals Simon's mother-in-law", 32: "Jesus heals many", 35: "Jesus prays alone", 40: "Jesus heals a man with leprosy" },
+          2: { 1: "Jesus heals a paralyzed man", 13: "Jesus calls Levi", 18: "Questions about fasting", 23: "Jesus, Lord of the Sabbath" },
+          3: { 1: "Jesus heals on the Sabbath", 7: "Crowds follow Jesus", 13: "Jesus chooses the twelve apostles", 20: "Jesus and the prince of demons", 31: "Jesus' true family" },
+          4: { 1: "The parable of the sower", 10: "Why does Jesus use parables?", 13: "The sower explained", 21: "A lamp on a stand", 26: "The growing seed", 30: "The mustard seed", 35: "Jesus calms the storm" },
+          5: { 1: "Jesus frees a man from many demons", 21: "Jairus pleads for his daughter", 25: "A woman touches Jesus and is healed", 35: "Jesus raises Jairus's daughter" },
+          6: { 1: "Jesus is rejected at Nazareth", 6: "Jesus sends out the twelve", 14: "Herod kills John the Baptist", 30: "Jesus feeds five thousand", 45: "Jesus walks on the water", 53: "Jesus heals all who touch Him" },
+          7: { 1: "Traditions versus God's commands", 14: "What makes a person unclean", 24: "A Gentile woman's faith", 31: "Jesus heals a deaf man" },
+          8: { 1: "Jesus feeds four thousand", 11: "The leaders demand a sign", 14: "The yeast of the Pharisees", 22: "Jesus heals a blind man at Bethsaida", 27: "Peter declares Jesus is the Christ", 31: "Jesus foretells His death" },
+          9: { 2: "The Transfiguration", 9: "Questions about Elijah", 14: "Jesus heals a boy with an evil spirit", 30: "Jesus foretells His death again", 33: "Who is the greatest?", 38: "Whoever is not against us is for us", 42: "Warnings about causing sin" },
+          10: { 1: "Jesus teaches about divorce", 13: "Jesus blesses the children", 17: "The rich young man", 32: "Jesus foretells His death a third time", 35: "James and John ask for places of honor", 46: "Jesus heals blind Bartimaeus" },
+          11: { 1: "Jesus enters Jerusalem as King", 12: "Jesus curses a fig tree", 15: "Jesus clears the temple", 20: "The withered fig tree and the power of prayer", 27: "The leaders question Jesus' authority" },
+          12: { 1: "The parable of the wicked tenants", 13: "Taxes for Caesar", 18: "Questions about the resurrection", 28: "The most important commandment", 35: "Whose son is the Messiah?", 38: "Beware the teachers of the law", 41: "The widow's offering" },
+          13: { 1: "Jesus foretells the temple's destruction", 5: "Signs of the end of the age", 14: "The great tribulation", 24: "The coming of the Son of Man", 28: "The lesson of the fig tree", 32: "No one knows the day or hour" },
+          14: { 1: "The plot to kill Jesus", 3: "Jesus is anointed at Bethany", 10: "Judas agrees to betray Jesus", 12: "The Last Supper", 32: "Jesus prays in Gethsemane", 43: "Jesus is arrested", 53: "Jesus before the council", 66: "Peter denies Jesus" },
+          15: { 1: "Jesus before Pilate", 6: "Barabbas is released", 16: "The soldiers mock Jesus", 21: "The crucifixion", 33: "The death of Jesus", 42: "Jesus is buried" },
+          16: { 1: "He is risen!", 9: "Jesus appears to Mary Magdalene", 12: "Jesus appears to two followers", 14: "Jesus sends out the eleven", 19: "Jesus ascends to heaven" }
         }
       };
       function chapterHeadings(bi, ci) {
