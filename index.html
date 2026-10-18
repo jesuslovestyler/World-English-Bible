@@ -606,6 +606,16 @@
       }
       .pd-arrow { color: var(--accent); font-size: 18px; }
 
+      /* ---------- back-to-plan (reader) ---------- */
+      .plan-return-row { margin: 14px 0 0; }
+      .plan-return-btn {
+        font: inherit; font-size: 15.5px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: var(--accent-soft);
+        border: 1px solid var(--line); border-radius: 999px;
+        padding: 9px 16px; min-height: 44px;
+      }
+      .plan-return-btn:active { transform: translateY(1px); }
+
       /* ---------- where to turn ---------- */
       .turn-moment { margin: 26px 0 0; }
       .turn-moment h3 { font-family: "Newsreader", Georgia, serif; font-size: 21px; font-weight: 600; margin: 0 0 10px; }
@@ -788,6 +798,9 @@
             </div>
           </div>
         </div>
+        <div class="plan-return-row" id="plan-return-row" hidden>
+          <button type="button" class="plan-return-btn" id="plan-return-btn"></button>
+        </div>
         <nav class="chap-nav chap-nav-top" id="chap-nav-top" hidden>
           <button id="prev-chap-top">
             <span class="cn-label">‹ Previous chapter</span>
@@ -849,7 +862,7 @@
         </div>
         <div class="search-head">
           <h2>Reading Plans</h2>
-          <p>Three gentle paths through the Bible. Go at your own pace — there are no dates here, and no falling behind. Read a day whenever you're ready; a day is checked off once you've read all of its chapters.</p>
+          <p>Four gentle paths through the Bible. Go at your own pace — there are no dates here, and no falling behind. Read a day whenever you're ready; a day is checked off once you've read all of its chapters.</p>
         </div>
         <div id="plans-body"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
@@ -924,76 +937,77 @@
       ];
       var OT_COUNT = 39;
 
-      /* One-line introductions, one per book in META order, shown at the
-         top of each book's chapter picker: a single warm sentence of
-         welcome before the reader chooses a chapter. */
+      /* A short paragraph of introduction per book, in META
+         order, shown at the top of each book's chapter picker —
+         a welcome and a sketch of the book before the reader
+         chooses a chapter. */
       var BOOK_INTROS = [
-        "The beginning of everything: creation, the fall, and God's promise carried through Abraham's family.",
-        "God rescues Israel from slavery in Egypt and gives them His law at Mount Sinai.",
-        "God teaches His rescued people how to live holy and near to Him.",
-        "Israel's forty years in the wilderness, counted and carried by God.",
-        "Moses' final sermons: remember God's faithfulness, and choose life.",
-        "Israel enters the promised land under Joshua's leadership.",
-        "A cycle of rebellion and rescue, as God raises up judges for a stubborn people.",
-        "A loyal widow from Moab finds a redeemer, and a place in the family line of Jesus.",
-        "From Samuel's birth to King Saul's fall, and the rise of David.",
-        "David's reign: great victories, deep sin, and God's unfailing covenant.",
-        "Solomon's glory, the kingdom splitting in two, and Elijah's fiery ministry.",
-        "Two kingdoms drift toward exile, while God's prophets keep calling them back.",
-        "Israel's story retold around David, worship, and the temple to come.",
-        "The kings of Judah, the temple's glory, and the road to exile and return.",
-        "God's people return from exile and rebuild the temple in Jerusalem.",
-        "Jerusalem's walls rebuilt in fifty-two days, against all opposition.",
-        "A Jewish queen risks her life, and God quietly saves His people.",
-        "A righteous man suffers, wrestles with God, and finds Him enough.",
-        "Israel's songbook: prayers and praise for every season of the soul.",
-        "Solomon's wisdom for everyday life: work, words, money, and character.",
-        "A king searches for meaning under the sun, and finds life's emptiness without God.",
-        "A love song celebrating marriage, desire, and devotion.",
-        "The prophet of the suffering Servant and the coming King: comfort for God's people.",
-        "The weeping prophet warns Jerusalem, and promises a new covenant.",
-        "Tears over fallen Jerusalem — grief that still dares to hope in God's mercy.",
-        "Visions of God's glory, dry bones living, and a new temple.",
-        "Faithful in exile: lions' dens, fiery furnaces, and visions of kingdoms to come.",
-        "God's unfailing love for an unfaithful people, pictured in a broken marriage.",
-        "Locusts, repentance, and the promise of God's Spirit poured out.",
-        "A shepherd from Tekoa calls the comfortable to justice and true worship.",
-        "A short warning to Edom: pride goes before a fall.",
-        "A runaway prophet, a great fish, and God's mercy on a wicked city.",
-        "Justice, mercy, and humility — and a Savior born in little Bethlehem.",
-        "God's judgment falls on Nineveh, the brutal empire.",
-        "A prophet asks God hard questions, and learns to rejoice anyway.",
-        "The day of the LORD is near — judgment, then a singing God.",
-        "Rebuild the temple: God's house first, and He will be with you.",
-        "Visions of the coming Messiah, the humble King on a donkey.",
-        "God's last Old Testament word: a call back to faithfulness before the coming silence.",
-        "Jesus the promised King, presented to Israel with His teaching and miracles.",
-        "The fast-moving Gospel: Jesus the Servant, always on His way to the cross.",
-        "The full, careful account of Jesus, the Savior who seeks the lost.",
-        "Jesus is God the Son: seven signs and His own 'I am' words, so that you may believe.",
-        "The Holy Spirit falls, the church is born, and the good news runs to the ends of the earth.",
-        "Paul's fullest explanation of the gospel: sin, grace, faith, and new life.",
-        "Paul straightens out a messy church with the wisdom of the cross.",
-        "Paul's most personal letter: strength in weakness, comfort in trouble.",
-        "Freedom in Christ: the gospel is grace alone, not law-keeping.",
-        "Who you are in Christ, and how to walk worthy of that calling.",
-        "Joy from a prison cell: Christ first, and everything else loss beside Him.",
-        "Christ is supreme over all creation — don't settle for less.",
-        "Encouragement for a young church: stand firm, Jesus is coming back.",
-        "Hold fast in confusing times; the Lord is faithful.",
-        "Paul's guidance to a young pastor on leading God's household.",
-        "Paul's last letter: preach the word, finish the race.",
-        "Sound teaching that shows up as good works on the island of Crete.",
-        "A tiny letter with a big heart: a runaway slave received as a brother.",
-        "Jesus is greater — than angels, Moses, and every old shadow; hold fast to Him.",
-        "Faith that works: taming the tongue, caring for the poor, living what you believe.",
-        "Hope for suffering believers: you're exiles with an inheritance that can't fade.",
-        "Peter's farewell: grow in grace, and watch for the day of the Lord.",
-        "John's letter of assurance: God is light, God is love, and you may know you have eternal life.",
-        "Walk in truth and love, and watch out for deceivers.",
-        "A short note praising hospitality and faithful friends.",
-        "Contend for the faith once delivered to the saints.",
-        "Jesus unveiled: the Lamb wins, and a new heaven and new earth are coming."
+        "The book of beginnings: God creates the heavens and the earth, makes man and woman in His image, and watches them fall — yet His promise survives. Through Noah, Abraham, Isaac, Jacob, and Joseph, God builds a family through whom He will bless every nation on earth. Nearly every great theme of the Bible starts here.",
+        "Israel groans under slavery in Egypt, and God raises up Moses to bring them out with a mighty hand. At Mount Sinai He gives them His law and His tabernacle, teaching a rescued people how to live as His own. It is the Old Testament's great picture of salvation: redeemed by blood, led by God, brought home.",
+        "God has rescued Israel — now He teaches them how to live near a holy God. Sacrifices, priests, feasts, and laws about everyday purity all point one way: sin is serious, God is holy, and He Himself makes the way for sinners to draw near. Jesus later sums up its heart: love God, and love your neighbor.",
+        "The census book that is really a wilderness story. Israel counts its tribes, builds its camp around God's tent, then spends forty years learning trust the hard way. A generation dies in the desert, yet God feeds them, leads them, and brings their children to the edge of the promised land.",
+        "Moses, 120 years old, preaches his heart out on the plains of Moab. He retells the law, reminds Israel of God's faithfulness, and sets life and death before them: choose life. It is the book Jesus quoted most, and its call to love the LORD with all your heart echoes through the whole Bible.",
+        "After Moses dies, Joshua leads Israel across the Jordan and into the land God promised Abraham centuries before. City by city the land is taken and divided among the tribes. The book ends with Joshua's famous charge: as for me and my house, we will serve the LORD.",
+        "Israel settles the land — and slowly falls apart. Again and again the pattern repeats: the people rebel, enemies oppress them, they cry out, and God raises up a judge to rescue them. Gideon, Deborah, Samson and others show both God's patience and what happens when everyone does what is right in his own eyes.",
+        "In the dark days of the judges, one small story shines. A widowed Moabite named Ruth clings to her mother-in-law Naomi and to Israel's God, and finds kindness, provision, and a redeemer in Boaz. Her great-grandson will be King David — and her name lands in the family line of Jesus Himself.",
+        "Israel asks for a king, and God gives them Saul — tall, impressive, and tragic. Through the prophet Samuel and the young shepherd David, God shows He is after a heart, not appearances. David's rise and Saul's fall teach that God resists the proud but gives grace to the humble.",
+        "David reigns at last, unites the kingdom, and receives God's covenant promise: his throne will be established forever. But David also falls — into adultery and murder — and his family pays the price for years. Through it all, God's promise holds, pointing ahead to David's greater Son.",
+        "Solomon builds the temple and Israel reaches its golden age of wealth and wisdom — then Solomon's heart turns, and the kingdom tears in two. Kings rise and fall in Israel and Judah while prophets like Elijah confront idolatry head-on. The question running through it all: will God's people stay faithful?",
+        "The two kingdoms spiral downward. Elijah is taken up to heaven, Elisha carries on his ministry, and a few godly kings — Hezekiah, Josiah — spark brief revivals. But in the end both Israel and Judah go into exile. God's warnings, ignored for centuries, come to pass; yet a thread of hope remains.",
+        "After the exile, God's people need reminding of who they are — so this book retells their story, tracing the line from Adam to David. David's reign is told in its glory: the ark brought home, the temple planned, worship organized. It is history written to give a returned people their identity back.",
+        "The story continues from Solomon's temple to the exile — and beyond, ending with Cyrus's decree letting God's people go home. Kings of Judah are measured by one standard: did they seek the LORD? The book's great promise rings out from a battlefield: the battle is not yours, but God's.",
+        "The exile is over. Under Zerubbabel and then Ezra the scribe, God's people return to Jerusalem, rebuild the temple, and rediscover the Law. There is opposition, delay, and discouragement — but also revival, as the public reading of God's word moves a generation to tears and to obedience.",
+        "Nehemiah hears that Jerusalem's walls still lie in ruins, weeps, prays — and goes to work. In fifty-two days, against mockery, threats, and plots, the walls stand again. The book is a masterclass in prayerful leadership: Nehemiah prays first, plans carefully, and refuses to come down from the work.",
+        "God's name is never mentioned in this book — yet His fingerprints are everywhere. A Jewish orphan becomes queen of Persia just in time to risk her life and save her people from destruction. It is a story of providence: God quietly arranging people and moments for the deliverance of His own.",
+        "A blameless man loses everything — wealth, children, health — and his friends' explanations only deepen the wound. Job argues with God honestly, and God answers not with explanations but with Himself. The book teaches that suffering is not always punishment, and that God is enough even when the why stays hidden.",
+        "One hundred fifty songs and prayers — Israel's hymnbook and the Bible's prayer book. David and others pour out praise, grief, anger, fear, thanksgiving, and hope, and every human season finds words here. Jesus prayed these psalms; the church has prayed them for three thousand years. Whatever you feel, a psalm has been there first.",
+        "Mostly from Solomon, this is wisdom for ordinary life: how to work, speak, spend, choose friends, raise children, and guard your heart. Its foundation is one sentence — the fear of the LORD is the beginning of wisdom. Read a chapter a day and it will re-tune your common sense.",
+        "The Preacher — a king with everything — runs the experiment of life without God at the center: pleasure, wealth, work, wisdom, all tested, all found to be vapor. The book is honest about life's frustrations under the sun, and lands where it must: fear God and keep His commandments, for this is the whole duty of man.",
+        "A joyful, unembarrassed celebration of married love. Through poetry between a bride and her beloved, the Song honors desire, delight, and faithfulness as God's good gifts. Many readers also hear in it an echo of a greater love — Christ's love for His bride, the church.",
+        "The greatest of the Old Testament prophets. Isaiah thunders against sin, comforts God's people with promises of forgiveness, and sees further than anyone: a virgin's child, a suffering Servant who bears our sins, a coming King and a new creation. No Old Testament book is quoted more in the New.",
+        "Called as a young man, Jeremiah preaches for forty years to a nation that will not listen, and weeps over the Jerusalem he watches fall. Yet in the ruins he speaks the Bible's great promise of a new covenant — God's law written on hearts, sins forgiven and forgotten. His tears earned him the name 'the weeping prophet.'",
+        "Five poems of grief over Jerusalem's ashes, written in the aftermath Jeremiah foresaw. The book gives suffering people permission to lament — to say it hurts, honestly, to God. And right in the middle of the ashes stands its famous sunrise: great is Thy faithfulness; His mercies never come to an end.",
+        "A priest carried into exile in Babylon, Ezekiel sees staggering visions: God's glory on a throne of wheels, a valley of dry bones standing up alive, a river flowing from a new temple making everything whole. God shows him that exile is not the end — He will gather, cleanse, and renew His people Himself.",
+        "Taken to Babylon as a teenager, Daniel serves pagan kings for seventy years without bending. God delivers his friends from a furnace and Daniel from lions, and gives him visions of the kingdoms of men rising and falling — and of one kingdom, God's, that will never be destroyed. Faithfulness in exile is its heartbeat.",
+        "God tells Hosea to marry a woman who will break his heart — to make Israel feel what their unfaithfulness does to God. The book swings between judgment and aching tenderness: 'How can I give you up?' It is the Old Testament's clearest picture of God's relentless, pursuing love for people who keep running.",
+        "A plague of locusts strips Judah bare, and Joel calls the nation to repent with fasting and weeping. Then the book opens its arms to the future: God will pour out His Spirit on all flesh — words Peter quotes at Pentecost — and restore the years the locusts have eaten.",
+        "A shepherd and fig farmer from the south, Amos marches north to preach to a prosperous, religious, unjust Israel. God roars through him: let justice roll down like waters. Amos teaches that God cares how His people treat the poor — and that ritual without righteousness stinks in His nostrils.",
+        "The shortest book in the Old Testament — one chapter aimed at Edom, Israel's smug brother nation, which gloated when Jerusalem fell. Its message is sharp and simple: pride goes before destruction, God sees how we treat our brothers in their calamity, and in the end the kingdom will be the LORD's.",
+        "God says go east to Nineveh; Jonah sails west. A storm, a great fish, and a reluctant sermon later, the wicked city repents — and Jonah sulks about God's mercy. The book ends with God's question hanging in the air, aimed at everyone who would rather see enemies judged than saved.",
+        "A contemporary of Isaiah, Micah preaches judgment on corrupt leaders and comfort to the remnant. He gives the Bible one of its most famous summaries — do justice, love kindness, walk humbly with your God — and one of its most precious prophecies: the ruler of Israel will come from little Bethlehem.",
+        "A century after Jonah, Nineveh has gone back to brutality, and this time there is no reprieve. Nahum announces the fall of the Assyrian capital in vivid poetry. Behind the judgment stands comfort for Judah: God is slow to anger and a stronghold in the day of trouble for those who trust Him.",
+        "A prophet does something bold: he questions God. Why do the wicked prosper? Why would God use Babylon to punish Judah? God's answer is to watch, wait, and trust — the just shall live by faith. The book ends with one of Scripture's greatest songs of joy chosen in the middle of loss.",
+        "Preaching in King Josiah's day, Zephaniah warns that the day of the LORD is near — a day of wrath against sin in Judah and the nations. But the book ends in music: God Himself singing over His people with joy, delighting in them, quieting them with His love.",
+        "The temple lies half-built while everyone panels their own houses — so God sends Haggai with a short, pointed message: consider your ways. Four sermons in four months move the people to rebuild, and God answers with the promise that fuels all small obediences: I am with you.",
+        "Night visions, a flying scroll, a woman in a basket — Zechariah's imagery is strange and rich, all aimed at encouraging the temple builders. Woven through it are some of the clearest Messianic prophecies in Scripture: the King coming humble on a donkey, thirty pieces of silver, and the pierced One they will mourn.",
+        "The last voice of the Old Testament. God's people have grown careless — robbing God, doubting His love, offering Him leftovers — and Malachi answers their complaints one by one. The book closes with a promise: Elijah will come before the great day of the LORD. Then, four hundred years of silence — until a voice cries in the wilderness.",
+        "Written for Jewish readers, Matthew presents Jesus as Israel's promised King and the fulfillment of prophecy after prophecy. It holds the Sermon on the Mount, the parables of the kingdom, and the most famous last words in history: go and make disciples of all nations. Jesus' teaching is arranged in five great sermons, like a new Torah.",
+        "The shortest and fastest Gospel — everything happens 'immediately.' Mark shows Jesus as the powerful Servant of God, always serving, teaching, healing, and moving steadily toward a cross nobody expected. It ends in an empty tomb and astonished silence. If you want to meet Jesus in motion, start here.",
+        "A doctor and careful historian, Luke investigated everything from eyewitnesses to give us the fullest account of Jesus' life. He lingers where others hurry: the births of John and Jesus, the lost sheep and the prodigal son, the Good Samaritan, the road to Emmaus. His theme glows through it all: the Son of Man came to seek and to save the lost.",
+        "John writes so that you may believe that Jesus is the Christ, the Son of God, and that believing, you may have life in His name. Through seven signs and Jesus' great 'I am' sayings, John lifts the veil: the Word who was with God, and was God, became flesh and dwelt among us. It is the Gospel of eternal life, offered to whoever believes.",
+        "Luke's second volume: the risen Jesus ascends, the Holy Spirit falls at Pentecost, and the church explodes outward from Jerusalem to Rome. Peter and then Paul carry the gospel through persecution, prison, and shipwreck. Acts has no real ending — because the story it tells is still going on in the church today.",
+        "Paul's masterpiece — the fullest, most orderly explanation of the gospel in the Bible. All have sinned; God justifies sinners freely by grace through faith in Christ; those He justifies He sanctifies and will glorify. Every Christian doctrine finds roots here, and every reader finds both humbling and solid ground to stand on.",
+        "The Corinthian church had talent, gifts — and division, immorality, lawsuits, and chaos at the Lord's table. Paul answers problem after problem with one remedy: the cross, and love as its way of life. Here stand the Bible's great chapters on love (13) and the resurrection (15).",
+        "Paul's most emotional letter, written through tears to defend his ministry and reconcile with a church that had wounded him. Out of deep suffering comes the Bible's richest teaching on comfort, weakness, and generosity: God's grace is sufficient, and His power is made perfect in weakness.",
+        "Paul's most urgent letter, written in fire. False teachers were adding law-keeping to the gospel, and Paul will have none of it: a person is justified by faith in Christ, not by works of the law. Galatians is the charter of Christian freedom — stand fast in it, and walk by the Spirit.",
+        "Paul lifts our eyes to the heavenlies: before the world began, God chose us in Christ and blessed us with every spiritual blessing. The first half piles up what God has done; the second half shows the walk that flows from it — unity, holiness, families in order, and armor on for the fight.",
+        "From a Roman prison, Paul writes the Bible's most joyful letter. Christ humbled Himself to a cross and was exalted above every name — so Paul rejoices in chains, counts everything else as loss, and presses on toward the prize. If a letter could smile, this one does.",
+        "Against teachers who offered something more than Christ, Paul answers with Christ's supremacy: He is the image of the invisible God, creator and head of the church, in whom all fullness dwells. You are complete in Him — so put off the old life and put on the new.",
+        "Paul writes to a young church he had to leave in a hurry, and pours out relief and affection. He encourages them in suffering, calls them to holiness, and comforts them about believers who have died: Jesus will return, and we will be with Him forever. Some of the New Testament's clearest words on the Lord's coming live here.",
+        "Confusion about the day of the Lord had unsettled the church — some even quit working to wait. Paul steadies them: that day has not come, God has not abandoned you, stand firm and hold to what you were taught. Warm reassurance and firm correction in three short chapters.",
+        "Paul leaves his young co-worker Timothy in Ephesus and writes him a field manual: how God's household should be ordered, how elders and deacons are chosen, how false teaching is answered, and how a minister guards his own soul. Personal, practical, and warm — the Bible's handbook for church life.",
+        "Paul's last letter, written from a cold Roman cell with execution near. He charges Timothy to guard the gospel, preach the word in season and out, and not be ashamed of suffering for it. His farewell still rings after two thousand years: I have fought the good fight, I have finished the race, I have kept the faith.",
+        "Paul's letter to Titus, organizing young churches on the island of Crete. Its theme is simple: sound doctrine must show itself in good works. The grace of God that saves also trains us — to say no to ungodliness and to live self-controlled, upright lives while we wait for our blessed hope.",
+        "The shortest of Paul's letters — one page, one favor. Onesimus, a runaway slave, is returning to his master Philemon as a Christian, and Paul asks that he be received as a brother, not a slave. Quietly, the gospel's power to melt social walls is on full display.",
+        "Written to believers tempted to drift back, Hebrews argues one thing from every angle: Jesus is greater. Greater than angels, than Moses, than the old priesthood and its sacrifices — He is the final High Priest whose once-for-all offering perfects forever those who draw near. The famous faith chapter (11) calls us to run with endurance.",
+        "The Lord's brother writes the New Testament's wisdom book — blunt, practical, and impossible to skim comfortably. Faith without works is dead, the tongue is a fire, partiality is sin, and prayer is powerful. James doesn't ask what you believe; he asks what your belief is doing.",
+        "Peter writes to scattered believers facing a hostile world, and calls them what they are: a chosen people, royal priests, exiles with a living hope. Suffering for Christ is not strange, he says — it is the family resemblance. Your inheritance is kept in heaven, and it will never fade.",
+        "Peter's farewell letter, written knowing his death was near. He urges believers to grow in the qualities that make faith fruitful, warns that false teachers will come, and answers scoffers about Christ's return: the Lord is not slow — He is patient, not willing that any should perish.",
+        "The apostle John, now old, writes with a grandfather's clarity: God is light, God is love, and those born of God walk in both. The letter circles a few great certainties so believers can KNOW they have eternal life — the assurance this letter exists to give. Its test is simple: we love.",
+        "A short letter to 'the chosen lady and her children' — likely a church and its members. John rejoices that they walk in the truth, commands them to love one another, and warns them not to welcome teachers who deny Christ come in the flesh. Thirteen verses, and every one earns its place.",
+        "John writes to his friend Gaius, praising his hospitality to traveling teachers, and warns about Diotrephes, who loved to be first and shut the door on the brothers. A tiny letter with a big lesson: support those who go out for the Name, and imitate good, not evil.",
+        "Jude planned to write about our common salvation — then changed course to urge believers to contend for the faith once delivered to the saints. False teachers had slipped in quietly, and Jude answers them sharply before ending with one of the most loved benedictions in all Scripture: to Him who is able to keep you from falling.",
+        "The Bible's last book unveils Jesus in His glory: the Lamb who was slain, reigning and returning. Through visions of judgment, worship, and war, it promises that evil will not win — the dragon is doomed, the martyrs are vindicated, and God will wipe every tear away. It ends where Genesis began, in a garden-city — only now, nothing can ever be lost again."
       ];
 
       /* ---- lazy data loading: assets/ot.js / assets/nt.js set window.__WEB_OT__ / __WEB_NT__ ---- */
@@ -1772,7 +1786,7 @@
       }
 
       /* ---- reading plans ----
-         Three gentle paths through the Bible, grouped at build time
+         Five gentle paths through the Bible, grouped at build time
          from the app's own book and chapter data (META). Days are not
          tied to calendar dates: the reader goes at their own pace,
          and a day counts as done when every chapter in it stands in
@@ -1808,6 +1822,10 @@
       }
       var NT_BOOK_LIST = [];
       for (var nbi = OT_COUNT; nbi < 66; nbi++) NT_BOOK_LIST.push(nbi);
+      var OT_BOOK_LIST = [];
+      for (var obi = 0; obi < OT_COUNT; obi++) OT_BOOK_LIST.push(obi);
+      var ALL_BOOK_LIST = [];
+      for (var abi = 0; abi < 66; abi++) ALL_BOOK_LIST.push(abi);
       var PLANS = [
         {
           title: "Meet Jesus: The Gospels in 30 Days",
@@ -1823,6 +1841,16 @@
           title: "The New Testament in 90 Days",
           desc: "From Matthew to Revelation, two or three chapters at a time.",
           days: groupEven(flatChapters(NT_BOOK_LIST), 90)
+        },
+        {
+          title: "The Old Testament in 9 Months",
+          desc: "Genesis through Malachi, in order — three or four chapters at a time.",
+          days: groupEven(flatChapters(OT_BOOK_LIST), 270)
+        },
+        {
+          title: "The Bible in a Year",
+          desc: "Genesis through Revelation, in order — three or four chapters at a time.",
+          days: groupEven(flatChapters(ALL_BOOK_LIST), 365)
         }
       ];
       function planDayDone(day) {
@@ -1839,10 +1867,25 @@
         }
         return refName(first.b, first.c) + " – " + refName(last.b, last.c);
       }
+      /* While the reader is working through a plan day, this holds
+         { plan, day } so the reader can offer its way back to that
+         plan and day; any chapter opened from outside a plan clears
+         it (see openChapter). */
+      var planReturn = null;
+      function refreshPlanReturn() {
+        var row = $("plan-return-row");
+        if (!row) return;
+        if (planReturn && PLANS[planReturn.plan]) {
+          $("plan-return-btn").textContent = "← Back to " + PLANS[planReturn.plan].title;
+          row.hidden = false;
+        } else {
+          row.hidden = true;
+        }
+      }
       function renderPlans() {
         var body = $("plans-body");
         body.textContent = "";
-        PLANS.forEach(function (plan) {
+        PLANS.forEach(function (plan, pi) {
           var block = el("div", "plan-block");
           block.appendChild(el("h3", "plan-title", plan.title));
           block.appendChild(el("p", "plan-desc", plan.desc));
@@ -1855,6 +1898,7 @@
             var li = el("li");
             var btn = el("button", "plan-day");
             btn.type = "button";
+            btn.id = "plan-day-" + pi + "-" + di;
             btn.appendChild(el("span", "pd-day", "Day " + (di + 1)));
             btn.appendChild(el("span", "pd-range", planDayLabel(day)));
             if (planDayDone(day)) {
@@ -1866,7 +1910,7 @@
             }
             btn.appendChild(el("span", "pd-arrow", "›"));
             btn.addEventListener("click", function () {
-              openChapter(day[0].b, day[0].c, 0);
+              openChapter(day[0].b, day[0].c, 0, { plan: pi, day: di });
             });
             li.appendChild(btn);
             ul.appendChild(li);
@@ -1882,38 +1926,226 @@
       }
       try { $("plans-btn").addEventListener("click", openPlans); } catch (e) {}
       try { $("plans-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try {
+        $("plan-return-btn").addEventListener("click", function () {
+          if (!planReturn) return;
+          var ctx = planReturn;
+          renderPlans();
+          showView("view-plans");
+          setPageMeta("Reading Plans — World English Bible", DEFAULT_DESC);
+          var target = document.getElementById("plan-day-" + ctx.plan + "-" + ctx.day);
+          if (target) target.scrollIntoView({ block: "center" });
+        });
+      } catch (e) {}
 
       /* ---- where to turn ----
-         Life moments, each with passages that open right in the
-         reader — a chapter reference opens its chapter, a verse
-         reference opens the chapter at that verse, exactly the way a
-         search result does. References are [label, book, chapter
+         Life topics, in alphabetical order, each with
+         passages that open right in the reader — a chapter
+         reference opens its chapter, a verse reference opens
+         the chapter at that verse, exactly the way a search
+         result does. References are [label, book, chapter
          (0-based), verse (1-based, 0 for the whole chapter)]. */
       var TURN_MOMENTS = [
-        { title: "When you're afraid", refs: [
+        { title: "Addiction or a habit you can't break", refs: [
+          ["Romans 7", 44, 6, 0], ["John 8", 42, 7, 0], ["Galatians 5", 47, 4, 0] ] },
+        { title: "Afraid", refs: [
           ["Psalm 23", 18, 22, 0], ["Psalm 56", 18, 55, 0], ["Isaiah 41:10", 22, 40, 10] ] },
-        { title: "When you're anxious or can't sleep", refs: [
-          ["Psalm 4", 18, 3, 0], ["Matthew 6", 39, 5, 0], ["Philippians 4", 49, 3, 0] ] },
-        { title: "When you're grieving", refs: [
-          ["Psalm 42", 18, 41, 0], ["John 11", 42, 10, 0], ["Revelation 21", 65, 20, 0] ] },
-        { title: "When you feel alone", refs: [
-          ["Psalm 139", 18, 138, 0], ["Deuteronomy 31:8", 4, 30, 8], ["Matthew 28:20", 39, 27, 20] ] },
-        { title: "When you're tempted", refs: [
-          ["Psalm 51", 18, 50, 0], ["1 Corinthians 10:13", 45, 9, 13], ["Hebrews 4", 57, 3, 0] ] },
-        { title: "When you need forgiveness", refs: [
-          ["Luke 15", 41, 14, 0], ["1 John 1", 61, 0, 0], ["Psalm 32", 18, 31, 0] ] },
-        { title: "When you're thankful", refs: [
-          ["Psalm 100", 18, 99, 0], ["Psalm 103", 18, 102, 0], ["1 Thessalonians 5", 51, 4, 0] ] },
-        { title: "When you doubt", refs: [
-          ["Mark 9", 40, 8, 0], ["John 20", 42, 19, 0], ["Jude 1", 64, 0, 0] ] },
-        { title: "When you're angry", refs: [
+        { title: "Angry", refs: [
           ["Psalm 37", 18, 36, 0], ["Ephesians 4", 48, 3, 0], ["James 1", 58, 0, 0] ] },
-        { title: "When you need strength", refs: [
-          ["Isaiah 40", 22, 39, 0], ["2 Corinthians 12", 46, 11, 0], ["Philippians 4:13", 49, 3, 13] ] },
-        { title: "When someone has hurt you", refs: [
+        { title: "Anxious or worried", refs: [
+          ["Matthew 6", 39, 5, 0], ["Philippians 4", 49, 3, 0], ["1 Peter 5", 59, 4, 0] ] },
+        { title: "Ashamed", refs: [
+          ["Psalm 25", 18, 24, 0], ["Isaiah 54", 22, 53, 0], ["Romans 8", 44, 7, 0] ] },
+        { title: "Assurance of salvation", refs: [
+          ["John 10", 42, 9, 0], ["Romans 8", 44, 7, 0], ["1 John 5", 61, 4, 0] ] },
+        { title: "Backsliding, returning to God", refs: [
+          ["Hosea 14", 27, 13, 0], ["Jeremiah 3", 23, 2, 0], ["Luke 15", 41, 14, 0] ] },
+        { title: "Betrayed", refs: [
+          ["Psalm 41", 18, 40, 0], ["Psalm 55", 18, 54, 0], ["Luke 22", 41, 21, 0] ] },
+        { title: "Bitterness", refs: [
+          ["Psalm 73", 18, 72, 0], ["Ephesians 4", 48, 3, 0], ["Hebrews 12", 57, 11, 0] ] },
+        { title: "Blessing and intercession", refs: [
+          ["Numbers 6", 3, 5, 0], ["1 Timothy 2", 53, 1, 0], ["Ephesians 1", 48, 0, 0] ] },
+        { title: "Boredom and meaninglessness", refs: [
+          ["Ecclesiastes 2", 20, 1, 0], ["Ecclesiastes 3", 20, 2, 0], ["Psalm 90", 18, 89, 0] ] },
+        { title: "Can't sleep", refs: [
+          ["Psalm 4", 18, 3, 0], ["Psalm 121", 18, 120, 0], ["Psalm 127", 18, 126, 0] ] },
+        { title: "Comfort", refs: [
+          ["Isaiah 49", 22, 48, 0], ["Isaiah 51", 22, 50, 0], ["Psalm 23", 18, 22, 0] ] },
+        { title: "Confusion", refs: [
+          ["Psalm 32", 18, 31, 0], ["Isaiah 30", 22, 29, 0], ["1 Corinthians 14", 45, 13, 0] ] },
+        { title: "Contentment", refs: [
+          ["Philippians 4", 49, 3, 0], ["Hebrews 13", 57, 12, 0], ["1 Timothy 6", 53, 5, 0] ] },
+        { title: "Courage", refs: [
+          ["Deuteronomy 31", 4, 30, 0], ["Joshua 1", 5, 0, 0], ["Daniel 3", 26, 2, 0] ] },
+        { title: "Death and dying", refs: [
+          ["Psalm 23", 18, 22, 0], ["2 Corinthians 5", 46, 4, 0], ["Philippians 1", 49, 0, 0] ] },
+        { title: "Depressed or despairing", refs: [
+          ["Psalm 34", 18, 33, 0], ["Lamentations 3", 24, 2, 0], ["2 Corinthians 1", 46, 0, 0] ] },
+        { title: "Diligence and hard work", refs: [
+          ["Proverbs 12", 19, 11, 0], ["Ecclesiastes 9", 20, 8, 0], ["Colossians 3", 50, 2, 0] ] },
+        { title: "Disappointed", refs: [
+          ["Psalm 62", 18, 61, 0], ["Romans 5", 44, 4, 0], ["Hebrews 6", 57, 5, 0] ] },
+        { title: "Discouraged", refs: [
+          ["Joshua 1", 5, 0, 0], ["Isaiah 40", 22, 39, 0], ["Galatians 6", 47, 5, 0] ] },
+        { title: "Doubting", refs: [
+          ["Mark 9", 40, 8, 0], ["John 20", 42, 19, 0], ["Jude 1", 64, 0, 0] ] },
+        { title: "Enemies and opposition", refs: [
+          ["Psalm 27", 18, 26, 0], ["Psalm 35", 18, 34, 0], ["Romans 8", 44, 7, 0] ] },
+        { title: "Facing a big decision", refs: [
+          ["Proverbs 3", 19, 2, 0], ["Psalm 32:8", 18, 31, 8], ["James 1", 58, 0, 0] ] },
+        { title: "Failure", refs: [
+          ["Micah 7", 32, 6, 0], ["Lamentations 3", 24, 2, 0], ["Psalm 51", 18, 50, 0] ] },
+        { title: "Faith growing", refs: [
+          ["Romans 10", 44, 9, 0], ["Hebrews 11", 57, 10, 0], ["Mark 9", 40, 8, 0] ] },
+        { title: "Falsely accused", refs: [
+          ["Psalm 26", 18, 25, 0], ["Psalm 43", 18, 42, 0], ["Isaiah 54", 22, 53, 0] ] },
+        { title: "Family conflict", refs: [
+          ["Genesis 50", 0, 49, 0], ["Matthew 18", 39, 17, 0], ["Colossians 3", 50, 2, 0] ] },
+        { title: "Far from God", refs: [
+          ["Psalm 73", 18, 72, 0], ["James 4", 58, 3, 0], ["Luke 15", 41, 14, 0] ] },
+        { title: "Forgiveness, needing", refs: [
+          ["Psalm 32", 18, 31, 0], ["Luke 15", 41, 14, 0], ["1 John 1", 61, 0, 0] ] },
+        { title: "Forgiving others", refs: [
+          ["Matthew 18", 39, 17, 0], ["Mark 11", 40, 10, 0], ["Luke 17", 41, 16, 0] ] },
+        { title: "Friendship", refs: [
+          ["Proverbs 17", 19, 16, 0], ["Proverbs 27", 19, 26, 0], ["John 15", 42, 14, 0] ] },
+        { title: "Generosity and giving", refs: [
+          ["Proverbs 11", 19, 10, 0], ["Luke 6", 41, 5, 0], ["2 Corinthians 9", 46, 8, 0] ] },
+        { title: "God's faithfulness", refs: [
+          ["Deuteronomy 7", 4, 6, 0], ["Psalm 89", 18, 88, 0], ["Lamentations 3", 24, 2, 0] ] },
+        { title: "God's love", refs: [
+          ["John 3", 42, 2, 0], ["Romans 8", 44, 7, 0], ["1 John 4", 61, 3, 0] ] },
+        { title: "God's power", refs: [
+          ["Genesis 1", 0, 0, 0], ["Psalm 147", 18, 146, 0], ["Jeremiah 32", 23, 31, 0] ] },
+        { title: "God's Word", refs: [
+          ["Psalm 119", 18, 118, 0], ["Joshua 1", 5, 0, 0], ["2 Timothy 3", 54, 2, 0] ] },
+        { title: "Greed and love of money", refs: [
+          ["Ecclesiastes 5", 20, 4, 0], ["Luke 12", 41, 11, 0], ["1 Timothy 6", 53, 5, 0] ] },
+        { title: "Grieving", refs: [
+          ["Psalm 42", 18, 41, 0], ["John 11", 42, 10, 0], ["Revelation 21", 65, 20, 0] ] },
+        { title: "Guidance", refs: [
+          ["Psalm 25", 18, 24, 0], ["Psalm 32", 18, 31, 0], ["Isaiah 30", 22, 29, 0] ] },
+        { title: "Guilty", refs: [
+          ["Psalm 32", 18, 31, 0], ["Psalm 51", 18, 50, 0], ["1 John 1", 61, 0, 0] ] },
+        { title: "Happy and joyful", refs: [
+          ["Psalm 16", 18, 15, 0], ["Psalm 118", 18, 117, 0], ["Philippians 4", 49, 3, 0] ] },
+        { title: "Heaven", refs: [
+          ["John 14", 42, 13, 0], ["Revelation 21", 65, 20, 0], ["Revelation 22", 65, 21, 0] ] },
+        { title: "Honesty and integrity", refs: [
+          ["Psalm 15", 18, 14, 0], ["Proverbs 12", 19, 11, 0], ["Micah 6", 32, 5, 0] ] },
+        { title: "Hope", refs: [
+          ["Psalm 33", 18, 32, 0], ["Jeremiah 29", 23, 28, 0], ["Romans 15", 44, 14, 0] ] },
+        { title: "Hopeless", refs: [
+          ["Psalm 130", 18, 129, 0], ["Lamentations 3", 24, 2, 0], ["Romans 15", 44, 14, 0] ] },
+        { title: "Humility", refs: [
+          ["Micah 6", 32, 5, 0], ["Proverbs 11", 19, 10, 0], ["Philippians 2", 49, 1, 0] ] },
+        { title: "Impatient", refs: [
+          ["Psalm 27", 18, 26, 0], ["Psalm 37", 18, 36, 0], ["Isaiah 40", 22, 39, 0] ] },
+        { title: "In trouble or danger", refs: [
+          ["Psalm 18", 18, 17, 0], ["Psalm 46", 18, 45, 0], ["Psalm 91", 18, 90, 0] ] },
+        { title: "Insecure", refs: [
+          ["Isaiah 43", 22, 42, 0], ["Luke 12", 41, 11, 0], ["Psalm 139", 18, 138, 0] ] },
+        { title: "Jealous or envious", refs: [
+          ["Psalm 37", 18, 36, 0], ["Psalm 73", 18, 72, 0], ["Galatians 5", 47, 4, 0] ] },
+        { title: "Joy in trials", refs: [
+          ["Habakkuk 3", 34, 2, 0], ["James 1", 58, 0, 0], ["1 Peter 1", 59, 0, 0] ] },
+        { title: "Justice", refs: [
+          ["Isaiah 1", 22, 0, 0], ["Amos 5", 29, 4, 0], ["Micah 6", 32, 5, 0] ] },
+        { title: "Kindness", refs: [
+          ["Micah 6", 32, 5, 0], ["Ephesians 4", 48, 3, 0], ["Colossians 3", 50, 2, 0] ] },
+        { title: "Laziness", refs: [
+          ["Proverbs 6", 19, 5, 0], ["Proverbs 24", 19, 23, 0], ["2 Thessalonians 3", 52, 2, 0] ] },
+        { title: "Lonely", refs: [
+          ["Psalm 139", 18, 138, 0], ["Deuteronomy 31:8", 4, 30, 8], ["Matthew 28:20", 39, 27, 20] ] },
+        { title: "Marriage", refs: [
+          ["Genesis 2", 0, 1, 0], ["Song of Solomon 8", 21, 7, 0], ["Ephesians 5", 48, 4, 0] ] },
+        { title: "Mercy", refs: [
+          ["Psalm 103", 18, 102, 0], ["Lamentations 3", 24, 2, 0], ["Matthew 5", 39, 4, 0] ] },
+        { title: "Money troubles", refs: [
+          ["Psalm 34", 18, 33, 0], ["Matthew 6", 39, 5, 0], ["Hebrews 13:5", 57, 12, 5] ] },
+        { title: "Needing peace", refs: [
+          ["John 14", 42, 13, 0], ["John 16", 42, 15, 0], ["Colossians 3", 50, 2, 0] ] },
+        { title: "New believer", refs: [
+          ["John 1", 42, 0, 0], ["Acts 2", 43, 1, 0], ["Romans 6", 44, 5, 0] ] },
+        { title: "Old age", refs: [
+          ["Psalm 71", 18, 70, 0], ["Psalm 92", 18, 91, 0], ["Isaiah 46", 22, 45, 0] ] },
+        { title: "Overwhelmed", refs: [
+          ["Psalm 46", 18, 45, 0], ["Psalm 61", 18, 60, 0], ["John 16", 42, 15, 0] ] },
+        { title: "Parenting and children", refs: [
+          ["Deuteronomy 6", 4, 5, 0], ["Psalm 127", 18, 126, 0], ["Proverbs 22", 19, 21, 0] ] },
+        { title: "Persecuted for faith", refs: [
+          ["Matthew 5", 39, 4, 0], ["1 Peter 3", 59, 2, 0], ["1 Peter 4", 59, 3, 0] ] },
+        { title: "Prayer", refs: [
+          ["Luke 11", 41, 10, 0], ["Matthew 6", 39, 5, 0], ["John 15", 42, 14, 0] ] },
+        { title: "Pride", refs: [
+          ["Proverbs 16", 19, 15, 0], ["Luke 18", 41, 17, 0], ["James 4", 58, 3, 0] ] },
+        { title: "Protection", refs: [
+          ["Psalm 91", 18, 90, 0], ["Psalm 121", 18, 120, 0], ["Psalm 125", 18, 124, 0] ] },
+        { title: "Regret", refs: [
+          ["Psalm 51", 18, 50, 0], ["Joel 2", 28, 1, 0], ["Philippians 3", 49, 2, 0] ] },
+        { title: "Repentance", refs: [
+          ["Psalm 51", 18, 50, 0], ["Joel 2", 28, 1, 0], ["Luke 15", 41, 14, 0] ] },
+        { title: "Restless", refs: [
+          ["Psalm 62", 18, 61, 0], ["Isaiah 26", 22, 25, 0], ["Matthew 11", 39, 10, 0] ] },
+        { title: "Resurrection hope", refs: [
+          ["Job 19", 17, 18, 0], ["John 11", 42, 10, 0], ["1 Corinthians 15", 45, 14, 0] ] },
+        { title: "Sad and downcast", refs: [
+          ["Psalm 42", 18, 41, 0], ["Psalm 43", 18, 42, 0], ["John 14", 42, 13, 0] ] },
+        { title: "Salvation, how to be saved", refs: [
+          ["John 3", 42, 2, 0], ["Acts 16", 43, 15, 0], ["Romans 10", 44, 9, 0] ] },
+        { title: "Second coming of Jesus", refs: [
+          ["Matthew 24", 39, 23, 0], ["2 Peter 3", 60, 2, 0], ["Revelation 22", 65, 21, 0] ] },
+        { title: "Seeking God", refs: [
+          ["Deuteronomy 4", 4, 3, 0], ["Jeremiah 29", 23, 28, 0], ["Acts 17", 43, 16, 0] ] },
+        { title: "Self-control", refs: [
+          ["Proverbs 25", 19, 24, 0], ["Galatians 5", 47, 4, 0], ["Titus 2", 55, 1, 0] ] },
+        { title: "Sharing your faith", refs: [
+          ["Matthew 28", 39, 27, 0], ["Acts 1", 43, 0, 0], ["1 Peter 3", 59, 2, 0] ] },
+        { title: "Sick or in pain", refs: [
+          ["Psalm 41", 18, 40, 0], ["Isaiah 53", 22, 52, 0], ["James 5", 58, 4, 0] ] },
+        { title: "Someone has hurt you", refs: [
           ["Matthew 6", 39, 5, 0], ["Romans 12", 44, 11, 0], ["Colossians 3", 50, 2, 0] ] },
-        { title: "When you face a big decision", refs: [
-          ["Proverbs 3", 19, 2, 0], ["Psalm 32:8", 18, 31, 8], ["James 1", 58, 0, 0] ] }
+        { title: "Speech, gossip, and words", refs: [
+          ["Proverbs 18", 19, 17, 0], ["James 3", 58, 2, 0], ["Ephesians 4", 48, 3, 0] ] },
+        { title: "Spiritual warfare", refs: [
+          ["Ephesians 6", 48, 5, 0], ["2 Corinthians 10", 46, 9, 0], ["1 Peter 5", 59, 4, 0] ] },
+        { title: "Starting something new", refs: [
+          ["Genesis 12", 0, 11, 0], ["Joshua 1", 5, 0, 0], ["Isaiah 43", 22, 42, 0] ] },
+        { title: "Strength, needing", refs: [
+          ["Isaiah 40", 22, 39, 0], ["2 Corinthians 12", 46, 11, 0], ["Philippians 4:13", 49, 3, 13] ] },
+        { title: "Success and blessing", refs: [
+          ["Deuteronomy 8", 4, 7, 0], ["Psalm 1", 18, 0, 0], ["Proverbs 3", 19, 2, 0] ] },
+        { title: "Suffering, why bad things happen", refs: [
+          ["Job 42", 17, 41, 0], ["Romans 8", 44, 7, 0], ["2 Corinthians 1", 46, 0, 0] ] },
+        { title: "Tempted", refs: [
+          ["Psalm 51", 18, 50, 0], ["1 Corinthians 10:13", 45, 9, 13], ["Hebrews 4", 57, 3, 0] ] },
+        { title: "Thankful", refs: [
+          ["Psalm 100", 18, 99, 0], ["Psalm 103", 18, 102, 0], ["1 Thessalonians 5", 51, 4, 0] ] },
+        { title: "The church and fellowship", refs: [
+          ["Acts 2", 43, 1, 0], ["Psalm 122", 18, 121, 0], ["Hebrews 10", 57, 9, 0] ] },
+        { title: "The Holy Spirit", refs: [
+          ["John 14", 42, 13, 0], ["Acts 2", 43, 1, 0], ["Galatians 5", 47, 4, 0] ] },
+        { title: "Traveling or moving", refs: [
+          ["Genesis 28", 0, 27, 0], ["Psalm 91", 18, 90, 0], ["Psalm 121", 18, 120, 0] ] },
+        { title: "Trusting God", refs: [
+          ["Proverbs 3", 19, 2, 0], ["Psalm 56", 18, 55, 0], ["Nahum 1", 33, 0, 0] ] },
+        { title: "Waiting on God", refs: [
+          ["Psalm 27", 18, 26, 0], ["Psalm 130", 18, 129, 0], ["Habakkuk 2", 34, 1, 0] ] },
+        { title: "Weary and tired", refs: [
+          ["Isaiah 40", 22, 39, 0], ["Matthew 11:28", 39, 10, 28], ["Galatians 6", 47, 5, 0] ] },
+        { title: "Who God is", refs: [
+          ["Exodus 34", 1, 33, 0], ["Isaiah 6", 22, 5, 0], ["Psalm 145", 18, 144, 0] ] },
+        { title: "Who Jesus is", refs: [
+          ["John 1", 42, 0, 0], ["Colossians 1", 50, 0, 0], ["Hebrews 1", 57, 0, 0] ] },
+        { title: "Wisdom", refs: [
+          ["Proverbs 1", 19, 0, 0], ["Proverbs 2", 19, 1, 0], ["James 1", 58, 0, 0] ] },
+        { title: "Work troubles", refs: [
+          ["Psalm 90", 18, 89, 0], ["Proverbs 16", 19, 15, 0], ["Colossians 3", 50, 2, 0] ] },
+        { title: "Worship and praise", refs: [
+          ["Psalm 95", 18, 94, 0], ["Psalm 150", 18, 149, 0], ["John 4", 42, 3, 0] ] },
+        { title: "Young and starting out", refs: [
+          ["Psalm 119", 18, 118, 0], ["Ecclesiastes 12", 20, 11, 0], ["1 Timothy 4", 53, 3, 0] ] }
       ];
       function renderTurn() {
         var body = $("turn-body");
@@ -2436,11 +2668,23 @@
       /* ---- reader ---- */
       var readerToken = 0;
       var current = { b: 0, c: 0 };
-      function openChapter(bi, ci, highlightVerse) {
+      function openChapter(bi, ci, highlightVerse, planCtx) {
         /* Any navigation of the reader's own cancels a pending
            auto-continue start; the roll itself sets the flag again
            after this call returns (see chapterPlaybackEnded). */
         pendingAutoListen = false;
+        /* Where the chapter was opened from decides whether the
+           reader offers its "← Back to [plan]" way home: a plan day
+           passes its { plan, day }, the reader's own Previous/Next
+           buttons (and the listening roll) pass "keep" so the way
+           back stays while the reader works through the day, and
+           every other door in — home, search, a book's grid, Start
+           Here, Where to turn, Continue Reading, a deep link —
+           passes nothing and clears it. */
+        if (planCtx === "keep") { /* stay with the plan we're in */ }
+        else if (planCtx) planReturn = planCtx;
+        else planReturn = null;
+        refreshPlanReturn();
         current = { b: bi, c: ci };
         dismissSelection();
         setPageMeta(refName(bi, ci) + " — World English Bible", DEFAULT_DESC);
@@ -2556,8 +2800,8 @@
         pb.disabled = !prev; nb.disabled = !next;
         $("prev-where").textContent = prev ? refName(prev.b, prev.c) : "—";
         $("next-where").textContent = next ? refName(next.b, next.c) : "—";
-        pb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0); } : null;
-        nb.onclick = next ? function () { openChapter(next.b, next.c, 0); } : null;
+        pb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0, "keep"); } : null;
+        nb.onclick = next ? function () { openChapter(next.b, next.c, 0, "keep"); } : null;
         $("chap-nav").hidden = false;
         /* The same pair at the top of the chapter: identical labels,
            destinations, and edge behavior as the bottom pair. */
@@ -2565,8 +2809,8 @@
         ptb.disabled = !prev; ntb.disabled = !next;
         $("prev-where-top").textContent = prev ? refName(prev.b, prev.c) : "—";
         $("next-where-top").textContent = next ? refName(next.b, next.c) : "—";
-        ptb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0); } : null;
-        ntb.onclick = next ? function () { openChapter(next.b, next.c, 0); } : null;
+        ptb.onclick = prev ? function () { openChapter(prev.b, prev.c, 0, "keep"); } : null;
+        ntb.onclick = next ? function () { openChapter(next.b, next.c, 0, "keep"); } : null;
         $("chap-nav-top").hidden = false;
 
         if (hlVerses.length) setSelection(bi, ci, hlVerses);
@@ -2714,7 +2958,7 @@
         if (autoContinue && lin < 1188) {
           var next = fromLinear(lin + 1);
           try {
-            openChapter(next.b, next.c, 0);
+            openChapter(next.b, next.c, 0, "keep");
             pendingAutoListen = true;
             return;
           } catch (e) { pendingAutoListen = false; }
@@ -3338,11 +3582,22 @@
         }
         return { b: bi, c: chap - 1, v: verse, vEnd: verseEnd };
       }
+      /* "#plans" is not a verse link: it opens the Reading Plans view.
+         "plans" is not a book name and carries no chapter, so it can
+         never collide with the deep-link format above — other pages
+         (Tyler's Bible Reading Plan page) link straight here with it. */
+      function isPlansHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return false; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        return h.trim().toLowerCase() === "plans";
+      }
       /* If the page was opened through a deep link, it wins over the saved
          Continue Reading position. No (or an invalid) hash: behavior is
          exactly as before — the home view. */
       (function () {
         try {
+          if (isPlansHash()) { openPlans(); return; }
           var link = parseHash();
           if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
         } catch (e) { /* a deep link that cannot be followed leaves the home view standing */ }
@@ -3352,6 +3607,7 @@
          replaceState, which never fires this event, so there is no loop. */
       window.addEventListener("hashchange", function () {
         try {
+          if (isPlansHash()) { openPlans(); return; }
           var link = parseHash();
           if (!link) return;
           if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
