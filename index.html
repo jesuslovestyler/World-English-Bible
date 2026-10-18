@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians. */
       var CHAPTER_IDEAS = {
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1707,6 +1707,14 @@
           4: "No longer slaves but sons: God sent His Son to redeem us, and the Spirit of His Son into our hearts; Hagar and Sarah picture slavery and freedom.",
           5: "Stand firm in the freedom Christ won; walk in the Spirit, and His fruit will grow — love, joy, peace — against which there is no law.",
           6: "Restore the fallen gently, bear one another's burdens, sow to the Spirit — and boast in nothing except the cross of our Lord Jesus Christ."
+        },
+        "Ephesians": {
+          1: "Every spiritual blessing in Christ: chosen before the foundation of the world, adopted, redeemed, and sealed with the Spirit — and Paul prays for opened eyes to know Him.",
+          2: "Dead in trespasses, made alive together with Christ — by grace you have been saved through faith; and Jew and Gentile are reconciled into one new humanity.",
+          3: "The mystery is revealed: the Gentiles are fellow heirs. Paul prays you be strengthened with power, rooted and grounded in love, filled with all God's fullness.",
+          4: "Walk worthy of the calling: one body, one Spirit, one Lord — gifts given to build up the body; put off the old self and put on the new.",
+          5: "Walk in love, as Christ loved us and gave Himself for us; walk as children of light, be filled with the Spirit, and let marriage picture Christ and the church.",
+          6: "Children and parents, servants and masters — and for the real battle: put on the whole armor of God, stand firm, and pray at all times."
         }
       };
       function chapterIdea(bi, ci) {
@@ -1723,7 +1731,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians. */
       var SECTION_HEADINGS = {
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
@@ -1910,6 +1918,14 @@
           4: { 1: "Sons and heirs, no longer slaves", 8: "Do not turn back to slavery", 12: "Paul pleads with them from the heart", 21: "The allegory of Hagar and Sarah" },
           5: { 1: "Stand firm in Christ's freedom", 7: "A little yeast works through the whole lump", 13: "Called to freedom: serve one another in love", 16: "Walk in the Spirit", 19: "The works of the flesh", 22: "The fruit of the Spirit" },
           6: { 1: "Restore those caught in sin", 3: "Bear one another's burdens", 7: "Sowing and reaping", 9: "Do good to all", 11: "Boast only in the cross" }
+        },
+        "Ephesians": {
+          1: { 1: "Paul greets the saints", 3: "Every spiritual blessing in Christ", 11: "Sealed with the promised Holy Spirit", 15: "Paul prays for opened eyes" },
+          2: { 1: "Dead in sins, alive in Christ", 8: "By grace, through faith", 11: "One new humanity", 19: "Members of God's household" },
+          3: { 1: "Paul, prisoner and steward of the mystery", 6: "The mystery: Gentiles are fellow heirs", 14: "Paul prays for strength and love", 20: "To Him who is able" },
+          4: { 1: "Walk worthy of your calling", 7: "Gifts given to build up the body", 17: "Put off the old self, put on the new", 25: "Rules for the new life", 29: "Do not grieve the Holy Spirit" },
+          5: { 1: "Walk in love", 6: "Walk as children of light", 15: "Walk carefully; be filled with the Spirit", 21: "Wives and husbands: Christ and the church" },
+          6: { 1: "Children and parents", 5: "Servants and masters", 10: "The whole armor of God", 18: "Pray at all times", 21: "Final greetings" }
         }
       };
       function chapterHeadings(bi, ci) {
