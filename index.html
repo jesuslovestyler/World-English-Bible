@@ -1520,7 +1520,7 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis, Exodus (chapters 1–20). */
       var CHAPTER_IDEAS = {
         "Genesis": {
           1: "In the beginning, God creates the heavens and the earth — light, sky, seas, dry land, plants, sun and moon, animals, and mankind in His own image — and sees that it is all very good.",
@@ -1573,6 +1573,28 @@
           48: "Dying Jacob claims Joseph's sons as his own and crosses his arms: the younger, Ephraim, is set before firstborn Manasseh; 'the Angel who redeemed me from all evil — bless the lads.'",
           49: "Jacob gathers his sons for their last blessings: Reuben falls, Levi is scattered, Judah receives the scepter until Shiloh comes, Joseph a fruitful bough by a spring — then Jacob is gathered to his people.",
           50: "Jacob is carried up to Machpelah with royal mourning; the brothers fear revenge, and Joseph answers with the heart of the whole story: 'You meant evil against me, but God meant it for good' — then dies, trusting God's visitation."
+        },
+        "Exodus": {
+          1: "Israel multiplies in Egypt until a Pharaoh who did not know Joseph enslaves them — but the midwives fear God, and the more Israel is afflicted, the more it grows.",
+          2: "A Levite baby hidden in a basket is drawn from the Nile by Pharaoh's daughter and named Moses; grown, he kills an Egyptian, flees to Midian — and God hears His people's groaning.",
+          3: "At the burning bush God calls Moses by name, names Himself 'I AM WHO I AM,' and sends the shepherd to Pharaoh: 'Let my people go.'",
+          4: "God arms Moses with signs and gives him Aaron for a spokesman; reluctant and fearful, Moses turns back toward Egypt, and Israel bows its head in worship.",
+          5: "'Let my people go,' Moses says — and Pharaoh answers with labor doubled: bricks without straw; Israel's officers turn on Moses, and Moses turns on God.",
+          6: "God promises deliverance by an outstretched arm, naming Himself the LORD — He will redeem Israel 'that I may be your God, and you will know that I am the LORD.'",
+          7: "The contest begins: Aaron's staff swallows the magicians' serpents, and the Nile turns to blood — yet Pharaoh's heart is hardened, as the Lord had said.",
+          8: "Frogs, gnats, and flies: Pharaoh begs, bargains, and breaks his word each time — while God's finger spares Goshen and hardens Pharaoh's heart.",
+          9: "Livestock die, boils break out, and hail such as Egypt has never seen flattens the land; some Egyptians begin to fear the word of the Lord, but Pharaoh will not bow.",
+          10: "Locusts devour what the hail left, darkness covers Egypt for three days — and Pharaoh's last bargains fail: 'Do not see my face again.'",
+          11: "The last plague is announced: at midnight every firstborn in Egypt will die — and Israel, favored in Egyptian eyes, will ask for silver and gold on its way out.",
+          12: "The Passover: a lamb without defect, blood on the doorposts, bread without yeast — the Lord passes over His people's houses, strikes Egypt at midnight, and Israel goes out after 430 years.",
+          13: "The firstborn belong to God; Joseph's bones go up from Egypt; and the Lord leads His people by a pillar of cloud by day and of fire by night — He does not depart from before them.",
+          14: "Trapped between Pharaoh's chariots and the sea, Israel hears: 'Stand firm, and see the salvation of the Lord.' The waters divide, Israel crosses on dry ground, and Egypt's army is swallowed behind them.",
+          15: "Moses and Israel sing: 'The Lord is my strength and my song, and He has become my salvation'; Miriam takes her tambourine, and bitter water at Marah is made sweet.",
+          16: "In the wilderness the whole congregation murmurs — and God rains bread from heaven: manna in the morning, quail at evening, and a double portion before the Sabbath rest.",
+          17: "Water flows from the struck rock at Rephidim; Amalek attacks, and while Joshua fights below, Aaron and Hur hold up Moses' weary hands until sunset and victory.",
+          18: "Jethro of Midian hears what God has done, blesses Him, and gives Moses saving counsel: share the burden — appoint judges over thousands, hundreds, fifties, and tens.",
+          19: "At Sinai the Lord descends in thunder, smoke, and trumpet blast: Israel is consecrated to be His treasured possession, 'a kingdom of priests and a holy nation.'",
+          20: "God Himself speaks the Ten Words from the mountain — no other gods, no idols, the Name honored, the Sabbath kept, parents honored, no murder, adultery, theft, false witness, or coveting."
         },
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
@@ -1903,7 +1925,7 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis, Exodus (chapters 1–20). */
       var SECTION_HEADINGS = {
         "Genesis": {
           1: { 1: "In the beginning, God created", 3: "'Let there be light': the first day", 6: "The sky and the waters: the second day", 9: "Land, seas, and plants: the third day", 14: "Lights in the sky: the fourth day", 20: "Birds and sea creatures: the fifth day", 24: "Animals — and mankind in God's image: the sixth day" },
@@ -1956,6 +1978,28 @@
           48: { 1: "Jacob, ill, sits up in bed for Joseph's sons", 13: "Ephraim is set before Manasseh", 17: "'Not so, my father' — Jacob crosses his hands", 20: "'By you, Israel will bless'", 21: "'God will bring you back to the land of your fathers'" },
           49: { 1: "Jacob calls his sons: 'Listen to Israel your father'", 3: "Reuben, Simeon and Levi", 8: "Judah: the scepter shall not depart", 13: "Zebulun, Issachar, Dan, Gad, Asher, Naphtali", 22: "Joseph: a fruitful bough by a spring", 28: "The charge about the cave of Machpelah", 33: "He gathered up his feet, and was gathered to his people" },
           50: { 1: "Egypt mourns Jacob seventy days", 7: "A very great company goes up to Canaan", 15: "The brothers fear Joseph's revenge", 19: "'You meant evil — God meant it for good'", 24: "Joseph dies: 'God will surely visit you'" }
+        },
+        "Exodus": {
+          1: { 1: "The sons of Israel who came into Egypt", 7: "Israel multiplies greatly", 8: "A new king 'who didn't know Joseph'", 15: "The midwives fear God", 22: "Pharaoh commands every son thrown into the Nile" },
+          2: { 1: "Moses is born and hidden three months", 3: "The basket among the reeds of the Nile", 5: "Pharaoh's daughter draws him from the water", 11: "Moses kills an Egyptian and flees to Midian", 16: "Moses defends the daughters at the well", 23: "God hears His people's groaning" },
+          3: { 1: "The burning bush at Horeb", 4: "'Moses, Moses! Remove your sandals'", 11: "'Who am I, that I should go to Pharaoh?'", 13: "'I AM WHO I AM' — the Name", 16: "'Go, gather the elders of Israel'" },
+          4: { 1: "Three signs given to Moses", 10: "'I am slow of speech and slow of tongue'", 14: "Aaron will be your spokesman", 18: "Moses turns back toward Egypt", 24: "A strange attack at the night lodging", 29: "The elders hear — and bow in worship" },
+          5: { 1: "'Let my people go'", 4: "Pharaoh increases the labor", 10: "'You shall no longer give the people straw'", 19: "The officers of Israel blame Moses", 22: "Moses turns back to God with the complaint" },
+          6: { 1: "'Now you shall see what I will do to Pharaoh'", 3: "God reveals His name: the LORD", 6: "'I will redeem you with an outstretched arm'", 14: "The generations of Reuben, Simeon, and Levi", 26: "Moses and Aaron of the house of Levi" },
+          7: { 1: "'I have made you as God to Pharaoh'", 8: "Aaron's staff becomes a serpent", 14: "The first plague is announced", 20: "The water of the Nile turns to blood" },
+          8: { 1: "Frogs cover the land of Egypt", 8: "Pharaoh begs relief — then breaks his word", 16: "The dust of the earth becomes gnats", 20: "Flies — everywhere but Goshen", 28: "Pharaoh bargains; his heart hardens again" },
+          9: { 1: "A severe plague on Egypt's livestock", 8: "Boils break out on man and beast", 13: "The plague of hail announced", 22: "Hail and fire fall on Egypt", 27: "'I have sinned this time' — then hardening" },
+          10: { 1: "'How long will you refuse to humble yourself?'", 7: "Pharaoh's servants plead with him", 12: "Locusts cover the face of the whole earth", 21: "Darkness that can be felt: three days", 28: "'Do not see my face again'" },
+          11: { 1: "'Yet one plague more I will bring'", 4: "At midnight, the firstborn will die", 9: "Moses goes out from Pharaoh in hot anger" },
+          12: { 1: "The Passover is instituted", 7: "Blood on the lintel and the two door posts", 14: "'This day shall be a memorial for you'", 29: "At midnight, the Lord strikes Egypt", 33: "The Egyptians urge Israel out", 40: "Four hundred thirty years — ended", 43: "Who may eat of the Passover" },
+          13: { 1: "Every firstborn belongs to the Lord", 3: "The Feast of Unleavened Bread", 11: "When the Lord brings you into the land", 17: "A pillar of cloud and of fire leads them" },
+          14: { 1: "Pharaoh pursues: Israel is trapped at the sea", 10: "The people cry out in fear", 13: "'Stand firm, and see the salvation of the Lord'", 21: "The sea is divided; Israel crosses dry-shod", 26: "'Let the waters return on the Egyptians'", 30: "Israel sees the Egyptians dead; Israel believes" },
+          15: { 1: "The song of Moses", 13: "'You have guided them to Your holy habitation'", 20: "Miriam answers with tambourines and dancing", 22: "Marah: bitter water is made sweet", 27: "Elim: twelve springs, seventy palm trees" },
+          16: { 1: "The whole congregation grumbles in the wilderness", 4: "'I will rain bread from the sky for you'", 11: "Quail cover the camp at twilight", 22: "On the sixth day, twice as much", 31: "An omer of manna kept through your generations" },
+          17: { 1: "No water for the people at Rephidim", 3: "'Why did you bring us up out of Egypt?'", 5: "Strike the rock, and water will come out", 8: "Amalek comes and fights Israel", 11: "Aaron and Hur hold up Moses' hands" },
+          18: { 1: "Jethro hears of all God has done", 8: "Moses tells his father-in-law the whole story", 13: "Moses sits to judge the people all day", 17: "'What you are doing is not good'", 21: "'Select able men, and place them as judges'", 27: "Jethro departs to his own country" },
+          19: { 1: "Israel camps before the mountain", 3: "God calls Moses up to the mountain", 5: "'A kingdom of priests and a holy nation'", 9: "'Consecrate them today and tomorrow'", 16: "Thunder, lightning, smoke, and a very loud trumpet", 20: "Moses goes up; the people are kept back" },
+          20: { 1: "God speaks all these words", 3: "'You shall have no other gods before me'", 7: "The Name, the Sabbath, and honor of parents", 13: "Murder, adultery, theft, false witness, coveting", 18: "The people tremble and stand far off", 22: "Laws concerning altars" }
         },
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
