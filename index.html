@@ -33,6 +33,7 @@
         --hl: #ffe89e;
         --hl-edge: #d9a92c;
         --mark: #ffe89e;
+        --wash: #fbeecd;
         --shadow: 0 1px 3px rgba(80, 62, 20, 0.10);
       }
       @media (prefers-color-scheme: dark) {
@@ -49,6 +50,7 @@
           --hl: #57451a;
           --hl-edge: #d9ab5e;
           --mark: #57451a;
+          --wash: #453613;
           --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
       }
@@ -251,6 +253,13 @@
       }
       .chapter-text .verse:first-child sup.vn { margin-left: 0; }
       .chapter-text .verse.hl { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); outline: 1px solid var(--hl-edge); }
+      /* a reader's own highlight: a soft, warm wash that sits quietly
+         behind the text and never touches the red-letter coloring */
+      .chapter-text .verse.marked { background: var(--wash); box-shadow: 0 0 0 2px var(--wash); }
+      .chapter-text .verse.marked.hl { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); }
+      /* small saved-verse markers (bookmark / note), tucked after the text */
+      .chapter-text .vmark { display: inline-block; width: 11px; margin-left: 5px; vertical-align: -1px; color: var(--accent); opacity: 0.8; }
+      .chapter-text .vmark svg { display: block; width: 100%; height: auto; }
       .loading-note { text-align: center; color: var(--ink-soft); padding: 48px 0; font-size: 16.5px; }
 
       .chap-nav { display: flex; gap: 10px; margin-top: 40px; }
@@ -287,33 +296,38 @@
       .noresults .nr-big { font-family: "Newsreader", Georgia, serif; font-size: 22px; color: var(--ink); margin: 0 0 8px; }
       .noresults p { margin: 0; }
 
-      /* ---------- verse share bar ---------- */
-      body.share-open .wrap { padding-bottom: 132px; }
+      /* ---------- verse action bar ---------- */
+      body.share-open .wrap { padding-bottom: 190px; }
       .sharebar {
         position: fixed; left: 50%; transform: translateX(-50%);
         bottom: calc(14px + env(safe-area-inset-bottom));
         z-index: 20;
-        display: flex; align-items: center; gap: 14px;
+        display: flex; flex-direction: column; align-items: stretch; gap: 8px;
         background: var(--surface); color: var(--ink);
-        border: 1px solid var(--line); border-radius: 999px;
-        padding: 6px 6px 6px 20px;
+        border: 1px solid var(--line); border-radius: 18px;
+        padding: 12px 14px;
         box-shadow: 0 6px 22px rgba(80, 62, 20, 0.22);
-        max-width: calc(100vw - 24px);
+        width: min(560px, calc(100vw - 24px));
+        box-sizing: border-box;
       }
       .sharebar .sb-ref {
         font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 17px;
+        text-align: center;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       }
+      .sharebar .sb-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
       .sharebar button {
         font: inherit; font-size: 15.5px; font-weight: 600; cursor: pointer;
         background: var(--accent); color: var(--accent-ink);
-        border: 0; border-radius: 999px;
-        padding: 10px 18px; min-height: 46px; white-space: nowrap;
+        border: 1px solid var(--accent); border-radius: 999px;
+        padding: 10px 16px; min-height: 46px; white-space: nowrap;
       }
+      .sharebar button.sb-ghost { background: var(--accent-soft); color: var(--accent); border-color: var(--line); }
+      .sharebar button.sb-ghost.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
       .sharebar button:active { transform: translateY(1px); }
       .share-toast {
         position: fixed; left: 50%; transform: translateX(-50%);
-        bottom: calc(88px + env(safe-area-inset-bottom));
+        bottom: calc(150px + env(safe-area-inset-bottom));
         z-index: 21;
         background: var(--ink); color: var(--paper);
         border-radius: 999px; padding: 11px 20px;
@@ -321,6 +335,83 @@
         box-shadow: 0 6px 22px rgba(80, 62, 20, 0.25);
         max-width: calc(100vw - 40px);
       }
+
+      /* ---------- note editor ---------- */
+      .notepanel {
+        position: fixed; left: 50%; transform: translateX(-50%);
+        bottom: calc(150px + env(safe-area-inset-bottom));
+        z-index: 22;
+        width: min(560px, calc(100vw - 24px)); box-sizing: border-box;
+        background: var(--surface); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 14px;
+        box-shadow: 0 6px 22px rgba(80, 62, 20, 0.22);
+        padding: 14px;
+      }
+      .notepanel .np-ref { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 17px; margin: 0 0 8px; }
+      .notepanel textarea {
+        width: 100%; box-sizing: border-box;
+        font: inherit; font-size: 16px; line-height: 1.5;
+        color: var(--ink); background: var(--paper);
+        border: 1.5px solid var(--line); border-radius: 10px;
+        padding: 10px 12px; min-height: 78px; resize: vertical;
+      }
+      .notepanel textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+      .notepanel .np-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+      .notepanel .np-actions button {
+        font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+        border-radius: 999px; padding: 9px 16px; min-height: 44px;
+        border: 1px solid var(--line); background: var(--accent-soft); color: var(--accent);
+      }
+      .notepanel .np-actions .np-save { margin-left: auto; background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+      .notepanel .np-actions .np-remove { color: var(--redletter); }
+
+      /* ---------- verse of the day & saved verses (home) ---------- */
+      .votd-card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+        box-shadow: var(--shadow); padding: 16px 18px; margin: 20px 0 4px;
+      }
+      .votd-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+      .votd-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+      .votd-share {
+        font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
+        color: var(--accent); background: none; border: 0;
+        padding: 6px 8px; min-height: 36px;
+      }
+      .votd-share:active { transform: translateY(1px); }
+      .votd-main {
+        display: block; width: 100%; text-align: left; cursor: pointer;
+        background: none; border: 0; padding: 0;
+        font: inherit; color: var(--ink);
+      }
+      .votd-text { display: block; font-family: "Newsreader", Georgia, serif; font-size: 20.5px; line-height: 1.55; }
+      .votd-ref { display: block; margin-top: 9px; font-weight: 700; font-size: 14.5px; color: var(--accent); }
+      .saved-box { margin: 12px 0 2px; }
+      .saved-btn { width: 100%; font-size: 16.5px; background: var(--surface); color: var(--accent); border-color: var(--line); }
+
+      /* ---------- saved verses shelf ---------- */
+      .sv-list { list-style: none; margin: 14px 0 0; padding: 0; }
+      .sv-list li { border-bottom: 1px solid var(--line); }
+      .sv-list li:first-child { border-top: 1px solid var(--line); }
+      .sv-entry { display: flex; align-items: flex-start; gap: 4px; }
+      .sv-main {
+        flex: 1 1 auto; min-width: 0; text-align: left; cursor: pointer;
+        background: none; border: 0; font: inherit; color: var(--ink);
+        padding: 14px 6px; min-height: 52px;
+      }
+      .sv-main:active { background: var(--accent-soft); }
+      .sv-ref { display: block; font-weight: 700; font-size: 14px; color: var(--accent); margin-bottom: 3px; }
+      .sv-text { display: block; font-family: "Newsreader", Georgia, serif; font-size: 17.5px; line-height: 1.55; }
+      .sv-note {
+        display: block; margin-top: 8px;
+        background: var(--accent-soft); border-radius: 8px;
+        padding: 8px 10px; font-size: 15px; line-height: 1.5;
+      }
+      .sv-remove {
+        font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+        color: var(--redletter); background: none; border: 0;
+        padding: 14px 6px; min-height: 48px; white-space: nowrap;
+      }
+      .sv-remove:active { transform: translateY(1px); }
     </style>
   </head>
   <body>
@@ -339,6 +430,19 @@
                    placeholder="Search the whole Bible…" aria-label="Search the whole Bible" />
             <button class="btn" type="submit">Search</button>
           </form>
+          <div class="votd-card" id="votd-card" hidden>
+            <div class="votd-head">
+              <span class="votd-label">Verse of the Day</span>
+              <button class="votd-share" id="votd-share" type="button">Share</button>
+            </div>
+            <button class="votd-main" id="votd-main" type="button">
+              <span class="votd-text" id="votd-text"></span>
+              <span class="votd-ref" id="votd-ref"></span>
+            </button>
+          </div>
+          <div class="saved-box">
+            <button class="btn saved-btn" id="saved-btn" type="button">🔖 Saved Verses</button>
+          </div>
           <div class="download-box">
             <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
             <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
@@ -448,12 +552,41 @@
         <div id="search-body"></div>
       </section>
 
+      <!-- ============ SAVED VERSES ============ -->
+      <section id="view-saved" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="saved-back">‹ Books</button>
+          <span class="tb-title">Saved Verses</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Saved Verses</h2>
+          <p id="saved-count"></p>
+        </div>
+        <div id="saved-body"></div>
+      </section>
+
     </div>
 
-    <!-- verse share bar: appears while verses are selected in the reader -->
+    <!-- verse action bar: appears while verses are selected in the reader -->
     <div class="sharebar" id="sharebar" hidden>
       <span class="sb-ref" id="sharebar-ref"></span>
-      <button type="button" id="sharebar-btn">Share this verse</button>
+      <div class="sb-actions">
+        <button type="button" class="sb-ghost" id="sharebar-save" aria-pressed="false">Save</button>
+        <button type="button" class="sb-ghost" id="sharebar-hl" aria-pressed="false">Highlight</button>
+        <button type="button" class="sb-ghost" id="sharebar-note">Note</button>
+        <button type="button" id="sharebar-btn">Share this verse</button>
+      </div>
+    </div>
+    <!-- note editor for the current selection -->
+    <div class="notepanel" id="note-panel" hidden>
+      <p class="np-ref" id="note-ref"></p>
+      <textarea id="note-text" rows="3" maxlength="500" placeholder="Write a short note…" aria-label="Note for the selected verses"></textarea>
+      <div class="np-actions">
+        <button type="button" id="note-cancel">Cancel</button>
+        <button type="button" class="np-remove" id="note-remove" hidden>Remove note</button>
+        <button type="button" class="np-save" id="note-save">Save note</button>
+      </div>
     </div>
     <div class="share-toast" id="share-toast" hidden role="status"></div>
 
@@ -513,7 +646,7 @@
         if (text != null) e.textContent = text;
         return e;
       }
-      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search"];
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved"];
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -632,6 +765,22 @@
         var ref = refSummary(s.b, s.c, vs);
         $("sharebar-ref").textContent = ref;
         $("sharebar-btn").textContent = vs.length === 1 ? "Share this verse" : "Share these verses";
+        /* The Save / Highlight / Note actions mirror what this selection
+           already is, so a second tap reads as the toggle it performs.
+           Guarded like everything cosmetic: the saved-verses helpers are
+           declared further down and hoist, but a failure here must never
+           cost the reader the share bar itself. */
+        try {
+          var allB = selectionAll("b"), allH = selectionAll("h");
+          var sbSave = $("sharebar-save"), sbHl = $("sharebar-hl"), sbNote = $("sharebar-note");
+          sbSave.textContent = allB ? "Saved" : "Save";
+          sbSave.classList.toggle("on", allB);
+          sbSave.setAttribute("aria-pressed", allB ? "true" : "false");
+          sbHl.textContent = allH ? "Highlighted" : "Highlight";
+          sbHl.classList.toggle("on", allH);
+          sbHl.setAttribute("aria-pressed", allH ? "true" : "false");
+          sbNote.textContent = selectionNoteText() ? "Edit note" : "Note";
+        } catch (e) {}
         $("sharebar").hidden = false;
         document.body.classList.add("share-open");
         setPageMeta(ref + " — World English Bible",
@@ -646,6 +795,7 @@
         selection = null;
         $("sharebar").hidden = true;
         document.body.classList.remove("share-open");
+        try { var np = $("note-panel"); if (np) np.hidden = true; } catch (e) {}
       }
       var toastTimer = null;
       function showToast(msg) {
@@ -725,6 +875,384 @@
         if (lastRead) openChapter(lastRead.b, lastRead.c, 0);
       });
       try { refreshContinue(); } catch (e) { /* the card simply stays hidden */ }
+
+      /* ---- saved verses: bookmarks, highlights, notes (this device only) ----
+         Everything a reader saves lives in one record on their own
+         device, kept the same guarded way as the voice choice and the
+         Continue Reading position: every read and write is wrapped, the
+         working copy lives in memory, and a storage failure — a full
+         disk, a private window, a viewer that throws — can never break
+         reading, searching, or listening. Nothing saved here is ever
+         sent anywhere. One entry per verse:
+           { "book:chapter:verse": { b: 1, h: 1, n: "note text" } }
+         with book and chapter 0-based and the verse 1-based, and only
+         the fields that are set. b = bookmarked, h = highlighted,
+         n = the reader's note. An entry with nothing left is deleted. */
+      var SAVED_KEY = "web-bible:saved";
+      var savedStore = {};
+      function savedKeyFor(bi, ci, v) { return bi + ":" + ci + ":" + v; }
+      function loadSaved() {
+        try {
+          var raw = window.localStorage.getItem(SAVED_KEY);
+          if (!raw) return;
+          var parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return;
+          for (var k in parsed) {
+            if (!/^\d+:\d+:\d+$/.test(k)) continue;
+            var e = parsed[k];
+            if (!e || typeof e !== "object") continue;
+            var clean = {};
+            if (e.b) clean.b = 1;
+            if (e.h) clean.h = 1;
+            if (typeof e.n === "string" && e.n) clean.n = e.n.slice(0, 2000);
+            if (clean.b || clean.h || clean.n) savedStore[k] = clean;
+          }
+        } catch (err) { savedStore = {}; }
+      }
+      function persistSaved() {
+        try { window.localStorage.setItem(SAVED_KEY, JSON.stringify(savedStore)); } catch (e) {}
+      }
+      function getSaved(bi, ci, v) { return savedStore[savedKeyFor(bi, ci, v)] || null; }
+      function putSaved(bi, ci, v, entry) {
+        var k = savedKeyFor(bi, ci, v);
+        if (entry && (entry.b || entry.h || entry.n)) savedStore[k] = entry;
+        else delete savedStore[k];
+      }
+      function entryCopy(e) {
+        var copy = {};
+        if (e) {
+          if (e.b) copy.b = 1;
+          if (e.h) copy.h = 1;
+          if (e.n) copy.n = e.n;
+        }
+        return copy;
+      }
+      try { loadSaved(); } catch (e) { savedStore = {}; }
+
+      /* ---- how a saved verse looks in the chapter ----
+         A highlighted verse wears the soft warm wash (.marked); a
+         bookmarked verse and a noted verse each get one small marker
+         after the text — a ribbon, a note bubble — drawn in the accent
+         color at half strength, so the words (and their red letters)
+         are never disturbed. */
+      var BM_SVG = '<svg viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 0.8h8V12.2L5 9.2 1 12.2z" fill="currentColor"/></svg>';
+      var NT_SVG = '<svg viewBox="0 0 12 11" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 0.8h10v6.9H6.2L3 10.4V7.7H1z" fill="currentColor"/></svg>';
+      function markerEl(kind) {
+        var s = el("span", "vmark");
+        s.setAttribute("aria-hidden", "true");
+        s.innerHTML = kind === "b" ? BM_SVG : NT_SVG;
+        return s;
+      }
+      function applyDecor(span, bi, ci, v) {
+        try {
+          var e = getSaved(bi, ci, v);
+          span.classList.toggle("marked", !!(e && e.h));
+          var old = span.querySelectorAll(".vmark");
+          for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+          if (e && e.b) span.appendChild(markerEl("b"));
+          if (e && e.n) span.appendChild(markerEl("n"));
+        } catch (err) {}
+      }
+      function refreshChapterDecor() {
+        try {
+          var spans = document.querySelectorAll("#reader-body .verse");
+          for (var i = 0; i < spans.length; i++) {
+            var v = parseInt(spans[i].id.slice(1), 10);
+            if (v) applyDecor(spans[i], current.b, current.c, v);
+          }
+        } catch (e) {}
+      }
+
+      /* ---- the selection's saved state ---- */
+      function selectionAll(flag) {
+        if (!selection || !selection.verses.length) return false;
+        for (var i = 0; i < selection.verses.length; i++) {
+          var e = getSaved(selection.b, selection.c, selection.verses[i]);
+          if (!e || !e[flag]) return false;
+        }
+        return true;
+      }
+      function selectionNoteText() {
+        if (!selection) return "";
+        for (var i = 0; i < selection.verses.length; i++) {
+          var e = getSaved(selection.b, selection.c, selection.verses[i]);
+          if (e && e.n) return e.n;
+        }
+        return "";
+      }
+      /* Save and Highlight are toggles over the whole selection: if
+         every selected verse already has the mark, the tap takes it
+         away; otherwise the tap gives it to them all. */
+      function toggleSelectionFlag(flag) {
+        if (!selection) return;
+        var target = !selectionAll(flag);
+        var b = selection.b, c = selection.c;
+        selection.verses.forEach(function (v) {
+          var copy = entryCopy(getSaved(b, c, v));
+          if (target) copy[flag] = 1; else delete copy[flag];
+          putSaved(b, c, v, copy);
+        });
+        persistSaved();
+        refreshChapterDecor();
+        refreshSelectionUI();
+        updateSavedCount();
+        showToast(flag === "b"
+          ? (target ? "Saved — find it in Saved Verses" : "Removed from Saved Verses")
+          : (target ? "Highlight added" : "Highlight removed"));
+      }
+
+      /* ---- notes ----
+         The note editor is an in-page panel above the action bar (the
+         sandbox this page runs in has no prompt()). One note applies
+         to the whole current selection; saving an empty note clears it. */
+      function openNotePanel() {
+        if (!selection) return;
+        try {
+          $("note-ref").textContent = refSummary(selection.b, selection.c, selection.verses);
+          var existing = selectionNoteText();
+          $("note-text").value = existing;
+          $("note-remove").hidden = !existing;
+          $("note-panel").hidden = false;
+          $("note-text").focus();
+        } catch (e) {}
+      }
+      function closeNotePanel() {
+        try { $("note-panel").hidden = true; } catch (e) {}
+      }
+      function applyNote(text) {
+        if (!selection) return;
+        var b = selection.b, c = selection.c;
+        selection.verses.forEach(function (v) {
+          var copy = entryCopy(getSaved(b, c, v));
+          if (text) copy.n = text; else delete copy.n;
+          putSaved(b, c, v, copy);
+        });
+        persistSaved();
+        refreshChapterDecor();
+        refreshSelectionUI();
+        updateSavedCount();
+        showToast(text ? "Note saved" : "Note removed");
+      }
+      function saveNoteFromPanel() {
+        if (!selection) { closeNotePanel(); return; }
+        var text = "";
+        try { text = $("note-text").value.replace(/^\s+|\s+$/g, ""); } catch (e) {}
+        applyNote(text);
+        closeNotePanel();
+      }
+
+      /* ---- the Saved Verses shelf ----
+         The home button counts what the shelf holds: bookmarked and
+         noted verses. A verse that is only highlighted keeps its wash
+         in the chapter and stays off the shelf. Entries stand in Bible
+         order; tapping one opens its chapter at that verse, the same
+         way a search result does, and Remove clears the verse's whole
+         saved record — bookmark, note, and highlight alike. */
+      function savedShelfEntries() {
+        var out = [];
+        for (var k in savedStore) {
+          var e = savedStore[k];
+          if (!e || (!e.b && !e.n)) continue;
+          var parts = k.split(":");
+          out.push({ b: +parts[0], c: +parts[1], v: +parts[2], note: e.n || "" });
+        }
+        out.sort(function (a, b) { return (a.b - b.b) || (a.c - b.c) || (a.v - b.v); });
+        return out;
+      }
+      function updateSavedCount() {
+        try {
+          var n = savedShelfEntries().length;
+          $("saved-btn").textContent = "🔖 Saved Verses" + (n ? " (" + n + ")" : "");
+        } catch (e) {}
+      }
+      function renderShelf() {
+        var body = $("saved-body");
+        body.textContent = "";
+        var entries = savedShelfEntries();
+        $("saved-count").textContent = entries.length
+          ? entries.length + (entries.length === 1 ? " verse" : " verses") + " kept on this device"
+          : "";
+        if (!entries.length) {
+          var nr = el("div", "noresults");
+          nr.appendChild(el("p", "nr-big", "Nothing saved yet."));
+          nr.appendChild(el("p", null,
+            "Open any chapter, tap a verse, and choose Save or Note — it will wait for you here."));
+          body.appendChild(nr);
+          return;
+        }
+        var ul = el("ul", "sv-list");
+        entries.forEach(function (en) {
+          var li = el("li");
+          var wrap = el("div", "sv-entry");
+          var ref = META[en.b][0] + " " + (en.c + 1) + ":" + en.v;
+          var main = el("button", "sv-main");
+          main.type = "button";
+          main.appendChild(el("span", "sv-ref", ref));
+          main.appendChild(el("span", "sv-text", verseText(en.b, en.c, en.v - 1)));
+          if (en.note) main.appendChild(el("span", "sv-note", en.note));
+          main.addEventListener("click", function () { openChapter(en.b, en.c, en.v); });
+          var rm = el("button", "sv-remove", "Remove");
+          rm.type = "button";
+          rm.setAttribute("aria-label", "Remove " + ref + " from Saved Verses");
+          rm.addEventListener("click", function () {
+            delete savedStore[savedKeyFor(en.b, en.c, en.v)];
+            persistSaved();
+            updateSavedCount();
+            renderShelf();
+            showToast("Removed from Saved Verses");
+          });
+          wrap.appendChild(main);
+          wrap.appendChild(rm);
+          li.appendChild(wrap);
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
+      }
+      function openShelf() {
+        showView("view-saved");
+        setPageMeta("Saved Verses — World English Bible", DEFAULT_DESC);
+        var body = $("saved-body");
+        body.textContent = "";
+        body.appendChild(el("p", "loading-note", "Gathering your saved verses…"));
+        $("saved-count").textContent = "";
+        ensureAll().then(function () {
+          if ($("view-saved").hidden) return;
+          renderShelf();
+        }).catch(function () {
+          if ($("view-saved").hidden) return;
+          body.textContent = "";
+          body.appendChild(el("p", "loading-note",
+            "The Bible text could not be loaded. Please check your connection and try again."));
+        });
+      }
+
+      /* ---- verse of the day ----
+         A curated shelf of well-loved verses from across the whole
+         Bible — Psalms and Proverbs, the Prophets, the Gospels, the
+         Epistles — as [book, chapter, verse]. The day's verse is
+         chosen by the calendar date alone (days since the epoch, mod
+         the list), so it is the same verse all day and a new one
+         tomorrow, with no storage and no network. The words come from
+         the app's own Bible data by reference, so the wording is
+         exactly WEB and it works offline like everything else here. */
+      var VOTD = [
+        [0,1,1],[0,1,27],[0,15,6],[0,28,15],[0,50,20],
+        [1,14,14],[1,15,2],[1,34,6],
+        [2,19,18],
+        [3,6,24],[3,6,26],[3,23,19],
+        [4,6,5],[4,31,6],[4,31,8],
+        [5,1,9],[5,24,15],
+        [6,6,12],
+        [7,1,16],
+        [8,16,7],[8,17,47],
+        [9,7,22],[9,22,31],
+        [10,8,56],
+        [12,16,34],[12,29,11],
+        [13,7,14],[13,20,15],
+        [15,8,10],
+        [16,4,14],
+        [17,19,25],[17,42,2],
+        [18,1,3],[18,16,11],[18,18,2],[18,19,1],[18,19,14],[18,23,1],[18,23,4],[18,23,6],
+        [18,27,1],[18,27,14],[18,30,5],[18,34,8],[18,34,18],[18,37,4],[18,37,5],[18,42,1],
+        [18,46,1],[18,46,10],[18,51,10],[18,56,3],[18,62,1],[18,63,1],[18,73,26],[18,84,11],
+        [18,90,12],[18,91,2],[18,100,5],[18,103,12],[18,118,24],[18,119,105],[18,121,2],[18,139,14],
+        [18,143,8],[18,147,3],[18,150,6],
+        [19,3,5],[19,3,6],[19,4,23],[19,16,3],[19,17,17],[19,18,10],[19,27,17],[19,30,5],
+        [20,3,1],[20,3,11],[20,12,13],
+        [21,8,7],
+        [22,6,3],[22,9,6],[22,26,3],[22,40,28],[22,40,31],[22,41,10],[22,43,2],[22,53,5],
+        [22,54,17],[22,55,8],[22,61,1],
+        [23,17,7],[23,29,11],[23,32,17],[23,33,3],
+        [24,3,22],[24,3,23],[24,3,25],
+        [25,36,26],
+        [26,12,3],
+        [27,6,6],
+        [28,2,13],
+        [29,5,24],
+        [31,2,9],
+        [32,6,8],[32,7,18],
+        [34,2,4],[34,3,18],
+        [35,3,17],
+        [37,4,6],
+        [38,3,6],
+        [39,5,14],[39,5,16],[39,6,33],[39,7,7],[39,11,28],[39,19,26],[39,22,37],[39,28,20],
+        [40,9,23],[40,10,27],[40,10,45],
+        [41,1,37],[41,2,10],[41,2,14],[41,6,31],[41,19,10],
+        [42,1,1],[42,1,12],[42,3,16],[42,3,17],[42,6,35],[42,8,12],[42,10,10],[42,10,11],
+        [42,11,25],[42,13,34],[42,14,6],[42,14,27],[42,15,5],[42,15,13],[42,16,33],
+        [43,1,8],[43,4,12],[43,16,31],[43,20,35],
+        [44,1,16],[44,5,8],[44,6,23],[44,8,1],[44,8,28],[44,8,31],[44,8,38],[44,10,9],
+        [44,12,2],[44,15,13],
+        [45,2,9],[45,10,13],[45,13,4],[45,13,13],[45,15,58],[45,16,14],
+        [46,4,16],[46,4,18],[46,5,7],[46,5,17],[46,9,7],[46,12,9],
+        [47,2,20],[47,5,22],[47,6,9],
+        [48,2,8],[48,2,10],[48,3,20],[48,4,32],[48,6,10],
+        [49,1,6],[49,3,14],[49,4,4],[49,4,6],[49,4,7],[49,4,13],[49,4,19],
+        [50,3,2],[50,3,16],[50,3,23],
+        [51,5,16],[51,5,17],[51,5,18],
+        [52,3,3],
+        [53,4,12],
+        [54,1,7],[54,3,16],[54,4,7],
+        [55,3,5],
+        [57,4,12],[57,4,16],[57,10,23],[57,11,1],[57,11,6],[57,12,2],[57,13,5],[57,13,8],
+        [58,1,5],[58,1,17],[58,1,22],[58,4,8],[58,5,16],
+        [59,1,3],[59,2,9],[59,2,24],[59,3,15],[59,5,7],[59,5,10],
+        [60,3,9],[60,3,18],
+        [61,1,9],[61,3,1],[61,4,8],[61,4,19],[61,5,13],
+        [64,1,24],
+        [65,1,8],[65,3,20],[65,4,11],[65,21,4],[65,21,5],[65,22,20]
+      ];
+      var votdPick = null; /* {b, c (0-based), v, text} once today's verse is in */
+      function initVotd() {
+        try {
+          var now = new Date();
+          var dayNum = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+          var start = ((dayNum % VOTD.length) + VOTD.length) % VOTD.length;
+          ensureBook(VOTD[start][0]).then(function () {
+            /* Walk forward from today's pick until a verse with text is
+               found — a verse the WEB leaves empty can never be the
+               verse of the day. */
+            for (var i = 0; i < VOTD.length; i++) {
+              var cand = VOTD[(start + i) % VOTD.length];
+              var text = verseText(cand[0], cand[1] - 1, cand[2] - 1);
+              if (text) { votdPick = { b: cand[0], c: cand[1] - 1, v: cand[2], text: text }; break; }
+            }
+            if (!votdPick) return;
+            $("votd-text").textContent = votdPick.text;
+            $("votd-ref").textContent = META[votdPick.b][0] + " " + (votdPick.c + 1) + ":" + votdPick.v;
+            $("votd-card").hidden = false;
+          }).catch(function () { /* no card today — the home view stands without it */ });
+        } catch (e) {}
+      }
+
+      /* ---- wiring: action bar, note panel, shelf, verse of the day ---- */
+      try { $("sharebar-save").addEventListener("click", function () { toggleSelectionFlag("b"); }); } catch (e) {}
+      try { $("sharebar-hl").addEventListener("click", function () { toggleSelectionFlag("h"); }); } catch (e) {}
+      try { $("sharebar-note").addEventListener("click", openNotePanel); } catch (e) {}
+      try { $("note-save").addEventListener("click", saveNoteFromPanel); } catch (e) {}
+      try { $("note-cancel").addEventListener("click", closeNotePanel); } catch (e) {}
+      try { $("note-remove").addEventListener("click", function () { applyNote(""); closeNotePanel(); }); } catch (e) {}
+      try { $("saved-btn").addEventListener("click", openShelf); } catch (e) {}
+      try { $("saved-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try {
+        $("votd-main").addEventListener("click", function () {
+          if (votdPick) openChapter(votdPick.b, votdPick.c, votdPick.v);
+        });
+      } catch (e) {}
+      try {
+        $("votd-share").addEventListener("click", function () {
+          if (!votdPick) return;
+          /* Reuse the verse-share flow exactly: the card's verse becomes
+             the selection for the length of the share, then the reader's
+             own selection (if any) is put back untouched. */
+          var prev = selection;
+          selection = { b: votdPick.b, c: votdPick.c, verses: [votdPick.v] };
+          shareSelectedVerses();
+          selection = prev;
+        });
+      } catch (e) {}
+      try { updateSavedCount(); } catch (e) {}
+      try { initVotd(); } catch (e) {}
 
       /* ---- download this Bible as an EPUB ebook ----
          The saved file is a real EPUB 3 ebook, built at tap time from
@@ -1180,6 +1708,9 @@
           span.appendChild(document.createTextNode(" "));
           if (hlSet[vi + 1]) { span.classList.add("hl"); hlVerses.push(vi + 1); if (!hlEl) hlEl = span; }
           span.addEventListener("click", function () { toggleVerse(bi, ci, vi + 1, span); });
+          /* The reader's own marks on this verse — highlight wash,
+             bookmark and note markers — ride along as it renders. */
+          applyDecor(span, bi, ci, vi + 1);
           p.appendChild(span);
         });
         body.appendChild(p);
