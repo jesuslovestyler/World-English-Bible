@@ -1520,8 +1520,35 @@
          the reading-time line. Keyed by book name, then chapter
          number (1-based), so future batches extend this same table
          book by book. A chapter with no line yet shows nothing.
-         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation. */
+         Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis 1–25. */
       var CHAPTER_IDEAS = {
+        "Genesis": {
+          1: "In the beginning, God creates the heavens and the earth — light, sky, seas, dry land, plants, sun and moon, animals, and mankind in His own image — and sees that it is all very good.",
+          2: "God rests on the seventh day and blesses it; He forms man from dust, breathes life into him, plants Eden, and builds him a wife from his side.",
+          3: "The serpent tempts Eve; they eat, fall, and hide — yet God clothes them, and even in judgment promises that the woman's offspring will crush the serpent's head.",
+          4: "Cain murders Abel and wanders under God's mark; a city-building line grows from him, and through Seth men begin to call on the name of the Lord.",
+          5: "The generations from Adam to Noah: century upon century of 'and he died' — except Enoch, who walked with God, and God took him.",
+          6: "Wickedness fills the earth and grieves God's heart; He chooses Noah, who walks with Him, to build an ark and preserve mankind and the animals through judgment.",
+          7: "Noah enters the ark with his family and the animals; the fountains of the deep burst open, the rain falls forty days, and the waters cover even the mountains.",
+          8: "God remembers Noah: the waters fall, a dove finds olive leaves, the earth dries, and over Noah's sacrifice God promises the seedtime and harvest will never cease.",
+          9: "God blesses Noah, covenants with every living creature, and sets the rainbow as its sign — yet Noah's drunkenness divides his sons, and Canaan is cursed.",
+          10: "The table of nations: from Noah's three sons the families of the earth spread out — Japheth to the coastlands, Ham to Canaan and Egypt, Shem toward the promise.",
+          11: "One language builds one tower at Babel, and God scatters mankind over the earth — then the line narrows through Shem's generations down to Abram.",
+          12: "God calls Abram: 'Go — I will make of you a great nation, and in you all the families of the earth will be blessed.' Abram goes, and worships at the oaks of Canaan.",
+          13: "Abram gives Lot the choice of the land; Lot takes the Jordan plain toward Sodom, and God promises Abram offspring as countless as the dust of the earth.",
+          14: "Abram musters 318 men, rescues captured Lot, and is blessed by Melchizedek king of Salem, priest of God Most High — refusing every spoil of Sodom's king.",
+          15: "'Do not be afraid, Abram: I am your shield.' God promises offspring as the stars; Abram believes Him, and it is credited to him as righteousness; a smoking fire pot seals the covenant.",
+          16: "Sarai gives her servant Hagar to Abram; despised and afflicted, Hagar flees — and meets the Angel of the Lord, naming Him 'the God who sees me'; Ishmael is born.",
+          17: "God Almighty renames Abram: Abraham, father of many nations; Sarai: Sarah, mother of kings; Isaac is promised within the year, and circumcision seals the covenant in their flesh.",
+          18: "Three visitors at Mamre's oaks: Sarah laughs at the promise of a son — and Abraham stands before the Lord pleading for Sodom: 'Will not the Judge of all the earth do right?'",
+          19: "Angels pull Lot out as sulfur and fire fall on Sodom and Gomorrah; Lot's wife looks back, and his daughters' desperate scheme gives Moab and Ammon their start.",
+          20: "In Gerar, Abraham again calls Sarah his sister; God guards her, warns Abimelech in a dream, and Abraham the prophet prays for the king's household.",
+          21: "The Lord keeps His word: Isaac — laughter — is born to Sarah in her old age; Hagar and Ishmael are sent away, but God hears the boy crying and opens her eyes to a well.",
+          22: "God tests Abraham: 'Take your son, your only son Isaac' — the knife is raised, the Angel calls, a ram stands in the thicket: 'On the mountain of the Lord, it will be provided.'",
+          23: "Sarah dies at 127 years, and Abraham buys the cave of Machpelah as a burial place — his first piece of the promised land held by deed.",
+          24: "Abraham's servant swears the oath, prays at Nahor's well, and is led straight to Rebekah; she says 'I will go,' and Isaac, meditating in the field, is comforted in his grief.",
+          25: "Abraham gives everything to Isaac and dies full of years at 175; Ishmael fathers twelve princes; and Isaac's twins wrestle from the womb — Esau sells his birthright for a bowl of stew."
+        },
         "Matthew": {
           1: "The genealogy and birth of Jesus the King — God keeps His promises to Abraham and David.",
           2: "Wise men worship the child King, Herod rages, and God protects Jesus in Egypt.",
@@ -1851,8 +1878,35 @@
          only: they render as their own line in the reader, never as
          verse text, and the Listen queue — built from the chapter's
          verses alone — never speaks them. A chapter with no
-         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation. */
+         headings yet shows none. Batches: Matthew, Mark, Luke, John, Acts, Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians, 1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews, James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation, Genesis 1–25. */
       var SECTION_HEADINGS = {
+        "Genesis": {
+          1: { 1: "In the beginning, God created", 3: "'Let there be light': the first day", 6: "The sky and the waters: the second day", 9: "Land, seas, and plants: the third day", 14: "Lights in the sky: the fourth day", 20: "Birds and sea creatures: the fifth day", 24: "Animals — and mankind in God's image: the sixth day" },
+          2: { 1: "The seventh day: God rests", 4: "The Lord God forms the man", 8: "The garden of Eden", 15: "The man in the garden; the one command", 18: "'It is not good for the man to be alone'", 21: "The woman is built from the man's side" },
+          3: { 1: "The serpent tempts Eve", 6: "They eat, and their eyes are opened", 8: "They hide; God calls, 'Where are you?'", 14: "The curse — and the first promise", 20: "Eve, the mother of all living", 22: "Sent out of Eden" },
+          4: { 1: "Cain and Abel bring their offerings", 8: "Cain murders his brother", 10: "'Your brother's blood cries out to Me'", 16: "Cain wanders; a city rises", 25: "Seth is born; men call on the Lord's name" },
+          5: { 1: "The generations of Adam", 21: "Enoch walked with God", 28: "Noah is born" },
+          6: { 1: "Wickedness fills the earth", 5: "It grieves God's heart; judgment is set", 9: "Noah walked with God", 13: "'Build an ark'", 17: "The covenant with Noah" },
+          7: { 1: "'Enter the ark'", 11: "The fountains of the deep burst open", 17: "The waters prevail over the earth" },
+          8: { 1: "God remembers Noah", 6: "Noah sends out a raven and a dove", 15: "'Come out of the ark'", 20: "Noah's sacrifice; the seasons are promised" },
+          9: { 1: "God blesses Noah and his sons", 3: "Every moving thing shall be food", 8: "The covenant, and the rainbow", 18: "Noah's drunkenness; his three sons", 24: "'Cursed be Canaan; blessed be the Lord, the God of Shem'" },
+          10: { 1: "The generations of Noah's sons", 2: "The sons of Japheth", 6: "The sons of Ham", 15: "The clans of Canaan", 21: "The sons of Shem" },
+          11: { 1: "One language, one tower", 5: "The Lord comes down and scatters them", 10: "Shem's line down to Terah", 27: "Terah's family; Abram appears" },
+          12: { 1: "The Lord calls Abram", 4: "Abram journeys into Canaan", 6: "The oak of Moreh; the land is promised", 10: "Abram in Egypt: 'Say you are my sister'" },
+          13: { 1: "Abram returns, very rich", 5: "'The land cannot support both': they part", 10: "Lot chooses the Jordan plain", 14: "The promise renewed in every direction" },
+          14: { 1: "Kings at war; Lot is taken", 13: "Abram rides to the rescue", 17: "Melchizedek blesses Abram", 21: "Abram refuses Sodom's riches" },
+          15: { 1: "'Do not be afraid, Abram: I am your shield'", 4: "'Your offspring will be as the stars'", 6: "He believed, and it was credited as righteousness", 12: "A deep sleep: bondage and exodus foretold", 17: "The smoking fire pot passes between the pieces" },
+          16: { 1: "Sarai gives Hagar to Abram", 4: "Hagar flees Sarai's harshness", 7: "The Angel finds Hagar: the God who sees", 13: "Hagar names the Lord; Ishmael is born" },
+          17: { 1: "'I am God Almighty: walk before Me'", 5: "'No longer Abram — Abraham'", 9: "The covenant sign: circumcision", 15: "Sarai becomes Sarah; Isaac is promised", 19: "Isaac, not Ishmael, carries the covenant", 23: "Abraham circumcises his household" },
+          18: { 1: "The Lord visits Abraham at Mamre", 9: "'Where is Sarah?' — she laughs", 16: "The visitors turn toward Sodom", 22: "Abraham pleads for Sodom", 32: "'For ten's sake, I will not destroy it'" },
+          19: { 1: "Two angels come to Sodom", 4: "The men of Sodom demand Lot's guests", 12: "The angels urge Lot to flee", 15: "'Escape for your life; do not look back'", 24: "Sulfur and fire fall on Sodom", 30: "Lot in the hills; Moab and Ammon are born" },
+          20: { 1: "Abraham in Gerar: 'She is my sister'", 3: "God warns Abimelech in a dream", 8: "Abimelech confronts Abraham", 14: "Gifts are given; Abraham prays for Gerar" },
+          21: { 1: "The Lord visits Sarah: Isaac is born", 8: "Isaac is weaned; Sarah sees Ishmael mocking", 12: "'Through Isaac your offspring will be called'", 14: "Hagar in the wilderness; God hears the boy", 22: "A covenant sworn at Beersheba" },
+          22: { 1: "God tests Abraham: 'Take your son'", 6: "Isaac carries the wood", 9: "The altar on Moriah; the Angel calls out", 13: "A ram caught in the thicket", 15: "'By Myself I have sworn'", 20: "Nahor's family; Rebekah is named" },
+          23: { 1: "Sarah dies at Hebron", 3: "Abraham asks for a burial place", 10: "Ephron's field and the cave of Machpelah", 17: "The field is deeded over; Sarah is buried" },
+          24: { 1: "The oath: a wife for Isaac from Abraham's kin", 10: "The servant journeys to Nahor", 12: "The servant's prayer at the well", 15: "Rebekah comes with her pitcher", 28: "Rebekah tells her mother's household", 50: "'The thing proceeds from the Lord'", 61: "Rebekah departs; Isaac meets her" },
+          25: { 1: "Abraham marries Keturah", 5: "Abraham gives all he has to Isaac", 7: "Abraham dies at 175, full of years", 12: "The generations of Ishmael", 19: "Isaac and Rebekah: the twins", 29: "Esau sells his birthright" }
+        },
         "Matthew": {
           1: { 1: "The ancestors of Jesus the Messiah", 18: "An angel announces Jesus' birth to Joseph" },
           2: { 1: "Wise men from the east worship the child", 13: "The escape to Egypt and the return home" },
