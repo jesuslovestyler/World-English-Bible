@@ -263,6 +263,13 @@
         margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line);
         color: var(--ink-soft); font-size: 14px; text-align: center;
       }
+      /* the home view's closing note: where the Bible text itself
+         comes from, and where this app's own helps begin — small and
+         quiet, in the same voice as the footer above it */
+      .source-note {
+        color: var(--ink-soft); font-size: 13.5px; line-height: 1.55;
+        text-align: center; margin: 14px auto 0; max-width: 36em;
+      }
 
       /* ---------- top bars (chapters / reader / search) ---------- */
       .topbar {
@@ -408,6 +415,19 @@
       .chapter-text .sec-head:first-child { margin-top: 0.15em; }
       .chapter-text .sec-head + .verse sup.vn { margin-left: 0; }
       .chapter-text .wj { color: var(--redletter); }
+      /* a word or phrase the Bible Words glossary knows (see
+         glossRanges): the quiet dotted underline that says a tap
+         here opens a short meaning. It is the text's own
+         decoration, not a background, so it rides on top of every
+         highlight wash and the Listen highlight, and it takes the
+         theme's accent gold — a different gold in each theme, but
+         always the one already proven readable on those washes by
+         the verse numbers. The word itself keeps its own color:
+         red-letter words stay red. */
+      .chapter-text .gw {
+        text-decoration: underline dotted var(--accent);
+        text-underline-offset: 3px;
+      }
       .chapter-text sup.vn {
         font-size: 11.5px; font-weight: 600; color: var(--accent);
         margin: 0 3px 0 6px; vertical-align: super; line-height: 0;
@@ -850,6 +870,7 @@
       .journey-chaprow .journey-big { margin: 0; }
 
       /* ---------- bible words (glossary) ---------- */
+      .words-note { color: var(--ink-soft); font-size: 14.5px; margin: 12px 0 0; }
       .glossary-list { border-top: 1px solid var(--line); margin-top: 14px; }
       .gloss-item { border-bottom: 1px solid var(--line); padding: 15px 6px; }
       .gloss-term { font-family: "Newsreader", Georgia, serif; font-size: 20px; font-weight: 600; margin: 0 0 3px; }
@@ -1056,6 +1077,7 @@
         </p>
 
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+        <p class="source-note">The Bible text is the World English Bible, public domain, word for word as published by eBible.org. The chapter summaries, section headings, and other helps were written for this app and are not part of the Bible text.</p>
       </section>
 
       <!-- ============ CHAPTER GRID ============ -->
@@ -1289,6 +1311,7 @@
           <h2>Bible Words</h2>
           <p>Big Bible words, in plain language.</p>
         </div>
+        <p class="words-note">In the reading text, words with a dotted underline can be tapped for a short meaning.</p>
         <div class="filter-box">
           <input id="words-filter" type="search" autocomplete="off" placeholder="Type to filter words…" aria-label="Filter Bible words by name" />
         </div>
@@ -5466,35 +5489,51 @@
          for the first time. The wording below is the glossary's own
          — kept exactly as written. */
       var GLOSSARY = [
+        ["Abba", "An Aramaic word for \"father\" — the intimate family name, warm like \"Dad\" but never casual. Jesus used it in Gethsemane, and the Spirit teaches God's adopted children to cry it too (Romans 8:15): it is the sound of belonging."],
         ["Adoption", "God taking people who believe in Jesus into His own family as His sons and daughters, with all the love and inheritance of children."],
         ["Altar", "A raised place or table where sacrifices and offerings were presented to God in worship."],
         ["Amen", "A Hebrew word meaning 'so be it' or 'truly' — our way of saying, 'Yes, Lord, we agree.'"],
         ["Angel", "A messenger from God. Angels serve God, carry His words to people, and watch over His children."],
         ["Anoint", "To pour oil on someone’s head as God’s public sign that He has chosen them for a task — priests, kings, and prophets were anointed."],
+        ["Antichrist", "Anyone who denies that Jesus is the Christ come in the flesh, and the final deceiver John and Paul warn will arise before Christ returns. The spirit of antichrist was already at work in the first century: false teachers who confess a different Jesus."],
+        ["Apostasy", "Deliberately turning away from the faith once professed — not a stumble or a season of doubt, but a settled departure from Christ. Scripture warns against it soberly (Hebrews 6; 2 Thessalonians 2) and urges believers to hold fast and encourage one another daily."],
         ["Apostle", "One sent out by Jesus Himself. The first apostles were the twelve men Jesus chose to witness His resurrection and found the church."],
         ["Ark", "Two famous ‘arks’ in Scripture: Noah’s great boat that carried his family through the flood, and the ark of the covenant, the golden chest where God’s presence rested among Israel."],
+        ["Ascension", "Jesus' return to heaven forty days after His resurrection, when He rose bodily before His disciples' eyes, blessing them, and was taken up in a cloud. He sits now at the Father's right hand, interceding for His people, until He comes again the same way He went."],
         ["Atonement", "The price paid to bring sinners back to God. In the Old Testament it was animal sacrifices; finally and fully, it is Jesus' death on the cross for us."],
         ["Baptism", "Being washed in water as a sign of new life: buried with Jesus in His death, and raised with Him to walk in newness of life."],
+        ["Beatitudes", "The blessings that open the Sermon on the Mount (Matthew 5): \"Blessed are the poor in spirit... the meek... those who hunger and thirst for righteousness.\" Each one reverses the world's values and describes the person God's kingdom delights to honor."],
         ["Believe", "To trust — not just to know facts about Jesus, but to rest your whole weight on Him and what He promised."],
         ["Blasphemy", "Speaking of God with contempt, or claiming God’s name and honors for yourself. It is treating the Holy One as if He were nothing."],
         ["Blessing", "God's goodness given as a gift. To bless someone is to speak and give God's good over their life."],
+        ["Blood", "In Scripture, blood is life itself (Leviticus 17:11), and shed blood speaks: Abel's cried from the ground; the Passover lamb's marked Israel's doors; sacrifices sealed covenants. Jesus' blood — \"the blood of the covenant\" — speaks a better word than Abel's: not vengeance, but forgiveness for all who come under it."],
         ["Born again", "Jesus' words for what God does inside a person: giving them a brand-new heart and life by His Spirit."],
+        ["Branch", "A name for the coming Messiah: the shoot that springs from Jesse's cut-down family tree, righteous and fruitful, on whom the Spirit rests (Isaiah 11). Jeremiah calls Him \"a righteous Branch\" who will reign as King; Zechariah, \"my servant the Branch,\" who builds the temple of the LORD."],
+        ["Centurion", "A Roman officer commanding about a hundred soldiers. The Gospels treat centurions remarkably kindly — one had faith greater than any in Israel; one confessed at the cross, \"Truly this was the Son of God\"; and Cornelius became the first Gentile household gathered into the church."],
         ["Cherubim", "Mighty angels shown with wings, set to guard holy places — they watched over Eden’s entrance and above the ark of the covenant."],
         ["Church", "Not a building — the people who belong to Jesus, gathered to worship Him and love one another, all over the world."],
         ["Circumcision", "The cutting sign God gave Abraham and his family as the mark of the old covenant — a sign in the body of belonging to God’s people."],
         ["Commandment", "Something God tells us to do. His commandments are not burdens; they show us His heart and the shape of a good life."],
         ["Condemnation", "God’s guilty verdict over sin. The gospel’s wonder: ‘There is therefore now no condemnation to those who are in Christ Jesus.’"],
         ["Confess", "To say the same thing God says — to admit our sins honestly to Him, and to say out loud that Jesus is Lord."],
+        ["Cornerstone", "The first and governing stone of a building, by which every wall is aligned. Scripture calls the Messiah the cornerstone God laid in Zion — precious to those who believe, a stone of stumbling to those who reject Him — and Jesus applied the words to Himself before the rulers who rejected Him."],
         ["Covenant", "God's solemn promise-bond with people, like a marriage vow from His side. The old covenant came through Moses; the new covenant comes through Jesus' blood."],
         ["Cross", "Where Jesus died for our sins. In the Bible 'the cross' often means the whole saving work Jesus did there."],
         ["Crucifixion", "Execution by being nailed to a wooden cross — a slow, shaming Roman death. It is how Jesus died for us, bearing our curse in our place."],
         ["Curse", "God’s judgment spoken against sin and evil. At the cross, Jesus became a curse for us, so that blessing could come to us instead."],
+        ["Day of the Lord", "The coming day when God acts openly in judgment and salvation — darkness and wrath for the proud, deliverance for His people. The prophets used it for near judgments (on Babylon, Egypt, Israel) and for the final day when Christ returns; the New Testament calls it \"the day of the Lord Jesus.\""],
         ["Deacon", "A servant-leader in the church, appointed to care for practical needs — food, money, widows — so the word of God can be served freely."],
+        ["Deliverance", "God's rescue of His people from enemies, slavery, sin, and death. Israel's great memory was deliverance from Egypt; the Psalms cry for it by name; and Jesus is the Deliverer who sets captives free — past rescue feeding present trust: \"He has delivered us... He will deliver us.\""],
         ["Demon", "An evil spirit who serves Satan and works against God and people. Demons fear Jesus, and His name drives them out."],
+        ["Denarius", "A Roman silver coin, worth about a day's wage for a laborer — the coin of the vineyard parable, the coin with Caesar's image shown to Jesus, and the measure in Revelation's famine prices: \"A quart of wheat for a denarius.\""],
         ["Devil", "Another name for Satan. ‘Devil’ means the slanderer, the accuser — the enemy who lies about God to us and about us to God."],
         ["Disciple", "A student and follower of Jesus — someone learning His ways and obeying Him, day by day, for life."],
+        ["Dispersion", "God's people scattered among the nations — also called the Diaspora. It began with the exiles to Assyria and Babylon and continued in Jewish communities across the Roman world; James and Peter write their letters \"to the Dispersion,\" and God used those scattered seeds to prepare the gospel's roads."],
+        ["Doctrine", "Teaching — the body of truth handed down and believed. Scripture prizes sound doctrine: it is to be guarded, taught, and adorned by our lives (Titus 2:10), and never traded for teaching that merely suits itching ears (2 Timothy 4:3)."],
+        ["Dragon", "Scripture's picture of Satan in his rage: the great red dragon of Revelation, \"that ancient serpent, who is called the devil and Satan, the deceiver of the whole world\" (Revelation 12:9). Old Testament poetry uses dragon imagery for the chaos powers God mastered at creation and will slay at the end (Isaiah 27:1)."],
         ["Elder", "A mature, godly leader in a local church — a shepherd who teaches, guards, and cares for God’s people."],
         ["Election", "God’s choosing of His people in love before time began — He saw us fully, sins and all, and set His love on us in Christ anyway."],
+        ["Ephod", "The richly woven vest worn by Israel's high priest (Exodus 28), bearing the breastpiece with twelve stones for the tribes and the Urim and Thummim for discerning God's will. Gideon tragically made a golden ephod that became a snare — a reminder that even God-ward things can be turned into idols."],
         ["Epistle", "A letter. Most of the New Testament is epistles — real letters from apostles to real churches, kept for us as Scripture."],
         ["Eternal life", "Life that never ends — but more than length, it is knowing God Himself, beginning now and lasting forever."],
         ["Evangelist", "One who carries the good news to people who have not heard it — a herald of the gospel, like Philip in the book of Acts."],
@@ -5502,29 +5541,52 @@
         ["Faith", "Trust in God that acts on what He said. Faith receives His promises as gifts; even faith itself is His gift to us."],
         ["Fasting", "Going without food for a time in order to seek God — humbling the body to pray with your whole heart."],
         ["Fellowship", "Sharing life with God and with His people — praying, eating, giving, and walking together as one family in Christ."],
+        ["Firstborn", "The first son, who held the birthright: a double portion and headship of the family. God claimed Israel's firstborn as His own after the Exodus, calls Israel itself \"My firstborn son,\" and names Jesus \"the firstborn over all creation\" and \"firstborn from the dead\" — the heir to whom everything belongs."],
+        ["Firstfruits", "The first and best of the harvest, offered to God before the rest was used — a confession that the whole crop was His gift. Jesus' resurrection is called the firstfruits of those who sleep: the first sheaf of the great harvest of the dead that God will gather at His return."],
+        ["Flesh", "In Paul's letters, usually not the body itself but human nature left to itself — life organized around appetite, pride, and self, at war with the Spirit. \"The flesh\" cannot please God; believers are commanded to walk by the Spirit so they do not gratify its desires."],
         ["Forgiveness", "God canceling the debt of our sins completely, for Jesus' sake — not holding them against us anymore, ever."],
+        ["Fruit of the Spirit", "The character the Holy Spirit grows in a believer, named in Galatians 5: love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control. It is fruit, not manufacture — one crop with nine flavors, grown by abiding in Christ, against which \"there is no law.\""],
+        ["Gehenna", "Jesus' word for hell: the valley of Hinnom south of Jerusalem, where children had once been burned to Molech and refuse later smoldered. He used it of the final judgment — a real place of fire and loss, spoken of more by Jesus than by anyone else in Scripture, and always as a warning."],
         ["Gentile", "Anyone who is not a Jew by birth. The gospel’s surprise and glory: the Gentiles — most of us — are welcomed into God’s family through Jesus."],
         ["Glory", "The shining weight of who God is — His beauty, power, and worth, seen most fully in Jesus."],
         ["Gospel", "Good news! The message that Jesus died for our sins, rose again, and that everyone who believes in Him receives eternal life."],
         ["Grace", "God's kindness to people who deserve the opposite — His gifts given freely because He loves, not because we earned."],
+        ["Hades", "The Greek word for the realm of the dead — the place of departed spirits before the final judgment, corresponding to the Hebrew Sheol. In Jesus' story of the rich man and Lazarus, Hades holds both torment and comfort; its keys now belong to the risen Christ."],
+        ["Hallelujah", "A Hebrew shout meaning \"Praise the LORD!\" (hallelu = praise, Yah = the LORD). It opens and closes many Psalms, and in Revelation 19 heaven's multitude thunders it four times over Babylon's fall and the marriage of the Lamb."],
         ["Heaven", "God's home, where Jesus now is, and where His people will live with Him forever — no more death, tears, or pain."],
         ["Hell", "The place of final judgment and separation from God for those who refuse His mercy. It is real, and it is why the gospel is urgent."],
+        ["High places", "Hilltop shrines where sacrifices were offered — condemned when used for idols, and a chronic temptation even for kings otherwise faithful to God. Again and again the histories add the sad refrain, \"yet the high places were not removed\": half-obedience in stone."],
         ["Holy", "Set apart and perfectly pure. God is holy — completely other, completely good — and He makes His people holy too."],
         ["Holy Spirit", "God the Spirit, who lives in every believer: comforting, teaching, convicting, and making us more like Jesus."],
         ["Hope", "In the Bible, hope is not a wish — it is a confident expectation of what God has promised and will surely do."],
+        ["Hosanna", "A Hebrew cry meaning \"Save us, we pray!\" that became a shout of praise. The crowds cried it to Jesus entering Jerusalem, waving palm branches (Psalm 118:25–26) — a plea and a coronation in one word."],
+        ["Hyssop", "A bushy plant used to sprinkle blood and water in Israel's cleansing rites — the Passover blood was painted on with it. David prayed, \"Purge me with hyssop, and I shall be clean\" (Psalm 51:7), and a sponge on a hyssop branch lifted sour wine to Jesus' lips at the cross."],
         ["Idol", "Anything we love, trust, or serve in God's place. Idolatry is giving God's worship to something smaller."],
+        ["Immanuel", "\"God with us\" — the name Isaiah promised a virgin's son would bear (Isaiah 7:14), fulfilled in Jesus (Matthew 1:23). It is more than a name: it is the gospel in three syllables — God has not stayed far off; in Christ He has come to be with His people, and will never leave them."],
+        ["Incense", "Fragrant spices burned on the altar of incense morning and evening, its rising smoke a picture of prayer: \"Let my prayer be counted as incense before you\" (Psalm 141:2). In Revelation, golden bowls of incense are \"the prayers of the saints,\" rising before God's throne."],
         ["Intercession", "Praying for someone else, pleading their case before God. Jesus Himself intercedes for us, always."],
         ["Jew", "A descendant of Abraham through Judah and Israel, one of God’s chosen people — the family through whom the Messiah came to the whole world."],
+        ["Jubilee", "The fiftieth year in Israel's calendar (Leviticus 25), when debts were released, slaves freed, and land returned to its families — heralded by a trumpet on the Day of Atonement. Jesus opened His ministry by proclaiming \"the year of the LORD's favor,\" the true Jubilee of release for captives."],
         ["Justified", "Declared righteous by God. When you believe in Jesus, God counts you as right with Him — as if you had never sinned — because Jesus paid it all."],
         ["Kingdom of God", "God's rule and reign — wherever Jesus is King. It came with Jesus, grows now in hearts, and will fill the earth when He returns."],
+        ["Lamb of God", "John the Baptist's name for Jesus: \"Behold, the Lamb of God, who takes away the sin of the world!\" It joins the Passover lamb, Abraham's \"God will provide himself the lamb,\" and Isaiah's lamb led to slaughter — one sacrifice, once for all, in whom the book of Revelation sees a Lamb standing as though slain, forever."],
         ["Law", "God's instructions given through Moses in the Old Testament. The law shows us God's holiness and our sin, and points us to Jesus."],
+        ["Legion", "A Roman army unit of some five to six thousand soldiers — and the name the demons gave themselves in the man of the Gadarenes: \"My name is Legion, for we are many\" (Mark 5:9). Jesus sent them out with a word, and left the man clothed, seated, and in his right mind."],
+        ["Leprosy", "A dreaded skin disease (a broader category in the Bible than modern leprosy) that made a person ceremonially unclean — cut off from worship and community, crying \"Unclean!\" Jesus touched lepers and cleansed them anyway, and sent the healed to the priests as a testimony."],
+        ["Leviathan", "A mighty sea creature of poetry — the twisting serpent God will punish at the end (Isaiah 27:1), the dragon of Psalm 74, and the untamable beast of Job 41 whom only God can face. Crocodile, chaos-monster, or both, Leviathan stands for every power too great for man and nothing to God."],
         ["Lord", "Master and ruler. Calling Jesus 'Lord' means He is God, He is in charge, and we gladly belong to Him."],
+        ["Lord's Supper", "The meal Jesus gave His church on the night He was betrayed: bread, \"This is my body,\" and the cup, \"the new covenant in my blood.\" Paul calls it proclaiming the Lord's death until He comes; it is eaten together, in self-examination and gratitude, looking back at the cross and forward to the feast."],
         ["Love", "God's own nature — He IS love. Real love gives itself for the good of another, as Jesus did at the cross."],
         ["Manna", "The bread from heaven God fed Israel with for forty years in the wilderness — appearing fresh every morning, impossible to hoard."],
+        ["Maranatha", "An Aramaic prayer meaning \"Our Lord, come!\" (or \"Our Lord has come\"), left untranslated by Paul at the end of 1 Corinthians and echoed in Revelation's \"Come, Lord Jesus.\" It is the church's oldest watchword of hope: everything held, everything endured, facing the door."],
         ["Martyr", "A witness for Jesus who would rather die than deny Him. Stephen was the first; the church has honored their courage ever since."],
+        ["Mediator", "A go-between who brings two parties together. Moses mediated the old covenant at Sinai; \"there is one God, and one mediator between God and men, the man Christ Jesus\" (1 Timothy 2:5) — fully God and fully man, He alone can lay a hand on both."],
         ["Mercy", "God NOT giving us the punishment we deserve. Grace gives us good we don't deserve; mercy withholds the bad we do."],
+        ["Mercy seat", "The pure gold lid of the Ark of the Covenant, flanked by golden cherubim, where God's presence rested and where the high priest sprinkled blood once a year on the Day of Atonement. Paul's word for Jesus' sacrifice points back here (Romans 3:25): the place where God meets sinners is now a Person."],
         ["Messiah", "Hebrew for 'the Anointed One' — God's promised King and Savior. In Greek the word is 'Christ.' Jesus is the Messiah."],
         ["Miracle", "An act of God beyond the ordinary course of nature — a sign pointing to who Jesus is and what His kingdom is like."],
+        ["Mustard seed", "The tiny seed Jesus used twice: faith \"like a grain of mustard seed\" moves mountains, and God's kingdom itself is mustard-like — beginning smaller than every seed, ending as a tree where the birds come and nest. God's great things habitually start embarrassingly small."],
+        ["Nazirite", "A man or woman under a special vow to God (Numbers 6): no wine, no haircut, no contact with the dead, for a set season or for life. Samson and Samuel were Nazirites from birth. The vow said with the whole body: wholly the LORD's."],
         ["Offering", "A gift presented to God in worship. Under the old covenant these were animals and grain; now we offer Him our money, our work, our very lives."],
         ["Parable", "A story Jesus told from everyday life — seeds, sheep, lost coins — carrying a truth about God's kingdom inside it."],
         ["Passover", "The feast remembering how God rescued Israel from Egypt, when the lamb's blood covered His people's homes. Jesus is our Passover Lamb."],
@@ -5537,6 +5599,7 @@
         ["Prophet", "A person God sends to speak His words to people — calling them back to God and, often, pointing ahead to Jesus."],
         ["Providence", "God's quiet rule over all things — He works every event, even the hard ones, together for the good of His people and for His purposes."],
         ["Psalm", "A sacred song or poem to God. There are 150 in the book of Psalms — Israel’s hymnbook, and still the church’s prayer book today."],
+        ["Rabbi", "A Hebrew title meaning \"my teacher\" or \"my master,\" used for respected teachers of the Law — and for Jesus, by disciples, crowds, and even opponents. Jesus is the church's one Rabbi in the deepest sense: \"You have one teacher, and you are all brothers\" (Matthew 23:8)."],
         ["Ransom", "The price paid to set a captive free. Jesus said He came ‘to give his life as a ransom for many’ — we are the freed captives."],
         ["Redeem", "To buy back. Jesus redeemed us — He paid the price (His own life) to free us from sin and make us God's own."],
         ["Remnant", "The small, faithful part of God’s people that He preserves through every age of falling away and judgment. God always keeps a remnant."],
@@ -5547,24 +5610,34 @@
         ["Sacrifice", "An offering given to God. In the Old Testament, animals died in the sinner's place; Jesus is the final, once-for-all sacrifice."],
         ["Saint", "A holy one — in the New Testament, simply every believer, set apart for God by Jesus. Saints are not a special class; they are the whole family."],
         ["Salvation", "Being rescued by God — from sin, death, and judgment — and brought into His family forever. It is all by grace, through faith in Jesus."],
+        ["Samaritan", "An inhabitant of Samaria, the land between Galilee and Judea, whose people mixed Israelite descent with foreign settlers and worshiped on Mount Gerizim. Jews and Samaritans despised each other — which is why Jesus' parable of the Good Samaritan, and His kindness to the Samaritan woman, shocked their hearers."],
         ["Sanctify", "To be set apart for God and made holy over time — the Spirit's daily work of making us more like Jesus."],
         ["Satan", "God's enemy, a fallen angel called the devil and the tempter. He lies, accuses, and steals — and Jesus has already defeated him."],
+        ["Scapegoat", "On the Day of Atonement, one goat was sacrificed and a second — the scapegoat — had Israel's sins confessed over its head and was sent bearing them into the wilderness (Leviticus 16). It pictures what Christ does: God lays our sin on another, and it is carried away, remembered no more."],
         ["Scribe", "An expert who copied Scripture by hand and taught the Law. In Jesus’ day the scribes were respected — and often His sharpest opponents."],
         ["Scripture", "God's written word, the Bible itself — breathed out by God and given to teach us, correct us, and train us in doing right."],
+        ["Selah", "A musical marking found 71 times in the Psalms and three times in Habakkuk. Its exact meaning is uncertain — likely a pause, a lift of the voice, or an instrumental break: an invitation to stop and let what was just sung sink in."],
+        ["Seraphim", "The burning ones: six-winged angels Isaiah saw above God's throne, crying \"Holy, holy, holy\" and veiling their faces and feet (Isaiah 6). One touched Isaiah's lips with a coal from the altar, and his guilt was taken away — heaven's fire, sent to cleanse rather than consume."],
+        ["Sheol", "The Hebrew name for the realm of the dead — the grave's shadowy depth where all the dead went, righteous and wicked alike. The Old Testament only glimpses beyond it (\"You will not abandon my soul to Sheol\"), until resurrection morning: death and Sheol themselves are thrown into the lake of fire (Revelation 20)."],
+        ["Showbread", "Twelve loaves laid fresh every Sabbath on the golden table in the tabernacle and temple — \"the bread of the Presence,\" bread set before God's face continually. David once ate it in need, and Jesus cited that day to show that mercy outranks ritual scruple."],
         ["Sin", "Anything we think, say, or do against God's will — and the bent toward it in every human heart. Sin is why we need a Savior."],
         ["Soul", "The inner, living you — your mind, heart, and will — the part of you made for God and made to live forever."],
         ["Synagogue", "The local Jewish house of prayer and Scripture reading in every town — where Jesus often taught, and where Paul preached first in each new city."],
         ["Tabernacle", "God’s tent among Israel in the wilderness before the Temple was built — a movable holy place where His presence lived in their midst."],
+        ["Talent", "A huge unit of money — a weight of silver worth roughly twenty years of a laborer's wages. In Jesus' parables a talent is a fortune entrusted to a servant; one man buried his master's talent in the ground and heard the saddest verdict: \"You wicked and slothful servant.\" (Our word \"talent\" for abilities descends from this parable.)"],
         ["Temple", "The house of God in Jerusalem, where Israel worshiped and offered sacrifices. Now God's Spirit lives in His people — we are His temple."],
         ["Temptation", "Being drawn toward sin. God never tempts anyone to evil; when we are tempted, He always makes a way out."],
         ["Testament", "Another word for covenant. The Old Testament is God's dealings with Israel before Jesus; the New Testament is the good news of Jesus and His church."],
+        ["Tongues", "Languages. At Pentecost the Spirit gave the apostles speech in real languages they had never learned, so every nation heard the gospel in its own tongue. Paul also describes a gift of tongues needing interpretation in church; his rule is order: intelligible words that build others up."],
         ["Transfiguration", "The moment on the mountain when Jesus shone with heaven’s glory before Peter, James, and John, and the Father’s voice said, ‘Listen to him.’"],
         ["Tribulation", "Great trouble and suffering. Jesus promised His followers tribulation in this world — and promised, in the same breath, that He has overcome the world."],
         ["Trinity", "The one true God is three Persons — Father, Son, and Holy Spirit — one God, forever, in perfect love."],
+        ["Vine", "Israel's emblem and Jesus' great \"I am\": \"I am the true vine, and my Father is the vinedresser.\" Israel as God's vine often bore wild grapes; in Christ the true Vine, branches bear fruit by abiding — remaining — in Him, apart from whom we can do nothing."],
         ["Virgin", "Mary, the mother of Jesus, was a virgin when the Holy Spirit caused her to conceive — so Jesus is both truly God’s Son and truly human, born of a woman."],
         ["Witness", "Someone who tells what they have seen and heard. Every Christian is Christ’s witness — with words, and with a life that backs them."],
         ["Worship", "Giving God the worth He deserves — with songs, prayers, obedience, and our whole lives offered to Him."],
         ["Wrath", "God's settled, holy anger against evil. It is not a temper tantrum; it is the judgment sin deserves — which Jesus bore for us at the cross."],
+        ["Yoke", "The wooden frame joining oxen to work together. Scripture uses it for slavery and oppression (\"the yoke of Babylon\") and for Jesus' own gentle rule: \"Take my yoke upon you, and learn from me... my yoke is easy, and my burden is light\" — discipleship as shared labor with a kind Master."],
         ["Zion", "The hill of Jerusalem where God’s Temple stood — in Scripture the name grows to mean God’s city, God’s people, and finally the heavenly Jerusalem to come."]
       ];
       function renderGlossary() {
@@ -5610,19 +5683,26 @@
          glossary knows opens that word's definition card instead of
          selecting the verse; every other tap is the verse tap it has
          always been. The word is found from the tap's point with the
-         caret APIs — the chapter's rendering is untouched, so verse
-         tapping, Listen highlighting, and scrolling all work exactly
-         as before, and where no caret can be had the tap simply
-         falls back to the verse. Matching is case-insensitive and
+         caret APIs, and where no caret can be had the tap simply
+         falls back to the verse. The matches are also made visible:
+         the reader underlines every word or phrase this same
+         matching claims, with a quiet dotted line (see glossRanges
+         and appendGlossText) — one matcher for tap and underline
+         alike, so the two can never disagree. Matching is case-insensitive and
          forgives the simple plural and possessive forms (angels →
          Angel, covenant's → Covenant); multi-word terms (Holy
          Spirit, Kingdom of God) match as phrases around the tap. */
       var GLOSS_WORDS = {};    /* one word, lowercase -> [term, definition] */
       var GLOSS_PHRASES = [];  /* [lowercase phrase, term, definition] */
+      var GLOSS_MAX_PHRASE = 2; /* the most words in any glossary phrase */
       GLOSSARY.forEach(function (pair) {
         var low = pair[0].toLowerCase();
         if (low.indexOf(" ") === -1) GLOSS_WORDS[low] = pair;
-        else GLOSS_PHRASES.push([low, pair[0], pair[1]]);
+        else {
+          GLOSS_PHRASES.push([low, pair[0], pair[1]]);
+          var nw = low.split(" ").length;
+          if (nw > GLOSS_MAX_PHRASE) GLOSS_MAX_PHRASE = nw;
+        }
       });
       function glossLookupWord(w) {
         var cands = [w];
@@ -5661,27 +5741,85 @@
           return { text: text, start: a, end: b };
         } catch (e) { return null; }
       }
-      /* The glossary entry a tapped word belongs to, if any:
-         phrases around the tap first (longest first), then the word
-         itself with its plural/possessive forgiveness. */
-      function glossForTap(info) {
-        var re = /[A-Za-zÀ-ÿ]+(?:['’-][A-Za-zÀ-ÿ]+)*/g, m, toks = [], hitIdx = -1;
-        while ((m = re.exec(info.text))) {
-          toks.push(m[0]);
-          if (m.index <= info.start && info.start < m.index + m[0].length) hitIdx = toks.length - 1;
-        }
-        if (hitIdx < 0) return null;
-        for (var size = 3; size >= 2; size--) {
+      /* The one matcher behind both the tap and the new dotted
+         underlines: given a verse segment's tokens (each with its
+         character offsets in the segment) and the token in question,
+         the glossary hit a tap on that token earns — the entry, plus
+         the character range the match covers (a whole phrase, or
+         the word itself) — or null. Phrases around the token first
+         (longest first), then the word itself with its plural and
+         possessive forgiveness: exactly the search the tap has
+         always made, now shared so the underline can never promise
+         a definition the tap would not open, nor hide one it would. */
+      function glossTokens(text) {
+        var re = /[A-Za-zÀ-ÿ]+(?:['’-][A-Za-zÀ-ÿ]+)*/g, m, toks = [];
+        while ((m = re.exec(text))) toks.push({ w: m[0], a: m.index, b: m.index + m[0].length });
+        return toks;
+      }
+      function glossMatchAt(toks, hitIdx) {
+        for (var size = GLOSS_MAX_PHRASE; size >= 2; size--) {
           for (var off = size - 1; off >= 0; off--) {
             var i0 = hitIdx - off;
             if (i0 < 0 || i0 + size > toks.length) continue;
-            var phr = toks.slice(i0, i0 + size).join(" ").toLowerCase();
+            var words = [];
+            for (var wi = i0; wi < i0 + size; wi++) words.push(toks[wi].w);
+            var phr = words.join(" ").toLowerCase();
             for (var gi = 0; gi < GLOSS_PHRASES.length; gi++) {
-              if (GLOSS_PHRASES[gi][0] === phr) return [GLOSS_PHRASES[gi][1], GLOSS_PHRASES[gi][2]];
+              if (GLOSS_PHRASES[gi][0] === phr) {
+                return { pair: [GLOSS_PHRASES[gi][1], GLOSS_PHRASES[gi][2]], a: toks[i0].a, b: toks[i0 + size - 1].b };
+              }
             }
           }
         }
-        return glossLookupWord(toks[hitIdx].toLowerCase());
+        var pair = glossLookupWord(toks[hitIdx].w.toLowerCase());
+        if (pair) return { pair: pair, a: toks[hitIdx].a, b: toks[hitIdx].b };
+        return null;
+      }
+      /* The glossary entry a tapped word belongs to, if any. */
+      function glossForTap(info) {
+        var toks = glossTokens(info.text), hitIdx = -1;
+        for (var i = 0; i < toks.length; i++) {
+          if (toks[i].a <= info.start && info.start < toks[i].b) hitIdx = i;
+        }
+        if (hitIdx < 0) return null;
+        var hit = glossMatchAt(toks, hitIdx);
+        return hit ? hit.pair : null;
+      }
+      /* The character ranges of a verse-text segment that the
+         matcher claims: every token tried in turn, and the ranges
+         the matcher wins for them merged where they overlap (a
+         phrase's words each win the whole phrase, so it lands as
+         one range — one continuous underline). */
+      function glossRanges(text) {
+        var toks = glossTokens(text), ranges = [];
+        for (var i = 0; i < toks.length; i++) {
+          var hit = glossMatchAt(toks, i);
+          if (hit) ranges.push([hit.a, hit.b]);
+        }
+        ranges.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
+        var merged = [];
+        for (var r = 0; r < ranges.length; r++) {
+          var last = merged[merged.length - 1];
+          if (last && ranges[r][0] <= last[1]) { if (ranges[r][1] > last[1]) last[1] = ranges[r][1]; }
+          else merged.push([ranges[r][0], ranges[r][1]]);
+        }
+        return merged;
+      }
+      /* Append one verse-text segment, wrapping each glossary match
+         in a .gw span (the dotted underline). A match's text stays a
+         single text node inside its span, so the tap finder's view
+         of the segment is the match itself — taps and underlines
+         agree by construction. */
+      function appendGlossText(parent, text) {
+        var ranges = glossRanges(text);
+        if (!ranges.length) { parent.appendChild(document.createTextNode(text)); return; }
+        var pos = 0;
+        ranges.forEach(function (r) {
+          if (r[0] > pos) parent.appendChild(document.createTextNode(text.slice(pos, r[0])));
+          parent.appendChild(el("span", "gw", text.slice(r[0], r[1])));
+          pos = r[1];
+        });
+        if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
       }
       function showDefCard(term, def) {
         try {
@@ -6280,16 +6418,21 @@
       }
       /* Words-of-Christ spans (from the WEB's own markup, shipped in assets/nt.js
          as window.__WEB_NT_WOC__: "book,chapter,verse" -> [[start,end],...]
-         character offsets into the unchanged verse text). NT only. */
+         character offsets into the unchanged verse text). NT only.
+         Every segment — plain or red-letter — goes through
+         appendGlossText, so glossary words wear their dotted
+         underline inside Jesus's words too, the red untouched. */
       function appendVerseText(parent, text, spans) {
-        if (!spans) { parent.appendChild(document.createTextNode(text)); return; }
+        if (!spans) { appendGlossText(parent, text); return; }
         var pos = 0;
         spans.forEach(function (rg) {
-          if (rg[0] > pos) parent.appendChild(document.createTextNode(text.slice(pos, rg[0])));
-          parent.appendChild(el("span", "wj", text.slice(rg[0], rg[1])));
+          if (rg[0] > pos) appendGlossText(parent, text.slice(pos, rg[0]));
+          var wj = el("span", "wj");
+          appendGlossText(wj, text.slice(rg[0], rg[1]));
+          parent.appendChild(wj);
           pos = rg[1];
         });
-        if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
+        if (pos < text.length) appendGlossText(parent, text.slice(pos));
       }
       /* Tapping a verse toggles it in the selection: an unselected verse
          lights up, an already-lit verse goes dark again. The share bar,
