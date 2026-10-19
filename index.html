@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610181705" />
+    <meta name="app-build" content="202610191030" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -357,6 +357,9 @@
         box-shadow: var(--shadow);
       }
       .listen-voice select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+      /* The recorded voice's one quiet failure line, shown only when
+         a recording cannot load or play. */
+      .listen-rec-error { margin: 10px auto 0; max-width: 30em; font-size: 14.5px; color: var(--ink-soft); }
       /* The seek row: shown only while listening (playing or paused).
          The slider moves verse by verse; the times beside it are
          estimates from the verses' word counts, marked with a ~. */
@@ -1232,10 +1235,19 @@
             <button class="seek-step" id="seek-fwd" type="button" aria-label="Forward one verse">⏭</button>
             <span class="seek-time" id="seek-time">~0:00 / ~0:00</span>
           </div>
+          <div class="listen-voice" id="listen-mode-row" hidden>
+            <label for="listen-mode-select">Listening voice</label>
+            <select id="listen-mode-select">
+              <option value="device" selected>Device voice</option>
+              <option value="recorded">Recorded voice</option>
+            </select>
+          </div>
           <div class="listen-voice" id="listen-voice-row" hidden>
             <label for="listen-voice-select">Voice</label>
             <select id="listen-voice-select"></select>
           </div>
+          <p class="listen-rec-error" id="listen-rec-error" hidden>Recording unavailable — check your connection, or switch to Device voice.</p>
+          <audio id="rec-audio" preload="none" hidden></audio>
           <div class="listen-opts" id="listen-opts" hidden>
             <span class="lo-group">
               <label for="listen-rate-select">Speed</label>
@@ -5714,7 +5726,7 @@
             " · " + planDoneCount(plan) + " of " + plan.days.length + " days done";
           readBtn.hidden = false;
           var canListen = false;
-          try { canListen = speechOK(); } catch (e) {}
+          try { canListen = speechOK() || recMode(); } catch (e) {}
           listenBtn.hidden = !canListen;
           startBtn.hidden = true;
           card.hidden = false;
@@ -5762,10 +5774,11 @@
       function renderPlans() {
         var body = $("plans-body");
         body.textContent = "";
-        /* The day rows offer listening only where the device can
-           speak — the same gate the reader's Listen bar lives by. */
+        /* The day rows offer listening where the device can speak
+           — or, with the recorded voice chosen, stream — the same
+           gate the reader's Listen bar lives by. */
         var canListen = false;
-        try { canListen = speechOK(); } catch (e) {}
+        try { canListen = speechOK() || recMode(); } catch (e) {}
         PLANS.forEach(function (plan, pi) {
           var block = el("div", "plan-block");
           block.id = "plan-block-" + pi;
@@ -7190,9 +7203,10 @@
           (bi < OT_COUNT ? "Old Testament" : "New Testament") + " · " +
           META[bi][1] + (META[bi][1] === 1 ? " chapter" : " chapters");
         $("chapters-intro").textContent = BOOK_INTROS[bi] || "";
-        /* Play the whole book, where the device can speak. */
+        /* Play the whole book, where the device can speak — or,
+           with the recorded voice chosen, stream it. */
         var blRow = $("book-listen-row");
-        if (blRow) blRow.hidden = !speechOK();
+        if (blRow) blRow.hidden = !(speechOK() || recMode());
         var blBtn = $("book-listen-btn");
         if (blBtn) {
           blBtn.textContent = "▶ Listen to " + META[bi][0];
@@ -7536,6 +7550,110 @@
       function saveRate() {
         try { window.localStorage.setItem(RATE_KEY, String(speechRate)); } catch (e) {}
       }
+      /* ---- the listening voice: device or recorded ----
+         Two ways to hear a chapter. "device" is everything this
+         Listen bar has always done — the device's own speech, verse
+         by verse, with the highlight. "recorded" streams a real
+         recording of the chapter, one MP3 per chapter, through a
+         single audio element: it plays on the lock screen (wired to
+         the Media Session API below), follows the same scopes as the
+         device voice (chapter, book, plan day, auto-continue), takes
+         the same speed and sleep timer, and counts a chapter as read
+         when the recording plays to its end — but it has no verse
+         timings, so no highlight follows it, "Listen from here" is
+         not offered, and the saved verses always stay with the
+         device voice. The pick is remembered on the device the same
+         guarded way as the rate; the default is the device voice. */
+      var MODE_KEY = "web-bible:listen-mode";
+      var listenMode = "device";
+      try {
+        if (window.localStorage.getItem(MODE_KEY) === "recorded") listenMode = "recorded";
+      } catch (e) {}
+      function recMode() { return listenMode === "recorded"; }
+      function saveListenMode() {
+        try { window.localStorage.setItem(MODE_KEY, listenMode); } catch (e) {}
+      }
+      /* The chapter-to-MP3 map: assets/audio.js sets
+         window.__WEB_AUDIO__, keyed "Book C" to the chapter's
+         recording URL. Loaded lazily through the same script-tag
+         path as the cross references — the first time the recorded
+         voice plays — and a failed load resolves to nothing, which
+         the recorded start treats as an unavailable recording. The
+         MP3s themselves are streamed by the audio element at play
+         time only and are never cached anywhere. */
+      var audioMapPromise = null;
+      function loadAudioMap() {
+        if (window.__WEB_AUDIO__) return Promise.resolve(window.__WEB_AUDIO__);
+        if (!audioMapPromise) {
+          audioMapPromise = new Promise(function (resolve) {
+            var s = document.createElement("script");
+            s.src = "assets/audio.js";
+            s.onload = function () { resolve(window.__WEB_AUDIO__ || null); };
+            s.onerror = function () { resolve(null); };
+            document.head.appendChild(s);
+          });
+        }
+        return audioMapPromise;
+      }
+      function recAudioEl() { return $("rec-audio"); }
+      function hideRecError() {
+        try { var p = $("listen-rec-error"); if (p) p.hidden = true; } catch (e) {}
+      }
+      function showRecError() {
+        try { var p = $("listen-rec-error"); if (p) p.hidden = false; } catch (e) {}
+      }
+      /* Media Session: what the lock screen and headphones see and
+         drive while a recording plays. The metadata names the
+         chapter; the track buttons move within the current
+         listening scope (see recSkipChapter). Cleared whenever
+         recorded playback stops, so a stopped app hands the lock
+         screen back. */
+      function setRecMediaSession(bi, ci) {
+        try {
+          if (!("mediaSession" in navigator)) return;
+          var ms = navigator.mediaSession;
+          if (typeof MediaMetadata === "function") {
+            ms.metadata = new MediaMetadata({
+              title: refName(bi, ci),
+              artist: "World English Bible",
+              artwork: [{ src: "icon-512.png", sizes: "512x512", type: "image/png" }]
+            });
+          }
+          ms.setActionHandler("play", function () {
+            var a = recAudioEl(); if (a) { var p = a.play(); if (p && p.catch) p.catch(function () {}); }
+          });
+          ms.setActionHandler("pause", function () {
+            var a = recAudioEl(); if (a) a.pause();
+          });
+          ms.setActionHandler("previoustrack", function () { recSkipChapter(-1); });
+          ms.setActionHandler("nexttrack", function () { recSkipChapter(1); });
+        } catch (e) {}
+      }
+      function clearRecMediaSession() {
+        try {
+          if (!("mediaSession" in navigator)) return;
+          var ms = navigator.mediaSession;
+          ms.metadata = null;
+          ["play", "pause", "previoustrack", "nexttrack"].forEach(function (act) {
+            try { ms.setActionHandler(act, null); } catch (e) {}
+          });
+        } catch (e) {}
+      }
+      /* Stop the recording itself: silence the element, let go of
+         the stream, and clear the lock-screen presence. Called on
+         every stop and every finish, whatever path brought us here,
+         so no recording ever plays on past the listening it belongs
+         to. Safe when nothing is recorded or playing. */
+      function stopRecAudio() {
+        try {
+          var a = recAudioEl();
+          if (a) {
+            try { a.pause(); } catch (e) {}
+            try { a.removeAttribute("src"); a.load(); } catch (e) {}
+          }
+        } catch (e) {}
+        clearRecMediaSession();
+      }
       function speechOK() {
         try {
           return !!(window.speechSynthesis &&
@@ -7552,15 +7670,28 @@
         try {
           var bar = $("listen-bar");
           if (!bar) return;
-          bar.hidden = !speechOK();
+          bar.hidden = !(speechOK() || recMode());
           $("listen-btn").hidden = !!listenState;
           $("listen-controls").hidden = !listenState;
           $("listen-pause-btn").textContent =
             listenState && listenState.paused ? "▶ Resume" : "⏸ Pause";
           var opts = $("listen-opts");
-          if (opts) opts.hidden = !speechOK();
+          if (opts) opts.hidden = !(speechOK() || recMode());
+          /* A recording cannot start mid-chapter, so "Listen from
+             here" is offered only with the device voice. */
           var lf = $("sharebar-listen");
-          if (lf) lf.hidden = !speechOK();
+          if (lf) lf.hidden = !speechOK() || recMode();
+          /* The listening-voice choice stands whenever listening
+             itself is available; the device-voice picker and its
+             help belong to the device voice alone. */
+          var mrow = $("listen-mode-row");
+          if (mrow) mrow.hidden = !(speechOK() || recMode());
+          var vrow = $("listen-voice-row");
+          if (vrow && recMode()) vrow.hidden = true;
+          var vhelp = $("voice-help-toggle");
+          if (vhelp) vhelp.hidden = recMode();
+          if (recMode()) { var vh = $("voice-help"); if (vh) vh.hidden = true; }
+          if (!listenState) hideRecError();
           /* The saved-verses playback bar stands only while the
              saved verses themselves are being spoken. */
           var slb = $("saved-listen-bar");
@@ -7581,6 +7712,7 @@
       }
       function stopListening() {
         var wasActive = !!listenState;
+        var wasRec = !!(listenState && listenState.mode === "recorded");
         listenSession++;
         clearListenTimer();
         clearSpoken();
@@ -7589,12 +7721,14 @@
         pendingPlanListen = false;
         bookListen = null;
         pendingBookListen = false;
+        if (wasRec) stopRecAudio();
         if (wasActive) {
           try { if (speechOK()) window.speechSynthesis.cancel(); } catch (e) {}
         }
         resetListenUI();
       }
       function finishListening() {
+        var wasRec = !!(listenState && listenState.mode === "recorded");
         listenSession++;
         clearListenTimer();
         clearSpoken();
@@ -7603,6 +7737,7 @@
         pendingPlanListen = false;
         bookListen = null;
         pendingBookListen = false;
+        if (wasRec) stopRecAudio();
         resetListenUI();
       }
       /* A chapter has been spoken to its very end: it counts as read,
@@ -7822,7 +7957,7 @@
           var row = $("listen-voice-row"), sel = $("listen-voice-select");
           if (!row || !sel) return;
           var vs = speechOK() ? englishVoices() : [];
-          row.hidden = !vs.length;
+          row.hidden = !vs.length || recMode();
           if (!vs.length) return;
           var cur = sel.value, keep = "";
           for (var k = 0; k < vs.length; k++) {
@@ -7932,7 +8067,7 @@
          Pause/Resume/Stop controls — and ends at the day's end. */
       function startPlanDayListen(pi, di) {
         try {
-          if (!speechOK()) return;
+          if (!speechOK() && !recMode()) return;
           var plan = PLANS[pi];
           if (!plan || !plan.days[di] || !plan.days[di].length) return;
           var pl = { chapters: plan.days[di].slice(), idx: 0 };
@@ -7954,7 +8089,7 @@
          done, with the render flagged to start listening. */
       function startBookListen(bi) {
         try {
-          if (!speechOK()) return;
+          if (!speechOK() && !recMode()) return;
           openChapter(bi, 0, 0);
           bookListen = { b: bi };
           pendingBookListen = true;
@@ -8000,7 +8135,126 @@
           try { finishListening(); } catch (e2) {}
         }
       }
+      /* ---- the recorded voice ----
+         Plays the open chapter's recording through the one audio
+         element: the URL comes from the chapter map, the speed from
+         the same remembered rate the device voice uses, and the
+         scope-keeping (plan day, book, auto-continue) is shared —
+         chapterPlaybackEnded decides what follows a finished
+         chapter exactly as it does for speech, and a recording that
+         plays to its end counts the chapter as read the same way.
+         No utterance queue, no watchdog, no highlight: the state
+         carries only what the shared controls need. */
+      function startRecordedListening(fromPlan, fromBook) {
+        var bi = current.b, ci = current.c;
+        loadAudioMap().then(function (map) {
+          try {
+            /* The reader may have moved on while the map loaded. */
+            if (current.b !== bi || current.c !== ci) return;
+            var url = map ? map[refName(bi, ci)] : null;
+            if (!url) { recLoadFailed(); return; }
+            /* Mirror startListening's queue-keeping: starting over
+               stops what was playing; a plan-day or book
+               continuation keeps its scope across the stop. */
+            var keepPlan = fromPlan ? planListen : null;
+            var keepBook = fromBook ? bookListen : null;
+            stopListening();
+            planListen = keepPlan;
+            bookListen = keepBook;
+            try { dismissSelection(); } catch (e) {}
+            var st = {
+              id: ++listenSession, paused: false, spokenEl: null,
+              b: bi, c: ci, mode: "recorded",
+              queue: [], step: 0, token: 0, voice: null,
+              timer: null, deadline: 0, remaining: 0,
+              cumMs: [0], totalMs: 0, restartOnResume: false
+            };
+            listenState = st;
+            hideRecError();
+            resetListenUI();
+            playRecChapter(st, url);
+          } catch (e) { recLoadFailed(); }
+        }).catch(function () { recLoadFailed(); });
+      }
+      function playRecChapter(st, url) {
+        var a = recAudioEl();
+        if (!a) { recLoadFailed(); return; }
+        try { a.pause(); } catch (e) {}
+        a.src = url;
+        try { a.playbackRate = speechRate; } catch (e) {}
+        setRecMediaSession(st.b, st.c);
+        var p = null;
+        try { p = a.play(); } catch (e) { recLoadFailed(); return; }
+        if (p && p.catch) p.catch(function () {
+          /* A play() the browser refuses (or a stream that dies
+             before it starts) is the unavailable path — unless the
+             tap was already superseded by a stop or a new chapter. */
+          if (listenState === st) recLoadFailed();
+        });
+      }
+      /* The recording for the chapter now playing has ended: the
+         chapter counts as read and the scope decides what follows,
+         through the very same chapterPlaybackEnded the device voice
+         ends in. A stale element event (a stop already landed) does
+         nothing. */
+      function recChapterEnded() {
+        var st = listenState;
+        if (!st || st.mode !== "recorded") return;
+        chapterPlaybackEnded(st);
+      }
+      /* A recording could not load or play: one quiet line in the
+         Listen area, playback stopped gracefully, no retries. The
+         device voice is untouched and stays fully usable. */
+      function recLoadFailed() {
+        try { stopListening(); } catch (e) {}
+        showRecError();
+      }
+      /* The lock screen's previous/next track buttons: move one
+         chapter within the current listening scope — a plan day
+         walks its own chapters, a book walks its own, and an
+         ordinary chapter walks the Bible's order — landing the same
+         way a finished chapter lands (the new chapter renders, then
+         its recording starts). At a scope's edge, nothing happens. */
+      function recSkipChapter(delta) {
+        try {
+          var st = listenState;
+          if (!st || st.mode !== "recorded") return;
+          if (planListen && planListen.chapters[planListen.idx] &&
+              planListen.chapters[planListen.idx].b === st.b &&
+              planListen.chapters[planListen.idx].c === st.c) {
+            var ni = planListen.idx + delta;
+            if (ni < 0 || ni >= planListen.chapters.length) return;
+            var pl = planListen;
+            pl.idx = ni;
+            var nx = pl.chapters[ni];
+            openChapter(nx.b, nx.c, 0, "keep");
+            planListen = pl;
+            pendingPlanListen = true;
+            return;
+          }
+          if (bookListen && st.b === bookListen.b) {
+            var nc = st.c + delta;
+            if (nc < 0 || nc >= META[st.b][1]) return;
+            var bl = bookListen, bb = st.b;
+            openChapter(bb, nc, 0, "keep");
+            bookListen = bl;
+            pendingBookListen = true;
+            return;
+          }
+          var lin = CHAP_START[st.b] + st.c + delta;
+          if (lin < 0 || lin > 1188) return;
+          var tg = fromLinear(lin);
+          openChapter(tg.b, tg.c, 0, "keep");
+          pendingAutoListen = true;
+        } catch (e) {}
+      }
       function startListening(fromVerse, fromPlan, fromBook) {
+        /* The recorded voice takes every chapter start — a recording
+           is a whole chapter, so a "from here" verse is simply where
+           the chapter's recording begins: at its beginning. The
+           saved verses never come through here; they keep the
+           device voice. */
+        if (recMode()) { startRecordedListening(fromPlan, fromBook); return; }
         try {
           if (!speechOK()) return;
           var bi = current.b, ci = current.c;
@@ -8054,7 +8308,21 @@
       }
       function toggleListenPause() {
         try {
-          if (!listenState || !speechOK()) return;
+          if (!listenState) return;
+          /* The recorded voice pauses and resumes its audio element;
+             the device voice below is untouched. */
+          if (listenState.mode === "recorded") {
+            var ra = recAudioEl();
+            if (!ra) return;
+            if (listenState.paused) {
+              var rp = ra.play();
+              if (rp && rp.catch) rp.catch(function () { recLoadFailed(); });
+            } else {
+              ra.pause();
+            }
+            return;
+          }
+          if (!speechOK()) return;
           var st = listenState;
           if (st.paused) {
             st.paused = false;
@@ -8105,12 +8373,44 @@
         var r = s % 60;
         return Math.floor(s / 60) + ":" + (r < 10 ? "0" : "") + r;
       }
+      /* The recorded voice's seek row: the same slider and label,
+         but honest times — the recording's own current position and
+         total length, no estimates and no tildes — and the slider
+         drags through the recording itself. The one-verse step
+         buttons have no meaning for a recording and step aside.
+         Driven by the audio element's own events (timeupdate,
+         loadedmetadata), never a timer of its own. */
+      function recSyncSeekUI() {
+        try {
+          var row = $("listen-seek");
+          if (!row) return;
+          if (!listenState || listenState.mode !== "recorded") { row.hidden = true; return; }
+          row.hidden = false;
+          var back = $("seek-back"), fwd = $("seek-fwd");
+          if (back) back.hidden = true;
+          if (fwd) fwd.hidden = true;
+          var a = recAudioEl();
+          var dur = a && isFinite(a.duration) ? a.duration : 0;
+          var cur = a ? a.currentTime || 0 : 0;
+          var slider = $("listen-slider");
+          var dsec = String(Math.max(0, Math.floor(dur)));
+          if (slider.max !== dsec) slider.max = dsec;
+          if (!seekDragging) slider.value = String(Math.max(0, Math.min(Math.floor(dur), Math.floor(cur))));
+          $("seek-time").textContent = fmtSeekTime(cur * 1000) + " / " + fmtSeekTime(dur * 1000);
+        } catch (e) {}
+      }
       function syncSeekUI() {
         try {
           var row = $("listen-seek");
           if (!row) return;
           if (!listenState) { row.hidden = true; return; }
+          /* The recorded voice's seek row is a true time seek bar —
+             see recSyncSeekUI. */
+          if (listenState.mode === "recorded") { recSyncSeekUI(); return; }
           row.hidden = false;
+          var sBack = $("seek-back"), sFwd = $("seek-fwd");
+          if (sBack) sBack.hidden = false;
+          if (sFwd) sFwd.hidden = false;
           var st = listenState;
           var slider = $("listen-slider");
           var last = Math.max(0, st.queue.length - 2);
@@ -8155,11 +8455,19 @@
         sliderEl.addEventListener("pointerdown", function () { seekDragging = true; });
         sliderEl.addEventListener("input", function () {
           seekDragging = true;
-          /* Preview the dragged verse's estimated time as it moves;
-             the seek itself lands on release (the change event). */
+          /* Preview the dragged position's time as it moves; the
+             seek itself lands on release (the change event). For the
+             recorded voice the preview is the recording's own time,
+             with no estimate tilde. */
           try {
             if (!listenState) return;
             var v = parseInt(sliderEl.value, 10) || 0;
+            if (listenState.mode === "recorded") {
+              var ra2 = recAudioEl();
+              var rd = ra2 && isFinite(ra2.duration) ? ra2.duration : 0;
+              $("seek-time").textContent = fmtSeekTime(v * 1000) + " / " + fmtSeekTime(rd * 1000);
+              return;
+            }
             $("seek-time").textContent =
               "~" + fmtSeekTime(listenState.cumMs[v + 1] || 0) + " / ~" + fmtSeekTime(listenState.totalMs);
           } catch (e) {}
@@ -8167,6 +8475,12 @@
         sliderEl.addEventListener("change", function () {
           var v = parseInt(sliderEl.value, 10) || 0;
           seekDragging = false;
+          /* The recorded voice seeks the recording itself. */
+          if (listenState && listenState.mode === "recorded") {
+            try { var ra3 = recAudioEl(); if (ra3) ra3.currentTime = v; } catch (e) {}
+            try { recSyncSeekUI(); } catch (e) {}
+            return;
+          }
           seekToStep(v + 1);
         });
         sliderEl.addEventListener("pointerup", function () {
@@ -8208,7 +8522,10 @@
             if (RATE_CHOICES.indexOf(v) < 0) return;
             speechRate = v;
             saveRate();
-            if (listenState) { refreshListenEstimates(listenState); syncSeekUI(); }
+            if (listenState && listenState.mode === "recorded") {
+              /* The recording takes the new speed at once. */
+              try { var ra4 = recAudioEl(); if (ra4) ra4.playbackRate = v; } catch (e) {}
+            } else if (listenState) { refreshListenEstimates(listenState); syncSeekUI(); }
           });
         }
       } catch (e) {}
@@ -8229,6 +8546,59 @@
         });
       } catch (e) {}
       try { refreshAutoContUI(); } catch (e) {}
+      /* The listening-voice choice: the picker opens on the
+         remembered pick, and a change is saved at once. Switching
+         mid-listen stops what is playing — the two voices share
+         the controls but never a sitting. The device-voice picker
+         steps aside while the recorded voice is chosen
+         (refreshVoicePicker and resetListenUI both see to it). */
+      try {
+        var modeSel = $("listen-mode-select");
+        if (modeSel) {
+          modeSel.value = listenMode;
+          modeSel.addEventListener("change", function () {
+            var v = modeSel.value === "recorded" ? "recorded" : "device";
+            if (v === listenMode) return;
+            listenMode = v;
+            saveListenMode();
+            if (listenState) stopListening();
+            hideRecError();
+            try { refreshVoicePicker(); } catch (e) {}
+            resetListenUI();
+          });
+        }
+      } catch (e) {}
+      /* The recording element's own events drive the recorded
+         voice: its end is the chapter's end, its clock is the
+         seek bar's, its play/pause keep the on-screen button
+         honest (the lock screen can pause it too), and its error
+         is the one quiet failure line. All of them no-op unless a
+         recorded sitting is live. */
+      try {
+        var recEl = recAudioEl();
+        if (recEl) {
+          recEl.addEventListener("ended", function () { recChapterEnded(); });
+          recEl.addEventListener("error", function () {
+            if (listenState && listenState.mode === "recorded") recLoadFailed();
+          });
+          recEl.addEventListener("timeupdate", function () { recSyncSeekUI(); });
+          recEl.addEventListener("loadedmetadata", function () { recSyncSeekUI(); });
+          recEl.addEventListener("durationchange", function () { recSyncSeekUI(); });
+          recEl.addEventListener("play", function () {
+            if (listenState && listenState.mode === "recorded") {
+              listenState.paused = false;
+              hideRecError();
+              resetListenUI();
+            }
+          });
+          recEl.addEventListener("pause", function () {
+            if (listenState && listenState.mode === "recorded" && !recEl.ended) {
+              listenState.paused = true;
+              resetListenUI();
+            }
+          });
+        }
+      } catch (e) {}
       /* "Listen from here" in the verse action bar: speak the open
          chapter starting at the first selected verse, with the chosen
          voice and speed. startListening clears the selection itself,
