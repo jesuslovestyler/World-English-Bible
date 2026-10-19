@@ -446,6 +446,24 @@
         padding: 8px 14px; min-height: 40px; box-shadow: var(--shadow);
       }
       .xref-chip:active { transform: translateY(1px); }
+      /* per-verse cross references in the verse action bar (see
+         assets/xrefs.js): the same chips under a like heading, in a
+         scrollable wrap when a verse carries many, shown only while
+         exactly one verse is selected. */
+      body.share-xrefs-open .wrap { padding-bottom: 400px; }
+      .sb-xrefs { border-top: 1px solid var(--line); padding-top: 10px; }
+      .sb-xrefs[hidden] { display: none; }
+      .sb-xrefs .xref-head { margin: 0 0 8px; }
+      .sb-xref-list {
+        display: flex; flex-wrap: wrap; gap: 8px;
+        max-height: 150px; overflow-y: auto; padding: 2px;
+      }
+      .sharebar button.xref-chip {
+        font-size: 15px; color: var(--accent); background: var(--surface);
+        border: 1px solid var(--line); border-radius: 999px;
+        padding: 8px 14px; min-height: 40px; box-shadow: var(--shadow);
+      }
+
       .chapter-text .wj { color: var(--redletter); }
       /* a word or phrase the Bible Words glossary knows (see
          glossRanges): the quiet dotted underline that says a tap
@@ -1403,6 +1421,12 @@
         <button type="button" class="sb-ghost" id="sharebar-listen">▶ Listen from here</button>
         <button type="button" id="sharebar-btn">Share this verse</button>
       </div>
+      <!-- per-verse cross references: filled by refreshVerseXrefs
+           while exactly one verse is selected; hidden otherwise -->
+      <div class="sb-xrefs" id="sharebar-xrefs" hidden>
+        <h3 class="xref-head">Cross references</h3>
+        <div class="sb-xref-list" id="sharebar-xref-list"></div>
+      </div>
     </div>
     <!-- note editor for the current selection -->
     <div class="notepanel" id="note-panel" hidden>
@@ -1565,6 +1589,32 @@
       }
       function ensureBook(bi) { return loadTestament(testamentOf(bi)); }
       function ensureAll() { return Promise.all([loadTestament("ot"), loadTestament("nt")]); }
+
+      /* ---- per-verse cross references: assets/xrefs.js sets
+         window.__WEB_XREFS__, keyed "Book C:V" with each verse's
+         reference labels in the data's own order (the Treasury of
+         Scripture Knowledge's). Loaded lazily through
+         the same script-tag path as the Bible text — the first time
+         a chapter opens in the reader — so it never delays the home
+         view, and the service worker's runtime caching keeps it
+         working offline after that first load, exactly like ot.js
+         and nt.js. A failed load resolves to nothing: the verse
+         action bar simply shows no cross-reference section and
+         nothing anywhere errors. */
+      var xrefsPromise = null, xrefsSettled = false;
+      function loadXrefs() {
+        if (window.__WEB_XREFS__) { xrefsSettled = true; return Promise.resolve(window.__WEB_XREFS__); }
+        if (!xrefsPromise) {
+          xrefsPromise = new Promise(function (resolve) {
+            var s = document.createElement("script");
+            s.src = "assets/xrefs.js";
+            s.onload = function () { xrefsSettled = true; resolve(window.__WEB_XREFS__ || null); };
+            s.onerror = function () { xrefsSettled = true; resolve(null); };
+            document.head.appendChild(s);
+          });
+        }
+        return xrefsPromise;
+      }
 
       /* ---- reading-time estimates ----
          A quiet "About N minutes" figured from a chapter's actual
@@ -4597,6 +4647,7 @@
         } catch (e) {}
         $("sharebar").hidden = false;
         document.body.classList.add("share-open");
+        refreshVerseXrefs();
         setPageMeta(ref + " — World English Bible",
                     selectionPlainText() + " — " + ref + " (World English Bible)");
         try { history.replaceState(null, "", selectionHash()); } catch (e) {}
@@ -4605,10 +4656,96 @@
         selection = { b: bi, c: ci, verses: verses.slice().sort(function (a, b) { return a - b; }) };
         refreshSelectionUI();
       }
+      /* ---- per-verse cross references in the action bar ----
+         While exactly one verse is selected, that verse's cross
+         references (assets/xrefs.js, loaded lazily by loadXrefs)
+         stand under the verse actions as chips in the data's own
+         order, each opening its passage the way a deep
+         link does — a verse or range lands with those verses
+         selected. No selection, several verses, or a verse with no
+         references: the section does not appear. Display only, like
+         the chapter-end blocks — never part of the Bible text and
+         never spoken by Listen. */
+      function verseXrefsFor(bi, ci, v) {
+        var data = window.__WEB_XREFS__;
+        if (!data) return null;
+        var list = data[META[bi][0] + " " + (ci + 1) + ":" + v];
+        return (list && list.length) ? list : null;
+      }
+      /* A verse cross-reference label read as a place to open, in
+         every shape the data takes: "John 1:1-3" (a run within one
+         chapter), "Genesis 11:32-12:1" (a run into the next
+         chapter), "2 Chronicles 36:22-Ezra 1:3" (the end's book
+         named again, and it can be the next book). A run that
+         leaves its first chapter lands on that chapter with
+         everything from its first verse to the chapter's end
+         selected — the nearest landing the reader's one-chapter
+         deep links can make. */
+      function parseVerseXref(label) {
+        var m = /^(.+?)\s+(\d+):(\d+)(.*)$/.exec(label);
+        if (!m) return null;
+        function bookIndex(name) {
+          if (name === "Psalm") name = "Psalms";
+          for (var i = 0; i < META.length; i++) if (META[i][0] === name) return i;
+          return -1;
+        }
+        var bi = bookIndex(m[1]);
+        if (bi < 0) return null;
+        var chap = parseInt(m[2], 10);
+        if (chap < 1 || chap > META[bi][1]) return null;
+        var v1 = parseInt(m[3], 10), hl = v1, rest = m[4] || "";
+        var rm = /^-(\d+)$/.exec(rest);
+        if (rm) {
+          var v2 = parseInt(rm[1], 10);
+          if (v2 > v1) hl = [v1, v2];
+        } else if (rest.charAt(0) === "-") {
+          var bk = bookData(bi);
+          if (bk && bk.c[chap - 1]) {
+            var parts = bk.c[chap - 1].split("\n"), lastV = parts.length;
+            while (lastV > 0 && !parts[lastV - 1]) lastV--;
+            if (lastV > v1) hl = [v1, lastV];
+          }
+        }
+        return { b: bi, c: chap - 1, hl: hl };
+      }
+      function refreshVerseXrefs() {
+        var box = $("sharebar-xrefs");
+        if (!box) return;
+        var single = !!(selection && selection.verses.length === 1);
+        var list = single ? verseXrefsFor(selection.b, selection.c, selection.verses[0]) : null;
+        if (!list) {
+          box.hidden = true;
+          document.body.classList.remove("share-xrefs-open");
+          /* One verse is selected but the data has not landed yet:
+             when it does, run this refresh once more for whatever
+             selection is standing then. */
+          if (single && !window.__WEB_XREFS__ && !xrefsSettled) {
+            loadXrefs().then(function () { refreshVerseXrefs(); });
+          }
+          return;
+        }
+        var wrap = $("sharebar-xref-list");
+        wrap.textContent = "";
+        list.forEach(function (label) {
+          var chip = el("button", "xref-chip", label);
+          chip.type = "button";
+          var target = parseVerseXref(label);
+          if (target) {
+            chip.addEventListener("click", function () {
+              openChapter(target.b, target.c, target.hl);
+            });
+          }
+          wrap.appendChild(chip);
+        });
+        box.hidden = false;
+        document.body.classList.add("share-xrefs-open");
+      }
       function dismissSelection() {
         selection = null;
         $("sharebar").hidden = true;
         document.body.classList.remove("share-open");
+        document.body.classList.remove("share-xrefs-open");
+        try { var xb0 = $("sharebar-xrefs"); if (xb0) xb0.hidden = true; } catch (e) {}
         try { var np = $("note-panel"); if (np) np.hidden = true; } catch (e) {}
         try { closeHlPalette(); } catch (e) {}
       }
@@ -7139,6 +7276,10 @@
         try { localStorage.setItem("web-bible:last-read", JSON.stringify({ b: bi, c: ci })); } catch (e) {}
         lastRead = { b: bi, c: ci };
         refreshContinue();
+        /* Warm the per-verse cross references in the background:
+           a chapter opening in the reader is their first possible
+           use, and the fetch never delays the chapter itself. */
+        try { loadXrefs(); } catch (e) {}
 
         var token = ++readerToken;
         ensureBook(bi).then(function () {
