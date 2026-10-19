@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610191030" />
+    <meta name="app-build" content="202610191510" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -8998,7 +8998,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610181705";
+      var APP_BUILD_STAMP = "202610191510";
       (function () {
         try {
           var btn = $("update-btn");
@@ -9036,6 +9036,22 @@
             if (m) return m[1];
             return null;
           }
+          /* The running page's own stamp. Read it from the live
+             <meta name="app-build"> tag whenever that tag exists, so
+             the comparison is always like-for-like with the stamp
+             extracted from the fetched copy (which also reads the
+             meta tag first). The APP_BUILD_STAMP constant is only a
+             fallback for when the tag is somehow missing. */
+          function localBuildStamp() {
+            try {
+              var tag = document.querySelector('meta[name="app-build"]');
+              if (tag) {
+                var v = tag.getAttribute("content");
+                if (v) return v;
+              }
+            } catch (e) {}
+            return APP_BUILD_STAMP;
+          }
           function restoreBtn() {
             try { btn.disabled = false; btn.textContent = "↻ Check for updates"; } catch (e) {}
           }
@@ -9058,7 +9074,7 @@
               return resp.text();
             }).then(function (html) {
               var remoteStamp = extractBuildStamp(html);
-              if (remoteStamp && remoteStamp !== APP_BUILD_STAMP) {
+              if (remoteStamp && remoteStamp !== localBuildStamp()) {
                 setUpdateStatus("A new version is ready — refreshing…");
                 var reloadUrl = base + "?wb_updated=1&_wbupdate=" + Date.now() + hash;
                 setTimeout(function () {
