@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610202208" />
+    <meta name="app-build" content="202610202230" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -8380,43 +8380,106 @@
       function pdfEsc(str) {
         return String(str).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)").replace(/[\r\n]/g, " ");
       }
-      /* Text widths come from the built-in faces' own published
-         metrics (per-1000-em tables), never from the device's
-         fonts. The tables are used only to decide where lines
-         break; within a line the words flow on the reader's own
-         advances, so the printed page is consistent wherever the
-         file is made. (Canvas measurement was tried first and
-         discarded — a device whose serif differs from Times
-         reports widths that have nothing to do with this file.) */
-      var PDF_TIMES_W = {
-        " ": 250, "!": 333, "\"": 408, "#": 500, "$": 500, "%": 833, "&": 778, "'": 333,
-        "(": 333, ")": 333, "*": 500, "+": 564, ",": 250, "-": 333, ".": 250, "/": 278,
-        "0": 500, "1": 500, "2": 500, "3": 500, "4": 500, "5": 500, "6": 500, "7": 500, "8": 500, "9": 500,
-        ":": 278, ";": 278, "<": 564, "=": 564, ">": 564, "?": 444, "@": 921,
-        "A": 722, "B": 667, "C": 667, "D": 722, "E": 611, "F": 556, "G": 722, "H": 722, "I": 333, "J": 389,
-        "K": 722, "L": 611, "M": 889, "N": 722, "O": 722, "P": 556, "Q": 722, "R": 667, "S": 556, "T": 611,
-        "U": 722, "V": 722, "W": 944, "X": 722, "Y": 722, "Z": 611,
-        "[": 333, "\\": 278, "]": 333, "^": 469, "_": 500, "`": 333,
-        "a": 444, "b": 500, "c": 444, "d": 500, "e": 444, "f": 333, "g": 500, "h": 500, "i": 278, "j": 278,
-        "k": 500, "l": 278, "m": 778, "n": 500, "o": 500, "p": 500, "q": 500, "r": 333, "s": 389, "t": 278,
-        "u": 500, "v": 500, "w": 722, "x": 500, "y": 500, "z": 444,
-        "{": 480, "|": 200, "}": 480, "~": 541,
-        "\u2018": 278, "\u2019": 278, "\u201c": 500, "\u201d": 500, "\u2013": 556, "\u2014": 1000, "\u2026": 1000, "\u2022": 350
-      };
-      var PDF_HELV_W = {
-        " ": 278, "0": 556, "1": 556, "2": 556, "3": 556, "4": 556, "5": 556, "6": 556, "7": 556, "8": 556, "9": 556,
-        "A": 722, "B": 722, "C": 722, "D": 722, "E": 667, "F": 611, "G": 778, "H": 722, "I": 278, "J": 556,
-        "K": 722, "L": 611, "M": 833, "N": 722, "O": 778, "P": 667, "Q": 778, "R": 722, "S": 667, "T": 611,
-        "U": 722, "V": 667, "W": 944, "X": 667, "Y": 667, "Z": 611
+      /* Text widths are the drawn faces' own true advance
+         widths (per-1000-em), one table per face: Times-Roman,
+         Times-Italic, and Times-Bold all differ from each
+         other, and every line is measured with the table of
+         the face it is actually drawn in — letter spacing
+         included — so the wrap is decided by the same measure
+         the page will be rendered with. (Canvas measurement
+         was tried first and discarded — a device whose serif
+         differs from the file's faces reports widths that
+         have nothing to do with this file.) */
+      var PDF_FONT_W = {
+        /* F1 = Times-Roman */
+        F1: { " ": 250, "!": 333, "\"": 408, "#": 500, "$": 500, "%": 833, "&": 778, "'": 180, "(": 333, ")": 333, "*": 500, "+": 564, ",": 250, "-": 333, ".": 250,
+          "/": 278, "0": 500, "1": 500, "2": 500, "3": 500, "4": 500, "5": 500, "6": 500, "7": 500, "8": 500, "9": 500, ":": 278, ";": 278, "<": 564, "=": 564,
+          ">": 564, "?": 444, "@": 921, "A": 722, "B": 667, "C": 667, "D": 722, "E": 611, "F": 556, "G": 722, "H": 722, "I": 333, "J": 389, "K": 722, "L": 611,
+          "M": 889, "N": 722, "O": 722, "P": 556, "Q": 722, "R": 667, "S": 556, "T": 611, "U": 722, "V": 722, "W": 944, "X": 722, "Y": 722, "Z": 611, "[": 333,
+          "\\": 278, "]": 333, "^": 469, "_": 500, "`": 333, "a": 444, "b": 500, "c": 444, "d": 500, "e": 444, "f": 333, "g": 500, "h": 500, "i": 278, "j": 278,
+          "k": 500, "l": 278, "m": 778, "n": 500, "o": 500, "p": 500, "q": 500, "r": 333, "s": 389, "t": 278, "u": 500, "v": 500, "w": 722, "x": 500, "y": 500,
+          "z": 444, "{": 480, "|": 200, "}": 480, "~": 541, "\u00a0": 250, "\u00a1": 333, "\u00a2": 500, "\u00a3": 500, "\u00a4": 500, "\u00a5": 500,
+          "\u00a6": 200, "\u00a7": 500, "\u00a8": 333, "\u00a9": 760, "\u00aa": 276, "\u00ab": 500, "\u00ac": 564, "\u00ad": 333, "\u00ae": 760, "\u00af": 500,
+          "\u00b0": 400, "\u00b1": 549, "\u00b2": 300, "\u00b3": 300, "\u00b4": 333, "\u00b5": 576, "\u00b6": 453, "\u00b7": 333, "\u00b8": 333, "\u00b9": 300,
+          "\u00ba": 310, "\u00bb": 500, "\u00bc": 750, "\u00bd": 750, "\u00be": 750, "\u00bf": 444, "\u00c0": 722, "\u00c1": 722, "\u00c2": 722, "\u00c3": 722,
+          "\u00c4": 722, "\u00c5": 722, "\u00c6": 889, "\u00c7": 667, "\u00c8": 611, "\u00c9": 611, "\u00ca": 611, "\u00cb": 611, "\u00cc": 333, "\u00cd": 333,
+          "\u00ce": 333, "\u00cf": 333, "\u00d0": 722, "\u00d1": 722, "\u00d2": 722, "\u00d3": 722, "\u00d4": 722, "\u00d5": 722, "\u00d6": 722, "\u00d7": 564,
+          "\u00d8": 722, "\u00d9": 722, "\u00da": 722, "\u00db": 722, "\u00dc": 722, "\u00dd": 722, "\u00de": 556, "\u00df": 500, "\u00e0": 444, "\u00e1": 444,
+          "\u00e2": 444, "\u00e3": 444, "\u00e4": 444, "\u00e5": 444, "\u00e6": 667, "\u00e7": 444, "\u00e8": 444, "\u00e9": 444, "\u00ea": 444, "\u00eb": 444,
+          "\u00ec": 278, "\u00ed": 278, "\u00ee": 278, "\u00ef": 278, "\u00f0": 500, "\u00f1": 500, "\u00f2": 500, "\u00f3": 500, "\u00f4": 500, "\u00f5": 500,
+          "\u00f6": 500, "\u00f7": 549, "\u00f8": 500, "\u00f9": 500, "\u00fa": 500, "\u00fb": 500, "\u00fc": 500, "\u00fd": 500, "\u00fe": 500, "\u00ff": 500,
+          "\u2018": 333, "\u2019": 333, "\u201c": 444, "\u201d": 444, "\u2013": 500, "\u2014": 1000, "\u2026": 1000, "\u2022": 350 },
+        /* F2 = Helvetica-Bold */
+        F2: { " ": 278, "!": 333, "\"": 474, "#": 556, "$": 556, "%": 889, "&": 722, "'": 238, "(": 333, ")": 333, "*": 389, "+": 584, ",": 278, "-": 333, ".": 278,
+          "/": 278, "0": 556, "1": 556, "2": 556, "3": 556, "4": 556, "5": 556, "6": 556, "7": 556, "8": 556, "9": 556, ":": 333, ";": 333, "<": 584, "=": 584,
+          ">": 584, "?": 611, "@": 975, "A": 722, "B": 722, "C": 722, "D": 722, "E": 667, "F": 611, "G": 778, "H": 722, "I": 278, "J": 556, "K": 722, "L": 611,
+          "M": 833, "N": 722, "O": 778, "P": 667, "Q": 778, "R": 722, "S": 667, "T": 611, "U": 722, "V": 667, "W": 944, "X": 667, "Y": 667, "Z": 611, "[": 333,
+          "\\": 278, "]": 333, "^": 584, "_": 556, "`": 333, "a": 556, "b": 611, "c": 556, "d": 611, "e": 556, "f": 333, "g": 611, "h": 611, "i": 278, "j": 278,
+          "k": 556, "l": 278, "m": 889, "n": 611, "o": 611, "p": 611, "q": 611, "r": 389, "s": 556, "t": 333, "u": 611, "v": 556, "w": 778, "x": 556, "y": 556,
+          "z": 500, "{": 389, "|": 280, "}": 389, "~": 584, "\u00a0": 278, "\u00a1": 333, "\u00a2": 556, "\u00a3": 556, "\u00a4": 556, "\u00a5": 556,
+          "\u00a6": 280, "\u00a7": 556, "\u00a8": 333, "\u00a9": 737, "\u00aa": 370, "\u00ab": 556, "\u00ac": 584, "\u00ad": 333, "\u00ae": 737, "\u00af": 552,
+          "\u00b0": 400, "\u00b1": 549, "\u00b2": 333, "\u00b3": 333, "\u00b4": 333, "\u00b5": 576, "\u00b6": 556, "\u00b7": 333, "\u00b8": 333, "\u00b9": 333,
+          "\u00ba": 365, "\u00bb": 556, "\u00bc": 834, "\u00bd": 834, "\u00be": 834, "\u00bf": 611, "\u00c0": 722, "\u00c1": 722, "\u00c2": 722, "\u00c3": 722,
+          "\u00c4": 722, "\u00c5": 722, "\u00c6": 1000, "\u00c7": 722, "\u00c8": 667, "\u00c9": 667, "\u00ca": 667, "\u00cb": 667, "\u00cc": 278, "\u00cd": 278,
+          "\u00ce": 278, "\u00cf": 278, "\u00d0": 722, "\u00d1": 722, "\u00d2": 778, "\u00d3": 778, "\u00d4": 778, "\u00d5": 778, "\u00d6": 778, "\u00d7": 584,
+          "\u00d8": 778, "\u00d9": 722, "\u00da": 722, "\u00db": 722, "\u00dc": 722, "\u00dd": 667, "\u00de": 667, "\u00df": 611, "\u00e0": 556, "\u00e1": 556,
+          "\u00e2": 556, "\u00e3": 556, "\u00e4": 556, "\u00e5": 556, "\u00e6": 889, "\u00e7": 556, "\u00e8": 556, "\u00e9": 556, "\u00ea": 556, "\u00eb": 556,
+          "\u00ec": 278, "\u00ed": 278, "\u00ee": 278, "\u00ef": 278, "\u00f0": 611, "\u00f1": 611, "\u00f2": 611, "\u00f3": 611, "\u00f4": 611, "\u00f5": 611,
+          "\u00f6": 611, "\u00f7": 549, "\u00f8": 611, "\u00f9": 611, "\u00fa": 611, "\u00fb": 611, "\u00fc": 611, "\u00fd": 556, "\u00fe": 611, "\u00ff": 556,
+          "\u2018": 278, "\u2019": 278, "\u201c": 500, "\u201d": 500, "\u2013": 556, "\u2014": 1000, "\u2026": 1000, "\u2022": 350 },
+        /* F3 = Times-Italic */
+        F3: { " ": 250, "!": 333, "\"": 420, "#": 500, "$": 500, "%": 833, "&": 778, "'": 214, "(": 333, ")": 333, "*": 500, "+": 675, ",": 250, "-": 333, ".": 250,
+          "/": 278, "0": 500, "1": 500, "2": 500, "3": 500, "4": 500, "5": 500, "6": 500, "7": 500, "8": 500, "9": 500, ":": 333, ";": 333, "<": 675, "=": 675,
+          ">": 675, "?": 500, "@": 920, "A": 611, "B": 611, "C": 667, "D": 722, "E": 611, "F": 611, "G": 722, "H": 722, "I": 333, "J": 444, "K": 667, "L": 556,
+          "M": 833, "N": 667, "O": 722, "P": 611, "Q": 722, "R": 611, "S": 500, "T": 556, "U": 722, "V": 611, "W": 833, "X": 611, "Y": 556, "Z": 556, "[": 389,
+          "\\": 278, "]": 389, "^": 422, "_": 500, "`": 333, "a": 500, "b": 500, "c": 444, "d": 500, "e": 444, "f": 278, "g": 500, "h": 500, "i": 278, "j": 278,
+          "k": 444, "l": 278, "m": 722, "n": 500, "o": 500, "p": 500, "q": 500, "r": 389, "s": 389, "t": 278, "u": 500, "v": 444, "w": 667, "x": 444, "y": 444,
+          "z": 389, "{": 400, "|": 275, "}": 400, "~": 541, "\u00a0": 250, "\u00a1": 389, "\u00a2": 500, "\u00a3": 500, "\u00a4": 500, "\u00a5": 500,
+          "\u00a6": 275, "\u00a7": 500, "\u00a8": 333, "\u00a9": 760, "\u00aa": 276, "\u00ab": 500, "\u00ac": 675, "\u00ad": 333, "\u00ae": 760, "\u00af": 500,
+          "\u00b0": 400, "\u00b1": 549, "\u00b2": 300, "\u00b3": 300, "\u00b4": 333, "\u00b5": 576, "\u00b6": 523, "\u00b7": 250, "\u00b8": 333, "\u00b9": 300,
+          "\u00ba": 310, "\u00bb": 500, "\u00bc": 750, "\u00bd": 750, "\u00be": 750, "\u00bf": 500, "\u00c0": 611, "\u00c1": 611, "\u00c2": 611, "\u00c3": 611,
+          "\u00c4": 611, "\u00c5": 611, "\u00c6": 889, "\u00c7": 667, "\u00c8": 611, "\u00c9": 611, "\u00ca": 611, "\u00cb": 611, "\u00cc": 333, "\u00cd": 333,
+          "\u00ce": 333, "\u00cf": 333, "\u00d0": 722, "\u00d1": 667, "\u00d2": 722, "\u00d3": 722, "\u00d4": 722, "\u00d5": 722, "\u00d6": 722, "\u00d7": 675,
+          "\u00d8": 722, "\u00d9": 722, "\u00da": 722, "\u00db": 722, "\u00dc": 722, "\u00dd": 556, "\u00de": 611, "\u00df": 500, "\u00e0": 500, "\u00e1": 500,
+          "\u00e2": 500, "\u00e3": 500, "\u00e4": 500, "\u00e5": 500, "\u00e6": 667, "\u00e7": 444, "\u00e8": 444, "\u00e9": 444, "\u00ea": 444, "\u00eb": 444,
+          "\u00ec": 278, "\u00ed": 278, "\u00ee": 278, "\u00ef": 278, "\u00f0": 500, "\u00f1": 500, "\u00f2": 500, "\u00f3": 500, "\u00f4": 500, "\u00f5": 500,
+          "\u00f6": 500, "\u00f7": 549, "\u00f8": 500, "\u00f9": 500, "\u00fa": 500, "\u00fb": 500, "\u00fc": 500, "\u00fd": 444, "\u00fe": 500, "\u00ff": 444,
+          "\u2018": 333, "\u2019": 333, "\u201c": 556, "\u201d": 556, "\u2013": 500, "\u2014": 889, "\u2026": 889, "\u2022": 350 },
+        /* F4 = Times-Bold */
+        F4: { " ": 250, "!": 333, "\"": 555, "#": 500, "$": 500, "%": 1000, "&": 833, "'": 278, "(": 333, ")": 333, "*": 500, "+": 570, ",": 250, "-": 333, ".": 250,
+          "/": 278, "0": 500, "1": 500, "2": 500, "3": 500, "4": 500, "5": 500, "6": 500, "7": 500, "8": 500, "9": 500, ":": 333, ";": 333, "<": 570, "=": 570,
+          ">": 570, "?": 500, "@": 930, "A": 722, "B": 667, "C": 722, "D": 722, "E": 667, "F": 611, "G": 778, "H": 778, "I": 389, "J": 500, "K": 778, "L": 667,
+          "M": 944, "N": 722, "O": 778, "P": 611, "Q": 778, "R": 722, "S": 556, "T": 667, "U": 722, "V": 722, "W": 1000, "X": 722, "Y": 722, "Z": 667, "[": 333,
+          "\\": 278, "]": 333, "^": 581, "_": 500, "`": 333, "a": 500, "b": 556, "c": 444, "d": 556, "e": 444, "f": 333, "g": 500, "h": 556, "i": 278, "j": 333,
+          "k": 556, "l": 278, "m": 833, "n": 556, "o": 500, "p": 556, "q": 556, "r": 444, "s": 389, "t": 333, "u": 556, "v": 500, "w": 722, "x": 500, "y": 500,
+          "z": 444, "{": 394, "|": 220, "}": 394, "~": 520, "\u00a0": 250, "\u00a1": 333, "\u00a2": 500, "\u00a3": 500, "\u00a4": 500, "\u00a5": 500,
+          "\u00a6": 220, "\u00a7": 500, "\u00a8": 333, "\u00a9": 747, "\u00aa": 300, "\u00ab": 500, "\u00ac": 570, "\u00ad": 333, "\u00ae": 747, "\u00af": 500,
+          "\u00b0": 400, "\u00b1": 549, "\u00b2": 300, "\u00b3": 300, "\u00b4": 333, "\u00b5": 576, "\u00b6": 540, "\u00b7": 333, "\u00b8": 333, "\u00b9": 300,
+          "\u00ba": 330, "\u00bb": 500, "\u00bc": 750, "\u00bd": 750, "\u00be": 750, "\u00bf": 500, "\u00c0": 722, "\u00c1": 722, "\u00c2": 722, "\u00c3": 722,
+          "\u00c4": 722, "\u00c5": 722, "\u00c6": 1000, "\u00c7": 722, "\u00c8": 667, "\u00c9": 667, "\u00ca": 667, "\u00cb": 667, "\u00cc": 389, "\u00cd": 389,
+          "\u00ce": 389, "\u00cf": 389, "\u00d0": 722, "\u00d1": 722, "\u00d2": 778, "\u00d3": 778, "\u00d4": 778, "\u00d5": 778, "\u00d6": 778, "\u00d7": 570,
+          "\u00d8": 778, "\u00d9": 722, "\u00da": 722, "\u00db": 722, "\u00dc": 722, "\u00dd": 722, "\u00de": 611, "\u00df": 556, "\u00e0": 500, "\u00e1": 500,
+          "\u00e2": 500, "\u00e3": 500, "\u00e4": 500, "\u00e5": 500, "\u00e6": 722, "\u00e7": 444, "\u00e8": 444, "\u00e9": 444, "\u00ea": 444, "\u00eb": 444,
+          "\u00ec": 278, "\u00ed": 278, "\u00ee": 278, "\u00ef": 278, "\u00f0": 500, "\u00f1": 556, "\u00f2": 500, "\u00f3": 500, "\u00f4": 500, "\u00f5": 500,
+          "\u00f6": 500, "\u00f7": 549, "\u00f8": 500, "\u00f9": 556, "\u00fa": 556, "\u00fb": 556, "\u00fc": 556, "\u00fd": 500, "\u00fe": 556, "\u00ff": 500,
+          "\u2018": 333, "\u2019": 333, "\u201c": 500, "\u201d": 500, "\u2013": 500, "\u2014": 1000, "\u2026": 1000, "\u2022": 350 }
       };
       function pdfWidth(text, font, size) {
-        var table = font === "F2" ? PDF_HELV_W : PDF_TIMES_W;
+        var table = PDF_FONT_W[font] || PDF_FONT_W.F1;
         var sum = 0;
         for (var i = 0; i < text.length; i++) {
           var w = table[text.charAt(i)];
           sum += w != null ? w : 500;
         }
         return sum * size / 1000;
+      }
+      /* The width a drawn string really occupies: its glyph
+         advances plus the letter spacing (Tc) the drawing
+         applies. Character spacing is charged after EVERY
+         glyph, the last one included, so it counts
+         text.length times, never length - 1. */
+      function pdfDrawnWidth(text, font, size, spacing) {
+        return pdfWidth(text, font, size) + (spacing ? spacing * text.length : 0);
       }
       /* A verse's text split into plain and red-letter segments by
          its words-of-Christ spans (mirrors appendPrintText). */
@@ -8480,35 +8543,63 @@
          table, so the result opens in any PDF reader. */
       function buildPdfBlob(blocks) {
         var PW = 612, PH = 792, ML = 56, CW = PW - 112, TOP = 58, BOT = PH - 56;
-        /* Body lines wrap narrower than the full measure: the
-           standard face's metrics govern the layout, and the
-           narrower measure leaves room for readers whose
-           substitute serif runs wider, so no line ever reaches
-           the page edge and gets clipped there. */
+        /* Body lines wrap to this measure from the left margin,
+           so a body line's right edge stays at or inside
+           ML + PARA_W = 501 — well within the right margin line
+           at PW - ML = 556. Every line is measured with the true
+           advance widths of the face it is drawn in, letter
+           spacing included (see PDF_FONT_W), so the rendered
+           line is the measured line. */
         var PARA_W = 445;
         var INK = "0.10 0.09 0.07", ACC = "0.42 0.35 0.20", RED = "0.62 0.11 0.05", IDEA = "0.29 0.26 0.20";
         var pages = [], ops = [], y = TOP;
         function newPage() { pages.push(ops.join("\n")); ops = []; y = TOP; }
         function need(h) { if (y + h > BOT) newPage(); }
         function draw(text, font, size, color, x, baseline, spacing) {
-          ops.push("BT /" + font + " " + size + " Tf " + color + " rg" +
-            (spacing ? " " + spacing + " Tc" : "") +
+          /* The letter spacing is stated on EVERY text object,
+             0 included. Tc lives in the page's text state, not
+             inside the text object, so the book line's 2pt
+             tracking would otherwise stay in force for every
+             line drawn after it on the page — silently adding
+             2pt per character to lines that were measured
+             without it and pushing them past the right margin,
+             where words were clipped. (That leak was the broken
+             margin: only a chapter's first page carries the book
+             line, so only first pages overflowed.) Stating the
+             spacing every time keeps the drawn page identical
+             to the measured page. */
+          ops.push("BT /" + font + " " + size + " Tf " + color + " rg " + (spacing || 0) + " Tc" +
             " 1 0 0 1 " + x.toFixed(1) + " " + baseline.toFixed(1) + " Tm (" + pdfEsc(text) + ") Tj ET");
         }
         function centered(text, font, size, color, h, after, spacing) {
           need(h + after);
-          var w = pdfWidth(text, font, size) + (spacing ? spacing * Math.max(0, text.length - 1) : 0);
+          var w = pdfDrawnWidth(text, font, size, spacing);
           draw(text, font, size, color, ML + (CW - w) / 2, PH - (y + size * 0.82), spacing);
           y += h + after;
         }
         function wrapWords(words, font, size, maxW) {
           var lines = [], cur = "", curW = 0, sw = pdfWidth(" ", font, size);
-          words.forEach(function (word) {
+          function place(word) {
             var w = pdfWidth(word, font, size);
             var add = cur ? sw + w : w;
-            if (cur && curW + add > maxW) { lines.push(cur); cur = word; curW = w; }
-            else { cur = cur ? cur + " " + word : word; curW += add; }
-          });
+            if (cur && curW + add > maxW) { lines.push(cur); cur = ""; curW = 0; add = w; }
+            if (!cur && w > maxW) {
+              /* A single word wider than the whole measure is
+                 broken across lines — never left to run past
+                 the margin and be clipped. */
+              var rest = word;
+              while (rest && pdfWidth(rest, font, size) > maxW) {
+                var n = rest.length - 1;
+                while (n > 1 && pdfWidth(rest.slice(0, n), font, size) > maxW) n--;
+                lines.push(rest.slice(0, n));
+                rest = rest.slice(n);
+              }
+              if (rest) { cur = rest; curW = pdfWidth(rest, font, size); }
+              return;
+            }
+            cur = cur ? cur + " " + word : word; curW += add;
+          }
+          words.forEach(place);
           if (cur) lines.push(cur);
           return lines;
         }
@@ -8523,36 +8614,75 @@
           } else if (b.k === "idea") {
             wrapWords(b.text.split(/\s+/), "F3", 13.5, 340).forEach(function (line) {
               need(20);
-              var w = pdfWidth(line, "F3", 13.5);
+              var w = pdfDrawnWidth(line, "F3", 13.5, 0);
               draw(line, "F3", 13.5, IDEA, ML + (CW - w) / 2, PH - (y + 13.5 * 0.82), 0);
               y += 20;
             });
             y += 8;
           } else if (b.k === "sec") {
             if (y > TOP) y += 13;
-            need(19 + 6 + 29);
-            draw(b.text, "F4", 14, ACC, ML, PH - (y + 14 * 0.82), 0);
-            y += 19 + 6;
+            /* A section heading is drawn in Times-Bold; wrap it
+               in that face's own measure if it ever runs wider
+               than the page measure, so a heading can never pass
+               the right margin either. One line advances exactly
+               as before (19 + 6). */
+            wrapWords(b.text.split(/\s+/), "F4", 14, CW).forEach(function (hline, hi) {
+              need(19 + 6 + 29);
+              draw(hline, "F4", 14, ACC, ML, PH - (y + 14 * 0.82), 0);
+              y += 19 + (hi === 0 ? 6 : 0);
+            });
           } else if (b.k === "para") {
             var size = 19, lead = 29, sw = pdfWidth(" ", "F1", size);
+            /* A token is measured in the face it is drawn in:
+               words in Times-Roman at 19, verse numbers in
+               Helvetica-Bold at 10.5 — and the gap before a
+               number rides inside the number's own string, so it
+               is charged at that face's space width, not the
+               body's. The charged width is the drawn width. */
+            function tokW(tok, withGap) {
+              if (tok.num != null) return (withGap ? pdfWidth(" ", "F2", 10.5) : 0) + pdfWidth(String(tok.num), "F2", 10.5);
+              return (withGap ? sw : 0) + pdfWidth(tok.w, "F1", size);
+            }
             var lines = [], cur = [], curW = 0;
             b.tokens.forEach(function (tok) {
-              var w = tok.num != null ? pdfWidth(String(tok.num), "F2", 10.5) : pdfWidth(tok.w, "F1", size);
-              var add = (cur.length ? sw : 0) + w;
-              if (cur.length && curW + add > PARA_W) { lines.push(cur); cur = [tok]; curW = w; }
-              else { cur.push(tok); curW += add; }
+              var w = tokW(tok, cur.length > 0);
+              if (cur.length && curW + w > PARA_W) { lines.push(cur); cur = []; curW = 0; w = tokW(tok, false); }
+              if (!cur.length && w > PARA_W && tok.w) {
+                /* One word wider than the whole measure: break
+                   it across lines — it may never run past the
+                   margin or be clipped. */
+                var rest = tok.w;
+                while (rest && pdfWidth(rest, "F1", size) > PARA_W) {
+                  var n = rest.length - 1;
+                  while (n > 1 && pdfWidth(rest.slice(0, n), "F1", size) > PARA_W) n--;
+                  lines.push([{ w: rest.slice(0, n), red: tok.red }]);
+                  rest = rest.slice(n);
+                }
+                if (rest) { cur = [{ w: rest, red: tok.red }]; curW = pdfWidth(rest, "F1", size); }
+                return;
+              }
+              cur.push(tok); curW += w;
             });
             if (cur.length) lines.push(cur);
             lines.forEach(function (line) {
               need(lead);
-              /* One text object per line, positioned once: the
-                 words inside flow on the reader's own advances
-                 (each Tj moves past the word it just drew), so a
-                 line can never collide with itself whatever face
-                 a reader substitutes for Times. The tables above
-                 are used only to decide where lines break. */
+              /* One text object per line, positioned once, with
+                 the letter spacing pinned to 0 inside the object
+                 itself: the words flow on their faces' true
+                 advances (each Tj moves past the word it just
+                 drew), exactly the widths the wrap measured, so
+                 no line can stretch past where it was broken. */
               var base = PH - (y + size * 0.82);
-              var parts = ["BT 1 0 0 1 " + ML.toFixed(1) + " " + base.toFixed(1) + " Tm"];
+              /* The finished line is re-measured end to end
+                 before it is drawn; if it could still cross the
+                 right margin line, it is shrunk to fit with Tz
+                 rather than ever clipped. (With the true metrics
+                 above this never triggers — it stands as the
+                 guarantee, not the mechanism.) */
+              var lineW = 0;
+              line.forEach(function (tok, ti) { lineW += tokW(tok, ti > 0); });
+              var hscale = lineW > CW ? Math.floor(100 * CW / lineW) : 100;
+              var parts = ["BT 0 Tc" + (hscale < 100 ? " " + hscale + " Tz" : "") + " 1 0 0 1 " + ML.toFixed(1) + " " + base.toFixed(1) + " Tm"];
               line.forEach(function (tok, ti) {
                 var gap = ti > 0 ? " " : "";
                 if (tok.num != null) {
@@ -10192,7 +10322,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610202208";
+      var APP_BUILD_STAMP = "202610202230";
       (function () {
         try {
           var btn = $("update-btn");
