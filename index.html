@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610202230" />
+    <meta name="app-build" content="202610202240" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -8282,11 +8282,15 @@
       }
       /* Hand a File to the reader: the share sheet where that is
          the reliable door, a plain download elsewhere, and the
-         old bare link only if even the download cannot start. */
+         old bare link only if even the download cannot start.
+         The share payload carries the file ALONE — no title, no
+         text, no url riding along — because iOS counts any
+         companion field as a second item, and "Save to Files"
+         then saves two files instead of one. */
       function deliverFile(file, fallbackUrl) {
         if (preferShareDelivery() && canShareFile(file)) {
           try {
-            var p = window.navigator.share({ files: [file], title: file.name });
+            var p = window.navigator.share({ files: [file] });
             if (p && p.catch) p.catch(function (err) {
               if (err && err.name === "AbortError") return; /* the reader closed the sheet — that is a result, not a failure */
               if (!anchorDownload(URL.createObjectURL(file), file.name) && fallbackUrl) window.location.href = fallbackUrl;
@@ -10322,7 +10326,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610202230";
+      var APP_BUILD_STAMP = "202610202240";
       (function () {
         try {
           var btn = $("update-btn");
