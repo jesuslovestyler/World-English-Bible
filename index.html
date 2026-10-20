@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610202123" />
+    <meta name="app-build" content="202610202208" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -616,6 +616,67 @@
         }
         #print-chapter > .pc-booktitle:first-child { page-break-before: auto; }
       }
+
+      /* ---------- print fallback view (screen) ----------
+         When window.print() cannot work — above all in the
+         installed home-screen app on iPhone, where it is silently
+         ignored — Print opens the same clean rendering full-screen
+         instead, carrying its own Share button and one instruction
+         line, so no tap ever ends in silence. The body reuses the
+         print rendering's classes (pc-book, pc-title, …), styled
+         here for the screen. On paper it never appears: the
+         @media print rules above hide everything but
+         #print-chapter. */
+      .print-view {
+        position: fixed; inset: 0; z-index: 60; overflow-y: auto;
+        background: var(--paper); color: var(--ink);
+        -webkit-overflow-scrolling: touch;
+      }
+      .print-view[hidden] { display: none; }
+      .print-view-bar {
+        position: sticky; top: 0; z-index: 1;
+        background: var(--surface); border-bottom: 1px solid var(--line);
+        padding: calc(10px + env(safe-area-inset-top)) 16px 12px;
+        text-align: center;
+      }
+      .print-view-hint { font-size: 16.5px; font-weight: 600; margin: 0 0 10px; }
+      .print-view-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .print-view-actions .btn { min-height: 50px; font-size: 16.5px; padding: 12px 22px; }
+      .print-view-body {
+        max-width: 40em; margin: 0 auto; padding: 22px 20px 48px;
+        font-family: "Newsreader", Georgia, "Times New Roman", serif;
+        font-size: 20px; line-height: 1.62;
+      }
+      .print-view-body .pc-book {
+        text-align: center; font-size: 14px; font-weight: 600;
+        letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--accent); margin: 0 0 2px;
+      }
+      .print-view-body .pc-title {
+        text-align: center; font-size: 30px; font-weight: 600; margin: 0 0 10px;
+      }
+      .print-view-body .pc-idea {
+        text-align: center; font-style: italic; font-size: 17px;
+        line-height: 1.5; color: var(--ink-soft); margin: 0 auto 18px; max-width: 32em;
+      }
+      .print-view-body .pc-text { margin: 0; }
+      .print-view-body .pc-sec {
+        display: block; font-weight: 600; font-size: 17px; line-height: 1.4;
+        color: var(--accent); margin: 20px 0 6px;
+      }
+      .print-view-body .pc-sec:first-child { margin-top: 0; }
+      .print-view-body sup.pc-vn {
+        font-size: 12px; font-weight: 600; color: var(--accent);
+        margin: 0 2px 0 5px; vertical-align: super; line-height: 0;
+        font-family: system-ui, sans-serif;
+      }
+      .print-view-body .pc-verse:first-child sup.pc-vn { margin-left: 0; }
+      .print-view-body .wj { color: var(--redletter); }
+      .print-view-body .pc-chap + .pc-chap { margin-top: 38px; }
+      .print-view-body .pc-booktitle {
+        text-align: center; font-size: 32px; font-weight: 600; margin: 26px 0 16px;
+      }
+      .print-view-body > .pc-booktitle:first-child { margin-top: 0; }
 
       /* ---------- search results ---------- */
       .search-head { padding: 20px 0 6px; }
@@ -1254,8 +1315,8 @@
             <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
           </div>
           <div class="download-box">
-            <a class="btn download-btn download-link" href="world-english-bible-large-print.pdf">⬇ The whole Bible as a large-print PDF</a>
-            <p class="download-note">All 66 books · 2,871 pages · about 17 MB · words of Christ in red.</p>
+            <a class="btn download-btn download-link" id="pdf-download-link" href="world-english-bible-large-print.pdf">⬇ The whole Bible as a large-print PDF</a>
+            <p class="download-note" id="pdf-download-note">All 66 books · 2,871 pages · about 17 MB · words of Christ in red.</p>
           </div>
           <div class="install-box" id="install-box">
             <button class="btn install-btn" id="install-btn" type="button">📲 Add the Bible to your home screen</button>
@@ -1391,7 +1452,7 @@
             <button type="button" class="btn pp-act pp-pdf" id="pp-pdf-btn">Save as PDF</button>
             <button type="button" class="pp-cancel" id="pp-cancel-btn">Cancel</button>
           </div>
-          <p class="pp-hint">To save as a PDF: in the print screen, choose “Save as PDF” — on iPhone, tap the share icon and then “Save to Files.”</p>
+          <p class="pp-hint">“Save as PDF” makes a real PDF file of the pages you chose — on iPhone the share sheet opens, and “Save to Files” keeps it. “Print” sends the same pages to a printer; in the home-screen app it shows the pages with a Share button instead — tap Share, then Print or Save to Files.</p>
         </div>
         <div class="listenbar" id="listen-bar" hidden>
           <button class="btn listen-btn" id="listen-btn" type="button">▶ Listen to this chapter</button>
@@ -1672,6 +1733,21 @@
     <!-- print rendering of the chosen scope: filled by
          buildPrintScope at print time; shown only on paper -->
     <div id="print-chapter" aria-hidden="true"></div>
+
+    <!-- the same print rendering on screen, for the places where
+         window.print() cannot work (the installed iOS app): filled
+         by openPrintView, carrying its own Share button and one
+         instruction line so no Print tap ever ends in silence -->
+    <div class="print-view" id="print-view" hidden>
+      <div class="print-view-bar">
+        <p class="print-view-hint">Tap Share, then Print or Save to Files.</p>
+        <div class="print-view-actions">
+          <button type="button" class="btn" id="print-view-share">Share</button>
+          <button type="button" class="btn welcome-ghost" id="print-view-close">Done</button>
+        </div>
+      </div>
+      <div class="print-view-body" id="print-view-body"></div>
+    </div>
 
     <!-- offline-data -->
     <script>
@@ -7646,19 +7722,33 @@
         }
         ensureAll().then(function () {
           var blob = buildEpubBlob();
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement("a");
-          a.href = url;
-          a.download = "World-English-Bible.epub";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-          restore("Your Bible is downloading — look in your downloads");
+          /* Delivered like every file in this app (see the print
+             section's delivery helpers): the share sheet in the
+             installed app — a bare download link is silently
+             ignored there — and a plain download elsewhere. */
+          deliverFile(makeFile(blob, "World-English-Bible.epub", "application/epub+zip"), null);
+          restore(preferShareDelivery()
+            ? "Your Bible is ready — save it from the share sheet"
+            : "Your Bible is downloading — look in your downloads");
         }).catch(function () {
           restore("Couldn't prepare the download — check your connection and try again.");
         });
       });
+
+      /* ---- the large-print PDF download row ----
+         In the installed app a bare link to the PDF strands the
+         reader in a full-screen preview with no way back and no
+         Save to Files, so there the file is fetched and handed to
+         the share sheet instead. In a desktop browser the plain
+         link downloads properly, and it is left to do so. */
+      try {
+        var pdfLink = $("pdf-download-link");
+        if (pdfLink) pdfLink.addEventListener("click", function (ev) {
+          if (fetchAndDeliver("world-english-bible-large-print.pdf", "world-english-bible-large-print.pdf", "application/pdf", $("pdf-download-note"))) {
+            ev.preventDefault();
+          }
+        });
+      } catch (e) {}
 
       /* ---- chapter grid ---- */
       var currentBook = 0;
@@ -7958,13 +8048,16 @@
          the app comes along — no navigation, no cross-reference
          chips, no glossary underlines, no highlight marks, no
          buttons. The verse text itself is the WEB text, untouched.
-         "Print" and "Save as PDF" build the identical rendering and
-         open the standard print flow (on a phone that offers Print,
-         Save as PDF and Share); the panel's hint line, shown before
-         either is tapped, explains how the PDF is saved in that
-         flow. The browser's own print command fires beforeprint,
-         which rebuilds the chosen scope, so the sheet always
-         matches what the panel offered. */
+         "Print" sends that rendering to the printer where
+         window.print() truly works; where it cannot (the installed
+         iOS app ignores it silently) the same rendering opens
+         full-screen with its own Share button instead. "Save as
+         PDF" builds a real PDF file of the chapter or book scope
+         in the page (the small writer below), or delivers the
+         app's existing large-print PDF for the whole-Bible scope.
+         The browser's own print command fires beforeprint, which
+         rebuilds the chosen scope, so the sheet always matches
+         what the panel offered. */
       var PRINT_WORDS_PER_PAGE = 200;
       var printScope = "chapter";
       function printPagesFor(words) { return Math.max(1, Math.round(words / PRINT_WORDS_PER_PAGE)); }
@@ -8108,13 +8201,432 @@
         }
         return any;
       }
-      /* Print and Save as PDF are the same door: fetch the scope's
-         text if it isn't here yet, build the identical rendering,
-         and open the browser's print flow. */
+      /* ---- getting print and files out of the app ----
+         window.print() is silently ignored inside an installed
+         home-screen app on iOS (a standalone WKWebView never shows
+         a print sheet), and following a bare link to a PDF there
+         strands the reader in a full-screen preview with no way
+         back and no Save to Files. So nothing here relies on
+         either one alone:
+         - "Print" calls window.print() only where it truly works.
+           Where it cannot — the installed app — or where calling
+           it produces no print flow at all, the clean rendering
+           opens full-screen (#print-view) with its own Share
+           button and the line "Tap Share, then Print or Save to
+           Files."
+         - "Save as PDF" builds a real PDF file in the page (the
+           small writer below) for the chapter and book scopes,
+           and fetches the app's existing large-print PDF for the
+           whole-Bible scope. The file goes to the share sheet
+           where file sharing is the reliable door, with a plain
+           download as the fallback.
+         - The home view's download rows deliver the same way in
+           the installed app, so neither of them can strand a
+           reader either. Every path ends in a print sheet, a
+           share sheet, a file, or a visible message. */
+      function isStandaloneApp() {
+        try {
+          return !!((window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+            window.navigator.standalone === true);
+        } catch (e) { return false; }
+      }
+      function isIosDevice() {
+        try {
+          var ua = window.navigator.userAgent || "";
+          return /iP(hone|ad|od)/.test(ua) ||
+            (ua.indexOf("Macintosh") >= 0 && "ontouchend" in document);
+        } catch (e) { return false; }
+      }
+      /* window.print() cannot work in the installed iOS app; in a
+         desktop browser or a real browser tab it can. */
+      function printCannotWork() {
+        if (typeof window.print !== "function") return true;
+        try { return isStandaloneApp() && isIosDevice(); } catch (e) { return false; }
+      }
+      /* File delivery by share sheet: in the installed app (and on
+         phones generally) the share sheet is where "Save to Files"
+         lives; a desktop browser downloads properly on its own. */
+      function preferShareDelivery() {
+        try {
+          return isStandaloneApp() || isIosDevice() ||
+            /Android/i.test(window.navigator.userAgent || "");
+        } catch (e) { return false; }
+      }
+      function canShareFile(file) {
+        try {
+          return !!(file && window.navigator.share && window.navigator.canShare &&
+            window.navigator.canShare({ files: [file] }));
+        } catch (e) { return false; }
+      }
+      function makeFile(blob, name, type) {
+        try { return new File([blob], name, { type: type }); }
+        catch (e) {
+          var b = new Blob([blob], { type: type });
+          try { b.name = name; } catch (e2) {}
+          return b;
+        }
+      }
+      function anchorDownload(url, name) {
+        try {
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = name || "";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          if (url && url.indexOf("blob:") === 0) {
+            setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 4000);
+          }
+          return true;
+        } catch (e) { return false; }
+      }
+      /* Hand a File to the reader: the share sheet where that is
+         the reliable door, a plain download elsewhere, and the
+         old bare link only if even the download cannot start. */
+      function deliverFile(file, fallbackUrl) {
+        if (preferShareDelivery() && canShareFile(file)) {
+          try {
+            var p = window.navigator.share({ files: [file], title: file.name });
+            if (p && p.catch) p.catch(function (err) {
+              if (err && err.name === "AbortError") return; /* the reader closed the sheet — that is a result, not a failure */
+              if (!anchorDownload(URL.createObjectURL(file), file.name) && fallbackUrl) window.location.href = fallbackUrl;
+            });
+            return;
+          } catch (e) {}
+        }
+        if (!anchorDownload(URL.createObjectURL(file), file.name) && fallbackUrl) {
+          window.location.href = fallbackUrl;
+        }
+      }
+      /* Fetch a file the app already serves (the large-print PDF)
+         and deliver it the way deliverFile does. Returns false —
+         leaving the caller's plain link to do its work — only
+         where a plain download genuinely works (a desktop
+         browser). Any failure shows a message, never silence. */
+      function fetchAndDeliver(url, name, type, noteEl) {
+        if (!preferShareDelivery()) return false;
+        try { showToast("Getting the file ready…"); } catch (e) {}
+        fetch(url).then(function (r) {
+          if (!r.ok) throw new Error("fetch failed");
+          return r.blob();
+        }).then(function (blob) {
+          deliverFile(makeFile(blob, name, type || blob.type || "application/octet-stream"), url);
+        }).catch(function () {
+          var msg = "That file couldn't be fetched here. Open this Bible in Safari and tap the download there — or check your connection and try again.";
+          if (noteEl) noteEl.textContent = msg;
+          try { showToast("Couldn't get the file — see the note by the download."); } catch (e) {}
+        });
+        return true;
+      }
+
+      /* ---- Print: the printer where printing works, the
+         full-screen rendering where it cannot ---- */
+      var printFlowFired = false;
       function runPrint() {
         var ready = printScope === "bible" ? ensureAll() : ensureBook(current.b);
-        ready.then(function () { if (buildPrintScope()) window.print(); })
-          .catch(function () { if (buildPrintScope()) window.print(); });
+        ready.then(go).catch(go);
+        function go() {
+          if (!buildPrintScope()) {
+            try { showToast("Couldn't prepare the pages — please try again."); } catch (e) {}
+            return;
+          }
+          if (printCannotWork()) { openPrintView(); return; }
+          printFlowFired = false;
+          try { window.print(); } catch (e) { openPrintView(); return; }
+          /* If the call produced no print flow at all — the silent
+             no-op of the installed app — the reader still lands
+             somewhere real: the full-screen rendering. */
+          setTimeout(function () { if (!printFlowFired) openPrintView(); }, 900);
+        }
+      }
+      function openPrintView() {
+        var pc = $("print-chapter"), body = $("print-view-body"), view = $("print-view");
+        if (!pc || !body || !view) return;
+        if (!pc.children.length && !buildPrintScope()) return;
+        body.textContent = "";
+        for (var i = 0; i < pc.children.length; i++) body.appendChild(pc.children[i].cloneNode(true));
+        var panel = $("print-panel");
+        if (panel) panel.hidden = true;
+        view.hidden = false;
+        view.scrollTop = 0;
+      }
+      function closePrintView() {
+        var view = $("print-view");
+        if (view) view.hidden = true;
+      }
+
+      /* ---- Save as PDF: a small built-in PDF writer ----
+         Builds a real PDF from the app's own WEB text — the same
+         content the print rendering carries: the book line, the
+         chapter heading, the big-idea line, section headings,
+         and the verses with their numbers, the words of Christ
+         in red. One serif face at a large size on clean pages;
+         no app chrome. Text is stored in WinAnsi encoding: the
+         Bible text's only characters beyond plain ASCII are
+         curly quotes and dashes, which WinAnsi holds exactly,
+         so the words in the file are the WEB's own words. */
+      var PDF_SPECIALS = { "\u2018": 0x91, "\u2019": 0x92, "\u201c": 0x93, "\u201d": 0x94, "\u2013": 0x96, "\u2014": 0x97, "\u2026": 0x85, "\u2022": 0x95, "\u00a0": 0x20 };
+      function pdfTextBytes(str) {
+        var out = new Uint8Array(str.length);
+        for (var i = 0; i < str.length; i++) {
+          var code = str.charCodeAt(i);
+          if (code < 128) out[i] = code;
+          else if (PDF_SPECIALS[str.charAt(i)] != null) out[i] = PDF_SPECIALS[str.charAt(i)];
+          else if (code >= 160 && code <= 255) out[i] = code;
+          else out[i] = 0x3f;
+        }
+        return out;
+      }
+      function pdfEsc(str) {
+        return String(str).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)").replace(/[\r\n]/g, " ");
+      }
+      /* Text widths come from the built-in faces' own published
+         metrics (per-1000-em tables), never from the device's
+         fonts. The tables are used only to decide where lines
+         break; within a line the words flow on the reader's own
+         advances, so the printed page is consistent wherever the
+         file is made. (Canvas measurement was tried first and
+         discarded — a device whose serif differs from Times
+         reports widths that have nothing to do with this file.) */
+      var PDF_TIMES_W = {
+        " ": 250, "!": 333, "\"": 408, "#": 500, "$": 500, "%": 833, "&": 778, "'": 333,
+        "(": 333, ")": 333, "*": 500, "+": 564, ",": 250, "-": 333, ".": 250, "/": 278,
+        "0": 500, "1": 500, "2": 500, "3": 500, "4": 500, "5": 500, "6": 500, "7": 500, "8": 500, "9": 500,
+        ":": 278, ";": 278, "<": 564, "=": 564, ">": 564, "?": 444, "@": 921,
+        "A": 722, "B": 667, "C": 667, "D": 722, "E": 611, "F": 556, "G": 722, "H": 722, "I": 333, "J": 389,
+        "K": 722, "L": 611, "M": 889, "N": 722, "O": 722, "P": 556, "Q": 722, "R": 667, "S": 556, "T": 611,
+        "U": 722, "V": 722, "W": 944, "X": 722, "Y": 722, "Z": 611,
+        "[": 333, "\\": 278, "]": 333, "^": 469, "_": 500, "`": 333,
+        "a": 444, "b": 500, "c": 444, "d": 500, "e": 444, "f": 333, "g": 500, "h": 500, "i": 278, "j": 278,
+        "k": 500, "l": 278, "m": 778, "n": 500, "o": 500, "p": 500, "q": 500, "r": 333, "s": 389, "t": 278,
+        "u": 500, "v": 500, "w": 722, "x": 500, "y": 500, "z": 444,
+        "{": 480, "|": 200, "}": 480, "~": 541,
+        "\u2018": 278, "\u2019": 278, "\u201c": 500, "\u201d": 500, "\u2013": 556, "\u2014": 1000, "\u2026": 1000, "\u2022": 350
+      };
+      var PDF_HELV_W = {
+        " ": 278, "0": 556, "1": 556, "2": 556, "3": 556, "4": 556, "5": 556, "6": 556, "7": 556, "8": 556, "9": 556,
+        "A": 722, "B": 722, "C": 722, "D": 722, "E": 667, "F": 611, "G": 778, "H": 722, "I": 278, "J": 556,
+        "K": 722, "L": 611, "M": 833, "N": 722, "O": 778, "P": 667, "Q": 778, "R": 722, "S": 667, "T": 611,
+        "U": 722, "V": 667, "W": 944, "X": 667, "Y": 667, "Z": 611
+      };
+      function pdfWidth(text, font, size) {
+        var table = font === "F2" ? PDF_HELV_W : PDF_TIMES_W;
+        var sum = 0;
+        for (var i = 0; i < text.length; i++) {
+          var w = table[text.charAt(i)];
+          sum += w != null ? w : 500;
+        }
+        return sum * size / 1000;
+      }
+      /* A verse's text split into plain and red-letter segments by
+         its words-of-Christ spans (mirrors appendPrintText). */
+      function pdfSegments(text, spans) {
+        if (!spans || !spans.length) return [{ text: text, red: false }];
+        var segs = [], pos = 0;
+        spans.forEach(function (rg) {
+          if (rg[0] > pos) segs.push({ text: text.slice(pos, rg[0]), red: false });
+          if (rg[1] > rg[0]) segs.push({ text: text.slice(rg[0], rg[1]), red: true });
+          if (rg[1] > pos) pos = rg[1];
+        });
+        if (pos < text.length) segs.push({ text: text.slice(pos), red: false });
+        return segs;
+      }
+      /* The chosen scope as a list of PDF blocks, built from the
+         same data and helpers the print rendering uses. The
+         whole-Bible scope is never generated here — it delivers
+         the app's existing large-print PDF file instead. */
+      function collectPdfBlocks() {
+        var blocks = [];
+        var woc = window.__WEB_NT_WOC__ || null;
+        function chapter(bi, ci, breakBefore) {
+          var bk = bookData(bi);
+          if (!bk || !bk.c[ci]) return;
+          blocks.push({ k: "bookline", text: META[bi][0], br: !!breakBefore });
+          blocks.push({ k: "title", text: "Chapter " + (ci + 1) });
+          var idea = chapterIdea(bi, ci);
+          if (idea) blocks.push({ k: "idea", text: idea });
+          var secHeads = chapterHeadings(bi, ci);
+          var para = null;
+          function flush() { if (para && para.length) blocks.push({ k: "para", tokens: para }); para = null; }
+          bk.c[ci].split("\n").forEach(function (text, vi) {
+            if (!text) return;
+            if (secHeads && secHeads[vi + 1]) { flush(); blocks.push({ k: "sec", text: secHeads[vi + 1] }); }
+            if (!para) para = [];
+            para.push({ num: vi + 1 });
+            pdfSegments(text, woc ? woc[bi + "," + ci + "," + (vi + 1)] : null).forEach(function (seg) {
+              seg.text.split(/\s+/).forEach(function (word) {
+                if (word) para.push({ w: word, red: seg.red });
+              });
+            });
+          });
+          flush();
+        }
+        if (printScope === "chapter") { chapter(current.b, current.c, false); return blocks; }
+        if (printScope === "book") {
+          var bk = bookData(current.b);
+          if (!bk) return blocks;
+          blocks.push({ k: "booktitle", text: META[current.b][0] });
+          for (var ci = 0; ci < bk.c.length; ci++) chapter(current.b, ci, ci > 0);
+          return blocks;
+        }
+        return blocks;
+      }
+      function pdfFileName() {
+        var base = printScope === "book" ? META[current.b][0] : refName(current.b, current.c);
+        return base.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "") + ".pdf";
+      }
+      /* Lay the blocks out on letter pages and assemble the file:
+         uncompressed content streams and a plain cross-reference
+         table, so the result opens in any PDF reader. */
+      function buildPdfBlob(blocks) {
+        var PW = 612, PH = 792, ML = 56, CW = PW - 112, TOP = 58, BOT = PH - 56;
+        /* Body lines wrap narrower than the full measure: the
+           standard face's metrics govern the layout, and the
+           narrower measure leaves room for readers whose
+           substitute serif runs wider, so no line ever reaches
+           the page edge and gets clipped there. */
+        var PARA_W = 445;
+        var INK = "0.10 0.09 0.07", ACC = "0.42 0.35 0.20", RED = "0.62 0.11 0.05", IDEA = "0.29 0.26 0.20";
+        var pages = [], ops = [], y = TOP;
+        function newPage() { pages.push(ops.join("\n")); ops = []; y = TOP; }
+        function need(h) { if (y + h > BOT) newPage(); }
+        function draw(text, font, size, color, x, baseline, spacing) {
+          ops.push("BT /" + font + " " + size + " Tf " + color + " rg" +
+            (spacing ? " " + spacing + " Tc" : "") +
+            " 1 0 0 1 " + x.toFixed(1) + " " + baseline.toFixed(1) + " Tm (" + pdfEsc(text) + ") Tj ET");
+        }
+        function centered(text, font, size, color, h, after, spacing) {
+          need(h + after);
+          var w = pdfWidth(text, font, size) + (spacing ? spacing * Math.max(0, text.length - 1) : 0);
+          draw(text, font, size, color, ML + (CW - w) / 2, PH - (y + size * 0.82), spacing);
+          y += h + after;
+        }
+        function wrapWords(words, font, size, maxW) {
+          var lines = [], cur = "", curW = 0, sw = pdfWidth(" ", font, size);
+          words.forEach(function (word) {
+            var w = pdfWidth(word, font, size);
+            var add = cur ? sw + w : w;
+            if (cur && curW + add > maxW) { lines.push(cur); cur = word; curW = w; }
+            else { cur = cur ? cur + " " + word : word; curW += add; }
+          });
+          if (cur) lines.push(cur);
+          return lines;
+        }
+        blocks.forEach(function (b) {
+          if (b.br && ops.length) newPage();
+          if (b.k === "booktitle") {
+            centered(b.text, "F4", 28, INK, 34, 16, 0);
+          } else if (b.k === "bookline") {
+            centered(b.text.toUpperCase(), "F2", 11, ACC, 14, 3, 2);
+          } else if (b.k === "title") {
+            centered(b.text, "F4", 26, INK, 31, 9, 0);
+          } else if (b.k === "idea") {
+            wrapWords(b.text.split(/\s+/), "F3", 13.5, 340).forEach(function (line) {
+              need(20);
+              var w = pdfWidth(line, "F3", 13.5);
+              draw(line, "F3", 13.5, IDEA, ML + (CW - w) / 2, PH - (y + 13.5 * 0.82), 0);
+              y += 20;
+            });
+            y += 8;
+          } else if (b.k === "sec") {
+            if (y > TOP) y += 13;
+            need(19 + 6 + 29);
+            draw(b.text, "F4", 14, ACC, ML, PH - (y + 14 * 0.82), 0);
+            y += 19 + 6;
+          } else if (b.k === "para") {
+            var size = 19, lead = 29, sw = pdfWidth(" ", "F1", size);
+            var lines = [], cur = [], curW = 0;
+            b.tokens.forEach(function (tok) {
+              var w = tok.num != null ? pdfWidth(String(tok.num), "F2", 10.5) : pdfWidth(tok.w, "F1", size);
+              var add = (cur.length ? sw : 0) + w;
+              if (cur.length && curW + add > PARA_W) { lines.push(cur); cur = [tok]; curW = w; }
+              else { cur.push(tok); curW += add; }
+            });
+            if (cur.length) lines.push(cur);
+            lines.forEach(function (line) {
+              need(lead);
+              /* One text object per line, positioned once: the
+                 words inside flow on the reader's own advances
+                 (each Tj moves past the word it just drew), so a
+                 line can never collide with itself whatever face
+                 a reader substitutes for Times. The tables above
+                 are used only to decide where lines break. */
+              var base = PH - (y + size * 0.82);
+              var parts = ["BT 1 0 0 1 " + ML.toFixed(1) + " " + base.toFixed(1) + " Tm"];
+              line.forEach(function (tok, ti) {
+                var gap = ti > 0 ? " " : "";
+                if (tok.num != null) {
+                  parts.push("/F2 10.5 Tf " + ACC + " rg 4 Ts (" + pdfEsc(gap + tok.num) + ") Tj 0 Ts");
+                } else {
+                  parts.push("/F1 " + size + " Tf " + (tok.red ? RED : INK) + " rg (" + pdfEsc(gap + tok.w) + ") Tj");
+                }
+              });
+              parts.push("ET");
+              ops.push(parts.join(" "));
+              y += lead;
+            });
+            y += 8;
+          }
+        });
+        newPage();
+        return assemblePdf(pages);
+      }
+      function assemblePdf(pageContents) {
+        var chunks = [], offset = 0, offsets = [];
+        function push(data) {
+          var bytes = typeof data === "string" ? pdfTextBytes(data) : data;
+          chunks.push(bytes);
+          offset += bytes.length;
+        }
+        function obj(id, body) { offsets[id] = offset; push(id + " 0 obj\n" + body + "\nendobj\n"); }
+        var nPages = pageContents.length, firstPageObj = 7, p, i;
+        push("%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n");
+        obj(1, "<< /Type /Catalog /Pages 2 0 R >>");
+        var kids = [];
+        for (i = 0; i < nPages; i++) kids.push((firstPageObj + i * 2) + " 0 R");
+        obj(2, "<< /Type /Pages /Kids [" + kids.join(" ") + "] /Count " + nPages + " >>");
+        obj(3, "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>");
+        obj(4, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+        obj(5, "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic /Encoding /WinAnsiEncoding >>");
+        obj(6, "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>");
+        for (p = 0; p < nPages; p++) {
+          var pageId = firstPageObj + p * 2, contentId = pageId + 1;
+          obj(pageId, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R >> >> /Contents " + contentId + " 0 R >>");
+          offsets[contentId] = offset;
+          push(contentId + " 0 obj\n<< /Length " + pdfTextBytes(pageContents[p]).length + " >>\nstream\n");
+          push(pageContents[p]);
+          push("\nendstream\nendobj\n");
+        }
+        var total = firstPageObj + nPages * 2, xrefAt = offset, o;
+        var xref = "xref\n0 " + total + "\n0000000000 65535 f \n";
+        for (o = 1; o < total; o++) xref += ("0000000000" + (offsets[o] || 0)).slice(-10) + " 00000 n \n";
+        push(xref);
+        push("trailer\n<< /Size " + total + " /Root 1 0 R >>\nstartxref\n" + xrefAt + "\n%%EOF");
+        var all = new Uint8Array(offset), pos = 0;
+        chunks.forEach(function (c) { all.set(c, pos); pos += c.length; });
+        return new Blob([all], { type: "application/pdf" });
+      }
+      function runSavePdf() {
+        if (printScope === "bible") {
+          /* The whole Bible already exists as this app's
+             large-print PDF — deliver that file, never a
+             generated one. */
+          if (!fetchAndDeliver("world-english-bible-large-print.pdf", "world-english-bible-large-print.pdf", "application/pdf", null)) {
+            window.location.href = "world-english-bible-large-print.pdf";
+          }
+          return;
+        }
+        ensureBook(current.b).then(function () {
+          var blocks = collectPdfBlocks();
+          if (!blocks.length) {
+            try { showToast("Couldn't prepare the PDF — please try again."); } catch (e) {}
+            return;
+          }
+          var blob = buildPdfBlob(blocks);
+          deliverFile(makeFile(blob, pdfFileName(), "application/pdf"), null);
+        }).catch(function () {
+          try { showToast("Couldn't prepare the PDF — check your connection and try again."); } catch (e) {}
+        });
       }
       try { $("print-open-btn").addEventListener("click", openPrintPanel); } catch (e) {}
       try { $("pp-cancel-btn").addEventListener("click", function () { $("print-panel").hidden = true; }); } catch (e) {}
@@ -8127,8 +8639,11 @@
         } catch (e) {}
       });
       try { $("pp-print-btn").addEventListener("click", runPrint); } catch (e) {}
-      try { $("pp-pdf-btn").addEventListener("click", runPrint); } catch (e) {}
-      try { window.addEventListener("beforeprint", buildPrintScope); } catch (e) {}
+      try { $("pp-pdf-btn").addEventListener("click", runSavePdf); } catch (e) {}
+      try { $("print-view-share").addEventListener("click", runSavePdf); } catch (e) {}
+      try { $("print-view-close").addEventListener("click", closePrintView); } catch (e) {}
+      try { window.addEventListener("beforeprint", function () { printFlowFired = true; buildPrintScope(); }); } catch (e) {}
+      try { window.addEventListener("afterprint", function () { printFlowFired = true; }); } catch (e) {}
 
       /* ---- listen to this chapter (optional audio Bible) ----
          Reads the open chapter aloud with the device's own speech (the
@@ -9677,7 +10192,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610202123";
+      var APP_BUILD_STAMP = "202610202208";
       (function () {
         try {
           var btn = $("update-btn");
