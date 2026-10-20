@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610191510" />
+    <meta name="app-build" content="202610202113" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -186,6 +186,7 @@
       .download-box { margin: 20px 0 2px; }
       .download-btn { width: 100%; font-size: 16.5px; }
       .download-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
+      .download-link { display: block; box-sizing: border-box; text-align: center; text-decoration: none; }
 
       .install-box { margin: 10px 0 2px; }
       .install-btn { width: 100%; font-size: 16.5px; }
@@ -521,6 +522,100 @@
          Listen bar: no big gap above them, a modest one below. */
       .chap-nav.chap-nav-top { margin-top: 0; margin-bottom: 22px; }
       .reader-foot { text-align: center; color: var(--ink-soft); font-size: 13.5px; margin-top: 34px; }
+
+      /* ---------- print this chapter ---------- */
+      /* The reader's Print button row: sits with the other reader
+         controls, above the Listen bar. On paper it never appears —
+         see the @media print block below. */
+      .print-row { text-align: center; margin: 0 0 14px; }
+      .print-btn { min-height: 50px; font-size: 16.5px; padding: 12px 22px; }
+      /* The print options panel the button opens: three scopes, each
+         with its estimated page count, a warning on the whole-Bible
+         scope, and the Print / Save as PDF pair. Screen only — the
+         @media print rules below hide it with everything else. */
+      .print-panel {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 12px; box-shadow: var(--shadow);
+        padding: 16px; margin: 0 0 16px; text-align: left;
+      }
+      .print-panel[hidden] { display: none; }
+      .pp-title { font-family: "Newsreader", Georgia, serif; font-size: 19px; font-weight: 600; margin: 0 0 10px; }
+      .pp-scopes { display: flex; flex-direction: column; gap: 8px; }
+      .pp-scope {
+        font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+        display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+        background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px;
+        padding: 11px 13px; min-height: 48px; width: 100%;
+      }
+      .pp-scope.on { border-color: var(--accent); background: var(--accent-soft); }
+      .pp-scope:active { transform: translateY(1px); }
+      .pp-scope-name { font-weight: 600; font-size: 16px; }
+      .pp-pages { color: var(--ink-soft); font-size: 14.5px; white-space: nowrap; }
+      .pp-warn { font-size: 15.5px; font-weight: 600; line-height: 1.5; margin: 12px 0 0; }
+      .pp-note { color: var(--ink-soft); font-size: 14px; line-height: 1.5; margin: 10px 0 0; }
+      .pp-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+      .pp-act { min-height: 50px; font-size: 16.5px; padding: 12px 20px; }
+      .pp-pdf { background: var(--surface); color: var(--accent); border-color: var(--line); }
+      .pp-cancel {
+        font: inherit; font-size: 15.5px; cursor: pointer; color: var(--ink-soft);
+        background: none; border: 0; padding: 12px 10px; min-height: 48px;
+      }
+      .pp-hint { color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; margin: 12px 0 0; }
+      /* The print rendering of the open chapter lives in its own
+         element at body level, built fresh from the chapter data
+         whenever printing starts (see buildPrintScope): the book
+         and chapter heading, the chapter's big-idea line, its own
+         section headings and the chapter text — and nothing else.
+         It is never shown on screen. */
+      #print-chapter { display: none; }
+      @media print {
+        @page { margin: 18mm 16mm; }
+        body > *:not(#print-chapter) { display: none !important; }
+        #print-chapter {
+          display: block;
+          font-family: "Newsreader", Georgia, "Times New Roman", serif;
+          color: #1a1712;
+          font-size: 19pt; line-height: 1.62;
+          -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        }
+        #print-chapter .pc-book {
+          text-align: center; font-size: 13pt; font-weight: 600;
+          letter-spacing: 0.14em; text-transform: uppercase;
+          color: #6b5a33; margin: 0 0 2pt;
+        }
+        #print-chapter .pc-title {
+          text-align: center; font-size: 27pt; font-weight: 600; margin: 0 0 10pt;
+        }
+        #print-chapter .pc-idea {
+          text-align: center; font-style: italic; font-size: 14.5pt;
+          line-height: 1.5; color: #4a4232; margin: 0 auto 18pt; max-width: 32em;
+        }
+        #print-chapter .pc-text { margin: 0; }
+        #print-chapter .pc-sec {
+          display: block; font-weight: 600; font-size: 15pt; line-height: 1.4;
+          color: #6b5a33; margin: 20pt 0 6pt;
+        }
+        #print-chapter .pc-sec:first-child { margin-top: 0; }
+        #print-chapter sup.pc-vn {
+          font-size: 10.5pt; font-weight: 600; color: #6b5a33;
+          margin: 0 2pt 0 5pt; vertical-align: super; line-height: 0;
+          font-family: system-ui, sans-serif;
+        }
+        #print-chapter .pc-verse:first-child sup.pc-vn { margin-left: 0; }
+        /* Red-letter words print red — a deep red that still reads
+           as solid dark text on a grayscale printer. */
+        #print-chapter .wj { color: #9e1b0e; }
+        /* Book and whole-Bible scopes: every chapter starts on its
+           own page, and a book's title stands at the head of its
+           first chapter's page (a fresh page unless it opens the
+           whole printing). */
+        #print-chapter .pc-chap + .pc-chap { page-break-before: always; }
+        #print-chapter .pc-booktitle {
+          text-align: center; font-size: 30pt; font-weight: 600;
+          margin: 0 0 16pt; page-break-before: always;
+        }
+        #print-chapter > .pc-booktitle:first-child { page-break-before: auto; }
+      }
 
       /* ---------- search results ---------- */
       .search-head { padding: 20px 0 6px; }
@@ -867,6 +962,11 @@
       .plan-day.pd-target { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); border-radius: 6px; }
       .pd-day { font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); min-width: 52px; }
       .pd-range { flex: 1 1 auto; min-width: 0; font-family: "Newsreader", Georgia, serif; font-size: 18px; font-weight: 500; }
+      /* a titled day (the Advent plan): its name in the row's serif
+         voice, its passage named beneath it in the quiet voice */
+      .pd-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+      .pd-name { font-family: "Newsreader", Georgia, serif; font-size: 18px; font-weight: 500; }
+      .pd-ref { color: var(--ink-soft); font-size: 14.5px; }
       /* the day's total reading-time estimate, in the same quiet
          voice as the reader's — summed over the day's chapters */
       .pd-time { color: var(--ink-soft); font-size: 14px; white-space: nowrap; }
@@ -899,6 +999,31 @@
         padding: 9px 16px; min-height: 44px; box-shadow: var(--shadow);
       }
       .turn-ref:active { background: var(--accent-soft); }
+
+      /* ---------- prayers of the bible ---------- */
+      /* the index rows wear the titled-day dress: the prayer's
+         name in the serif voice, its moment beneath it in the
+         quiet voice, its passage named last */
+      .prayers-list { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line); }
+      .prayers-list li { border-bottom: 1px solid var(--line); }
+      .prayer-row {
+        display: flex; gap: 12px; align-items: center; width: 100%;
+        background: none; border: 0; cursor: pointer; text-align: left;
+        padding: 13px 6px; min-height: 48px; font: inherit; color: var(--ink);
+      }
+      .prayer-row:active { background: var(--accent-soft); }
+      .prayer-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .prayer-name { font-family: "Newsreader", Georgia, serif; font-size: 19px; font-weight: 600; }
+      .prayer-intro { color: var(--ink-soft); font-size: 15px; line-height: 1.45; }
+      .prayer-ref { color: var(--accent); font-size: 14.5px; font-weight: 600; }
+      .prayer-arrow { color: var(--accent); font-size: 18px; flex: 0 0 auto; }
+      .prayers-psalms { margin: 26px 0 0; }
+      .prayers-psalms-btn {
+        font: inherit; font-family: "Newsreader", Georgia, serif; font-size: 18px; font-weight: 500;
+        font-style: italic; color: var(--accent); background: none; border: 0; cursor: pointer;
+        text-align: left; padding: 6px; line-height: 1.5;
+      }
+      .prayers-psalms-btn:active { background: var(--accent-soft); }
 
       /* ---------- list filters (where to turn, bible words) ---------- */
       .filter-box { margin: 16px 0 0; }
@@ -1106,6 +1231,9 @@
             <button class="btn saved-btn" id="turn-btn" type="button">🧭 Where to turn</button>
           </div>
           <div class="saved-box">
+            <button class="btn saved-btn" id="prayers-btn" type="button">🙏 Prayers of the Bible</button>
+          </div>
+          <div class="saved-box">
             <button class="btn saved-btn" id="journey-btn" type="button">🌱 My Journey</button>
           </div>
           <div class="saved-box">
@@ -1114,6 +1242,10 @@
           <div class="download-box">
             <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
             <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
+          </div>
+          <div class="download-box">
+            <a class="btn download-btn download-link" href="world-english-bible-large-print.pdf">⬇ The whole Bible as a large-print PDF</a>
+            <p class="download-note">All 66 books · 2,871 pages · about 17 MB · words of Christ in red.</p>
           </div>
           <div class="install-box" id="install-box">
             <button class="btn install-btn" id="install-btn" type="button">📲 Add the Bible to your home screen</button>
@@ -1223,6 +1355,34 @@
             </select>
           </span>
         </div>
+        <div class="print-row">
+          <button class="btn print-btn" id="print-open-btn" type="button">🖨 Print this chapter</button>
+        </div>
+        <div class="print-panel" id="print-panel" hidden>
+          <p class="pp-title">Print — choose how much</p>
+          <div class="pp-scopes">
+            <button type="button" class="pp-scope on" id="pp-scope-chapter" aria-pressed="true">
+              <span class="pp-scope-name" id="pp-scope-chapter-name">This chapter</span>
+              <span class="pp-pages" id="pp-pages-chapter"></span>
+            </button>
+            <button type="button" class="pp-scope" id="pp-scope-book" aria-pressed="false">
+              <span class="pp-scope-name" id="pp-scope-book-name">This book</span>
+              <span class="pp-pages" id="pp-pages-book"></span>
+            </button>
+            <button type="button" class="pp-scope" id="pp-scope-bible" aria-pressed="false">
+              <span class="pp-scope-name">The whole Bible</span>
+              <span class="pp-pages" id="pp-pages-bible"></span>
+            </button>
+          </div>
+          <p class="pp-warn" id="pp-warn" hidden></p>
+          <p class="pp-note">Page counts are estimates, figured from the actual text at this large type size — about 200 words to a page.</p>
+          <div class="pp-actions">
+            <button type="button" class="btn pp-act" id="pp-print-btn">🖨 Print</button>
+            <button type="button" class="btn pp-act pp-pdf" id="pp-pdf-btn">Save as PDF</button>
+            <button type="button" class="pp-cancel" id="pp-cancel-btn">Cancel</button>
+          </div>
+          <p class="pp-hint">To save as a PDF: in the print screen, choose “Save as PDF” — on iPhone, tap the share icon and then “Save to Files.”</p>
+        </div>
         <div class="listenbar" id="listen-bar" hidden>
           <button class="btn listen-btn" id="listen-btn" type="button">▶ Listen to this chapter</button>
           <div class="listen-controls" id="listen-controls" hidden>
@@ -1283,6 +1443,9 @@
         </div>
         <div class="plan-return-row" id="turn-return-row" hidden>
           <button type="button" class="plan-return-btn" id="turn-return-btn">← Back to Where to turn</button>
+        </div>
+        <div class="plan-return-row" id="prayers-return-row" hidden>
+          <button type="button" class="plan-return-btn" id="prayers-return-btn">← Back to Prayers of the Bible</button>
         </div>
         <div class="plan-return-row" id="place-row">
           <button type="button" class="plan-return-btn" id="place-save-btn">🔖 Save as a place</button>
@@ -1354,7 +1517,7 @@
         </div>
         <div class="search-head">
           <h2>Reading Plans</h2>
-          <p>Four gentle paths through the Bible. Go at your own pace — there are no dates here, and no falling behind. Read a day whenever you're ready; a day is checked off once you've read all of its chapters.</p>
+          <p>Gentle paths through the Bible. Go at your own pace — there are no dates here, and no falling behind. Read a day whenever you're ready; a day is checked off once you've read all of its chapters.</p>
         </div>
         <div id="plans-body"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
@@ -1376,6 +1539,21 @@
         </div>
         <p class="filter-none" id="turn-filter-none" hidden>No matches — try another word</p>
         <div id="turn-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ PRAYERS OF THE BIBLE ============ -->
+      <section id="view-prayers" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="prayers-back">‹ Books</button>
+          <span class="tb-title">Prayers of the Bible</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Prayers of the Bible</h2>
+          <p>The Bible's own prayers — who prayed them, and the moment they were in. Tap one to read it in its place.</p>
+        </div>
+        <div id="prayers-body"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
 
@@ -1480,6 +1658,10 @@
         </div>
       </div>
     </div>
+
+    <!-- print rendering of the chosen scope: filled by
+         buildPrintScope at print time; shown only on paper -->
+    <div id="print-chapter" aria-hidden="true"></div>
 
     <!-- offline-data -->
     <script>
@@ -1652,11 +1834,22 @@
         return "About " + hrs + " hr" + (rem ? " " + rem + " min" : "");
       }
       /* A plan day's total: its chapters' words summed, or -1 while
-         any of them is still unfetched. */
+         any of them is still unfetched. A chapter entry that names
+         a run of verses (v0–v1, the Advent plan's passages) counts
+         only those verses. */
       function planDayWords(day) {
         var total = 0;
         for (var i = 0; i < day.length; i++) {
-          var w = chapterWords(day[i].b, day[i].c);
+          var e = day[i], w;
+          if (e.v0) {
+            var bk = bookData(e.b);
+            if (!bk || typeof bk.c[e.c] !== "string") return -1;
+            var runParts = bk.c[e.c].split("\n").slice(e.v0 - 1, e.v1 || e.v0).join(" ").split(/\s+/);
+            w = 0;
+            for (var j = 0; j < runParts.length; j++) if (runParts[j]) w++;
+          } else {
+            w = chapterWords(e.b, e.c);
+          }
           if (w < 0) return -1;
           total += w;
         }
@@ -4508,7 +4701,7 @@
         if (text != null) e.textContent = text;
         return e;
       }
-      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-journey", "view-glossary"];
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-prayers", "view-journey", "view-glossary"];
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -5566,7 +5759,7 @@
       try { refreshPlaces(); } catch (e) {}
 
       /* ---- reading plans ----
-         Five gentle paths through the Bible, grouped at build time
+         Gentle paths through the Bible, grouped at build time
          from the app's own book and chapter data (META). Days are not
          tied to calendar dates: the reader goes at their own pace,
          and a day counts as done when every chapter in it stands in
@@ -5631,6 +5824,109 @@
           title: "The Bible in a Year",
           desc: "Genesis through Revelation, in order — three or four chapters at a time.",
           days: groupEven(flatChapters(ALL_BOOK_LIST), 365)
+        },
+        /* A plan of passages rather than whole chapters: each day is
+           one run of verses inside a single chapter, and each day
+           carries a title of its own (dayTitles walks beside days).
+           The v0/v1 fields on a day's chapter entry are what
+           planDayLabel, planDayWords, the day's opening mark, and
+           the day's listening all read; no other plan carries them,
+           and no other plan carries dayTitles. Progress stays the
+           one chapters-read record, as with every plan: a day
+           counts once its chapter stands read. */
+        {
+          title: "Advent — 25 Days to Christmas",
+          desc: "From the first promise in Eden to the child in the manger — one passage a day toward Christmas, and the whole story on Christmas Day.",
+          days: [
+            [{ b: 0, c: 2, v0: 8, v1: 15 }],
+            [{ b: 0, c: 11, v0: 1, v1: 7 }],
+            [{ b: 22, c: 6, v0: 10, v1: 17 }],
+            [{ b: 22, c: 8, v0: 1, v1: 7 }],
+            [{ b: 22, c: 10, v0: 1, v1: 10 }],
+            [{ b: 32, c: 4, v0: 2, v1: 5 }],
+            [{ b: 22, c: 39, v0: 1, v1: 11 }],
+            [{ b: 22, c: 60, v0: 1, v1: 4 }],
+            [{ b: 23, c: 22, v0: 1, v1: 6 }],
+            [{ b: 26, c: 6, v0: 9, v1: 14 }],
+            [{ b: 37, c: 8, v0: 9, v1: 10 }],
+            [{ b: 38, c: 2, v0: 1, v1: 4 }],
+            [{ b: 41, c: 0, v0: 5, v1: 25 }],
+            [{ b: 41, c: 0, v0: 26, v1: 38 }],
+            [{ b: 41, c: 0, v0: 39, v1: 56 }],
+            [{ b: 41, c: 0, v0: 57, v1: 80 }],
+            [{ b: 39, c: 0, v0: 18, v1: 25 }],
+            [{ b: 41, c: 1, v0: 1, v1: 7 }],
+            [{ b: 41, c: 1, v0: 8, v1: 20 }],
+            [{ b: 41, c: 1, v0: 21, v1: 38 }],
+            [{ b: 39, c: 1, v0: 1, v1: 12 }],
+            [{ b: 39, c: 1, v0: 13, v1: 23 }],
+            [{ b: 42, c: 0, v0: 1, v1: 14 }],
+            [{ b: 49, c: 1, v0: 5, v1: 11 }],
+            [{ b: 41, c: 1, v0: 1, v1: 20 }]
+          ],
+          dayTitles: [
+            "The First Promise", "The Promise to Abraham", "Immanuel Promised",
+            "Unto Us a Child Is Born", "The Shoot from Jesse", "Out of Bethlehem",
+            "Prepare the Way", "Good News to the Poor", "The Righteous Branch",
+            "The Son of Man", "Your King Comes", "The Messenger Before Him",
+            "Zechariah and Elizabeth", "The Angel Comes to Mary", "Mary's Song",
+            "John Is Born", "Joseph's Dream", "Jesus Is Born",
+            "Shepherds Hear the News", "Simeon and Anna", "The Wise Men",
+            "The Flight to Egypt", "The Word Became Flesh", "He Humbled Himself",
+            "The Whole Story — Christmas Day"
+          ]
+        },
+        /* The same passage-plan shape as Advent: thirty stops
+           through the life of Jesus, each one run of verses in a
+           single chapter under a title of its own. Book indexes:
+           Matthew 39, Mark 40, Luke 41, John 42, Acts 43. */
+        {
+          title: "The Life of Jesus — 30 Stops",
+          desc: "Thirty passages that walk with Jesus from before His birth to His ascension — one stop at a time.",
+          days: [
+            [{ b: 42, c: 0, v0: 1, v1: 5 }],
+            [{ b: 41, c: 1, v0: 1, v1: 7 }],
+            [{ b: 41, c: 1, v0: 8, v1: 20 }],
+            [{ b: 41, c: 1, v0: 21, v1: 38 }],
+            [{ b: 41, c: 1, v0: 41, v1: 52 }],
+            [{ b: 39, c: 2, v0: 13, v1: 17 }],
+            [{ b: 39, c: 3, v0: 1, v1: 11 }],
+            [{ b: 42, c: 0, v0: 35, v1: 51 }],
+            [{ b: 42, c: 1, v0: 1, v1: 11 }],
+            [{ b: 42, c: 2, v0: 1, v1: 21 }],
+            [{ b: 42, c: 3, v0: 4, v1: 42 }],
+            [{ b: 39, c: 4, v0: 1, v1: 16 }],
+            [{ b: 40, c: 3, v0: 35, v1: 41 }],
+            [{ b: 42, c: 5, v0: 1, v1: 15 }],
+            [{ b: 42, c: 5, v0: 32, v1: 40 }],
+            [{ b: 42, c: 9, v0: 11, v1: 18 }],
+            [{ b: 42, c: 10, v0: 17, v1: 44 }],
+            [{ b: 39, c: 16, v0: 1, v1: 9 }],
+            [{ b: 41, c: 18, v0: 1, v1: 10 }],
+            [{ b: 39, c: 20, v0: 1, v1: 11 }],
+            [{ b: 42, c: 12, v0: 1, v1: 17 }],
+            [{ b: 39, c: 25, v0: 36, v1: 46 }],
+            [{ b: 41, c: 22, v0: 1, v1: 25 }],
+            [{ b: 42, c: 18, v0: 16, v1: 30 }],
+            [{ b: 39, c: 26, v0: 57, v1: 66 }],
+            [{ b: 42, c: 19, v0: 1, v1: 18 }],
+            [{ b: 41, c: 23, v0: 13, v1: 35 }],
+            [{ b: 42, c: 19, v0: 24, v1: 29 }],
+            [{ b: 42, c: 20, v0: 1, v1: 19 }],
+            [{ b: 43, c: 0, v0: 1, v1: 11 }]
+          ],
+          dayTitles: [
+            "The Word Before Time", "Born in Bethlehem", "Shepherds and Wise Men",
+            "Presented at the Temple", "The Boy in the Temple", "Baptized",
+            "Tempted in the Wilderness", "The First Disciples", "Water into Wine",
+            "Nicodemus at Night", "The Woman at the Well", "The Sermon on the Mount Begins",
+            "Calming the Storm", "Feeding the Five Thousand", "I Am the Bread of Life",
+            "The Good Shepherd", "Lazarus, Come Out", "The Transfiguration",
+            "Zacchaeus", "The King Enters Jerusalem", "The Last Supper",
+            "Gethsemane", "On Trial", "The Cross",
+            "Buried", "The Empty Tomb", "The Emmaus Road",
+            "Thomas Believes", "Breakfast by the Sea", "Taken Up — and Coming Again"
+          ]
         }
       ];
       function planDayDone(day) {
@@ -5641,11 +5937,25 @@
       }
       function planDayLabel(day) {
         var first = day[0], last = day[day.length - 1];
+        /* A day that is one run of verses within a single chapter
+           (the Advent plan's passages) is named by its verses:
+           "Genesis 3:8–15". */
+        if (first === last && first.v0) {
+          var vref = META[first.b][0] + " " + (first.c + 1) + ":" + first.v0;
+          return first.v1 > first.v0 ? vref + "–" + first.v1 : vref;
+        }
         if (first.b === last.b) {
           if (first.c === last.c) return refName(first.b, first.c);
           return META[first.b][0] + " " + (first.c + 1) + "–" + (last.c + 1);
         }
         return refName(first.b, first.c) + " – " + refName(last.b, last.c);
+      }
+      /* The reader mark a day opens with: the day's verse run when
+         it names one, so the passage itself stands highlighted and
+         scrolled into view; 0 (the chapter from its top) otherwise. */
+      function planDayMark(day) {
+        var f = day[0];
+        return (f && f.v0) ? [f.v0, f.v1 || f.v0] : 0;
       }
       /* While the reader is working through a plan day, this holds
          { plan, day } so the reader can offer its way back to that
@@ -5721,8 +6031,10 @@
           planCardPick = { plan: pick, day: pickDay };
           $("plan-card-label").textContent = "Your reading plan";
           $("plan-card-title").textContent = plan.title;
+          var nextTitle = plan.dayTitles ? plan.dayTitles[pickDay] : null;
           $("plan-card-next").textContent =
-            "Next: Day " + (pickDay + 1) + " — " + planDayLabel(plan.days[pickDay]) +
+            "Next: Day " + (pickDay + 1) + " — " +
+            (nextTitle ? nextTitle + " · " : "") + planDayLabel(plan.days[pickDay]) +
             " · " + planDoneCount(plan) + " of " + plan.days.length + " days done";
           readBtn.hidden = false;
           var canListen = false;
@@ -5737,7 +6049,7 @@
         if (anyStarted) { card.hidden = true; return; } /* every started plan stands finished */
         $("plan-card-label").textContent = "Reading plans";
         $("plan-card-title").textContent = "Walk through the Bible, a day at a time";
-        $("plan-card-next").textContent = "Five gentle paths — go at your own pace, with no dates and no falling behind.";
+        $("plan-card-next").textContent = "Gentle paths through the Bible — go at your own pace, with no dates and no falling behind.";
         readBtn.hidden = true;
         listenBtn.hidden = true;
         startBtn.hidden = false;
@@ -5747,7 +6059,7 @@
         $("plan-card-read").addEventListener("click", function () {
           if (!planCardPick) return;
           var day = PLANS[planCardPick.plan].days[planCardPick.day];
-          openChapter(day[0].b, day[0].c, 0, { plan: planCardPick.plan, day: planCardPick.day });
+          openChapter(day[0].b, day[0].c, planDayMark(day), { plan: planCardPick.plan, day: planCardPick.day });
         });
       } catch (e) {}
       try {
@@ -5767,6 +6079,7 @@
         var link = "";
         try { link = location.href.split("#")[0] + "#plan/" + pi + "/" + (di + 1); } catch (e) {}
         var text = "Read Day " + (di + 1) + " of " + plan.title + " with me — " +
+          (plan.dayTitles && plan.dayTitles[di] ? plan.dayTitles[di] + " — " : "") +
           planDayLabel(plan.days[di]) + " (World English Bible)" +
           (link ? " " + link : "");
         shareTextBlock("Day " + (di + 1) + " of " + plan.title + " — World English Bible", text);
@@ -5795,7 +6108,18 @@
             btn.type = "button";
             btn.id = "plan-day-" + pi + "-" + di;
             btn.appendChild(el("span", "pd-day", "Day " + (di + 1)));
-            btn.appendChild(el("span", "pd-range", planDayLabel(day)));
+            /* A plan whose days carry titles of their own (the
+               Advent plan) shows the day's title over its passage;
+               every other plan shows the passage alone, as always. */
+            var dayTitle = plan.dayTitles ? plan.dayTitles[di] : null;
+            if (dayTitle) {
+              var pdMain = el("span", "pd-main");
+              pdMain.appendChild(el("span", "pd-name", dayTitle));
+              pdMain.appendChild(el("span", "pd-ref", planDayLabel(day)));
+              btn.appendChild(pdMain);
+            } else {
+              btn.appendChild(el("span", "pd-range", planDayLabel(day)));
+            }
             /* The day's total reading time, summed over its chapters.
                Filled now if the text is already in hand; otherwise
                fillPlanTimes fills it once the text lands. */
@@ -5809,11 +6133,12 @@
               check.setAttribute("aria-hidden", "true");
               btn.appendChild(check);
               btn.setAttribute("aria-label",
-                "Day " + (di + 1) + ": " + planDayLabel(day) + " — done");
+                "Day " + (di + 1) + ": " +
+                (dayTitle ? dayTitle + " — " : "") + planDayLabel(day) + " — done");
             }
             btn.appendChild(el("span", "pd-arrow", "›"));
             btn.addEventListener("click", function () {
-              openChapter(day[0].b, day[0].c, 0, { plan: pi, day: di });
+              openChapter(day[0].b, day[0].c, planDayMark(day), { plan: pi, day: di });
             });
             li.appendChild(btn);
             if (canListen) {
@@ -6165,6 +6490,102 @@
       try {
         $("turn-return-btn").addEventListener("click", function () {
           if (turnReturn) openTurn();
+        });
+      } catch (e) {}
+
+      /* ---- prayers of the bible ----
+         The Bible's great prayers, in the order they stand below,
+         each with the one line that says who is praying and the
+         moment they are in. Tapping one opens its chapter in the
+         reader with the prayer's verses standing highlighted and
+         scrolled into view, the way a reading plan's day opens.
+         Entries are [name, introduction, reference label, book,
+         chapter (0-based), first verse, last verse] — a last verse
+         of 0 means the prayer is the whole chapter, and its verses
+         are counted from the chapter itself when it is opened.
+         Every range was checked against the WEB text: the words
+         are the app's own, unchanged. */
+      var PRAYERS = [
+        ["The Lord's Prayer", "Jesus teaches us to pray", "Matthew 6:9–13", 39, 5, 9, 13],
+        ["Jesus in Gethsemane", "Alone in the garden on the night He was betrayed, Jesus asks His Father about the cup — and yields to His will.", "Matthew 26:39–44", 39, 25, 39, 44],
+        ["The High Priestly Prayer", "Jesus prays for His own", "John 17", 42, 16, 1, 0],
+        ["Mary's Song", "The Magnificat — Mary, carrying Jesus, sings her joy to God at Elizabeth's house.", "Luke 1:46–55", 41, 0, 46, 55],
+        ["Hannah's Prayer of Joy", "Hannah, her long prayer for a child answered, gives Samuel back to God with a song of thanks.", "1 Samuel 2:1–10", 8, 1, 1, 10],
+        ["David's Prayer of Thanks", "David, before all the assembly, thanks God for the gifts gathered to build His house.", "1 Chronicles 29:10–13", 12, 28, 10, 13],
+        ["Solomon Dedicates the Temple", "Solomon stands before the altar at the temple's dedication and prays for God's house and people.", "1 Kings 8:22–30", 10, 7, 22, 30],
+        ["Hezekiah Prays in the Invasion", "With Assyria's army at the gate, Hezekiah spreads the enemy's letter before God in the temple and prays.", "2 Kings 19:15–19", 11, 18, 15, 19],
+        ["Ezra Confesses for the People", "Ezra, weeping and ashamed of the people's sin, confesses it and pleads God's covenant mercy.", "Ezra 9:6–15", 14, 8, 6, 15],
+        ["Nehemiah's Prayer for Jerusalem", "Nehemiah, hearing of Jerusalem's broken walls, weeps and prays — before he acts.", "Nehemiah 1:5–11", 15, 0, 5, 11],
+        ["Daniel Prays for His People", "Daniel, in exile, confesses his people's sin and asks God to turn His anger away from Jerusalem.", "Daniel 9:4–19", 26, 8, 4, 19],
+        ["Jonah Prays from the Fish", "From inside the great fish, Jonah thanks God for a rescue he cannot yet see the end of.", "Jonah 2:2–9", 31, 1, 2, 9],
+        ["Habakkuk Rejoices Anyway", "Habakkuk's prayer-song: though the fields stand empty, he will rejoice in God his Savior.", "Habakkuk 3", 34, 2, 1, 0],
+        ["The First Church Prays Boldly", "Threatened and told to be silent, the first believers ask God not for safety, but for boldness.", "Acts 4:24–30", 43, 3, 24, 30],
+        ["Paul Prays for the Ephesians — to Know Him", "Paul asks the Father of glory to open their eyes — to know Him, and the hope and power that are theirs.", "Ephesians 1:17–23", 48, 0, 17, 23],
+        ["Paul Prays for the Ephesians — Rooted in Love", "Paul bows his knees and prays they would be rooted and grounded in Christ's love.", "Ephesians 3:14–21", 48, 2, 14, 21],
+        ["Paul Prays for the Philippians", "Paul thanks God for his dear friends and prays their love will grow in knowledge and depth of insight.", "Philippians 1:9–11", 49, 0, 9, 11],
+        ["Paul Prays for the Colossians", "Paul, who has never met them face to face, prays they will walk worthy of the Lord and bear fruit.", "Colossians 1:9–14", 50, 0, 9, 14]
+      ];
+      /* While the reader is in a chapter opened from here, this
+         stands so the reader can offer its "← Back to Prayers of
+         the Bible" — the same courtesy Where to Turn extends, on
+         the same terms (see openChapter). */
+      var prayersReturn = false;
+      function refreshPrayersReturn() {
+        var row = $("prayers-return-row");
+        if (!row) return;
+        row.hidden = !prayersReturn;
+      }
+      function openPrayer(p) {
+        if (p[6] > 0) { openChapter(p[3], p[4], [p[5], p[6]], null, false, true); return; }
+        /* The whole chapter is the prayer: count its verses from
+           the text itself, then open it with every verse lit. */
+        ensureBook(p[3]).then(function () {
+          var bk = bookData(p[3]);
+          var n = bk && bk.c[p[4]] ? bk.c[p[4]].split("\n").length : 0;
+          openChapter(p[3], p[4], n > 0 ? [1, n] : 0, null, false, true);
+        }).catch(function () { openChapter(p[3], p[4], 0, null, false, true); });
+      }
+      function renderPrayers() {
+        var body = $("prayers-body");
+        body.textContent = "";
+        var list = el("ul", "prayers-list");
+        PRAYERS.forEach(function (p) {
+          var li = el("li");
+          var btn = el("button", "prayer-row");
+          btn.type = "button";
+          var main = el("span", "prayer-main");
+          main.appendChild(el("span", "prayer-name", p[0]));
+          main.appendChild(el("span", "prayer-intro", p[1]));
+          main.appendChild(el("span", "prayer-ref", p[2]));
+          btn.appendChild(main);
+          var arrow = el("span", "prayer-arrow", "›");
+          arrow.setAttribute("aria-hidden", "true");
+          btn.appendChild(arrow);
+          btn.addEventListener("click", function () { openPrayer(p); });
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+        body.appendChild(list);
+        /* The closing word: the Psalms are a prayer book entire —
+           the line itself is the door to their book page. */
+        var close = el("div", "prayers-psalms");
+        var psBtn = el("button", "prayers-psalms-btn",
+          "And the whole book of Psalms — Israel's prayer book, still praying today.");
+        psBtn.type = "button";
+        psBtn.addEventListener("click", function () { openChapters(18); });
+        close.appendChild(psBtn);
+        body.appendChild(close);
+      }
+      function openPrayers() {
+        showView("view-prayers");
+        setPageMeta("Prayers of the Bible — World English Bible", DEFAULT_DESC);
+      }
+      try { renderPrayers(); } catch (e) {}
+      try { $("prayers-btn").addEventListener("click", openPrayers); } catch (e) {}
+      try { $("prayers-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try {
+        $("prayers-return-btn").addEventListener("click", function () {
+          if (prayersReturn) openPrayers();
         });
       } catch (e) {}
 
@@ -7236,7 +7657,7 @@
       /* ---- reader ---- */
       var readerToken = 0;
       var current = { b: 0, c: 0 };
-      function openChapter(bi, ci, highlightVerse, planCtx, fromTurn) {
+      function openChapter(bi, ci, highlightVerse, planCtx, fromTurn, fromPrayers) {
         /* Any navigation of the reader's own cancels a pending
            auto-continue start; the roll itself sets the flag again
            after this call returns (see chapterPlaybackEnded). */
@@ -7245,7 +7666,9 @@
            reader offers a way back, and to where: a plan day passes
            its { plan, day } and earns "← Back to [plan]"; a Where to
            Turn passage passes fromTurn and earns "← Back to Where to
-           turn". Only one ever stands — the most recent origin wins.
+           turn"; a Prayers of the Bible passage passes fromPrayers
+           and earns "← Back to Prayers of the Bible". Only one ever
+           stands — the most recent origin wins.
            The reader's own Previous/Next buttons (and the listening
            roll) pass "keep", so whichever way back is up stays up
            while the reader works on from that opening; every other
@@ -7253,11 +7676,13 @@
            shelf, My Journey, Continue Reading, a deep link — passes
            nothing and clears both. */
         if (planCtx === "keep") { /* stay with the origin we're in */ }
-        else if (planCtx) { planReturn = planCtx; turnReturn = false; }
-        else if (fromTurn) { planReturn = null; turnReturn = true; }
-        else { planReturn = null; turnReturn = false; }
+        else if (planCtx) { planReturn = planCtx; turnReturn = false; prayersReturn = false; }
+        else if (fromTurn) { planReturn = null; turnReturn = true; prayersReturn = false; }
+        else if (fromPrayers) { planReturn = null; turnReturn = false; prayersReturn = true; }
+        else { planReturn = null; turnReturn = false; prayersReturn = false; }
         refreshPlanReturn();
         refreshTurnReturn();
+        refreshPrayersReturn();
         if (planReturn) notePlanOpened(planReturn.plan);
         current = { b: bi, c: ci };
         dismissSelection();
@@ -7470,6 +7895,193 @@
       }
       $("reader-to-chapters").addEventListener("click", function () { openChapters(current.b); });
       $("reader-to-books").addEventListener("click", function () { showView("view-home"); });
+
+      /* ---- print ----
+         A paper rendering built fresh from the Bible data into
+         #print-chapter — an element that exists only for print (the
+         @media print rules hide everything else on the page). The
+         reader's Print button opens a small panel offering three
+         scopes — this chapter, this book, the whole Bible — each
+         with an estimated page count figured from the actual WEB
+         text at the print size (about 200 words of 19pt type to a
+         page; an estimate, and labeled one). Every scope follows
+         the same rules: each chapter stands with its book/chapter
+         heading, its big-idea line where it has one, and its own
+         section headings; red-letter words stay red; and none of
+         the app comes along — no navigation, no cross-reference
+         chips, no glossary underlines, no highlight marks, no
+         buttons. The verse text itself is the WEB text, untouched.
+         "Print" and "Save as PDF" build the identical rendering and
+         open the standard print flow (on a phone that offers Print,
+         Save as PDF and Share); the panel's hint line, shown before
+         either is tapped, explains how the PDF is saved in that
+         flow. The browser's own print command fires beforeprint,
+         which rebuilds the chosen scope, so the sheet always
+         matches what the panel offered. */
+      var PRINT_WORDS_PER_PAGE = 200;
+      var printScope = "chapter";
+      function printPagesFor(words) { return Math.max(1, Math.round(words / PRINT_WORDS_PER_PAGE)); }
+      function printPagesLabel(words) {
+        if (words < 0) return "…";
+        var n = printPagesFor(words);
+        return "≈ " + n.toLocaleString("en-US") + (n === 1 ? " page" : " pages");
+      }
+      /* Total words of a scope from the shipped text itself, or -1
+         while any of its text hasn't been fetched yet. */
+      function scopeWords(scope) {
+        var total = 0, b, i, w;
+        if (scope === "chapter") {
+          w = chapterWords(current.b, current.c);
+          return w < 0 ? -1 : w;
+        }
+        if (scope === "book") {
+          var bk = bookData(current.b);
+          if (!bk) return -1;
+          for (i = 0; i < bk.c.length; i++) {
+            w = chapterWords(current.b, i);
+            if (w < 0) return -1;
+            total += w;
+          }
+          return total;
+        }
+        for (b = 0; b < META.length; b++) {
+          var bk2 = bookData(b);
+          if (!bk2) return -1;
+          for (i = 0; i < bk2.c.length; i++) {
+            w = chapterWords(b, i);
+            if (w < 0) return -1;
+            total += w;
+          }
+        }
+        return total;
+      }
+      function refreshPrintWarn() {
+        var warn = $("pp-warn");
+        if (printScope !== "bible") { warn.hidden = true; return; }
+        var words = scopeWords("bible");
+        warn.textContent = words < 0
+          ? "That's a lot of paper and ink at this size — printing one book at a time is usually kinder."
+          : "That's about " + printPagesFor(words).toLocaleString("en-US") +
+            " pages at this size — a lot of paper and ink. Printing one book at a time is usually kinder.";
+        warn.hidden = false;
+      }
+      function refreshPrintEstimates() {
+        $("pp-pages-chapter").textContent = printPagesLabel(scopeWords("chapter"));
+        $("pp-pages-book").textContent = printPagesLabel(scopeWords("book"));
+        $("pp-pages-bible").textContent = printPagesLabel(scopeWords("bible"));
+        refreshPrintWarn();
+      }
+      function markPrintScope() {
+        ["chapter", "book", "bible"].forEach(function (s) {
+          var b = $("pp-scope-" + s);
+          var on = s === printScope;
+          b.classList.toggle("on", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        refreshPrintWarn();
+      }
+      function openPrintPanel() {
+        printScope = "chapter";
+        $("pp-scope-chapter-name").textContent = "This chapter — " + refName(current.b, current.c);
+        var n = META[current.b][1];
+        $("pp-scope-book-name").textContent = "This book — " + META[current.b][0] +
+          " (" + n + (n === 1 ? " chapter" : " chapters") + ")";
+        $("print-panel").hidden = false;
+        markPrintScope();
+        refreshPrintEstimates();
+        /* The estimates want the whole text; fetch both testaments
+           in the background and fill the counts in as they land. */
+        ensureAll().then(refreshPrintEstimates).catch(function () {});
+      }
+      function appendPrintText(parent, text, spans) {
+        if (!spans) { parent.appendChild(document.createTextNode(text)); return; }
+        var pos = 0;
+        spans.forEach(function (rg) {
+          if (rg[0] > pos) parent.appendChild(document.createTextNode(text.slice(pos, rg[0])));
+          var wj = el("span", "wj");
+          wj.appendChild(document.createTextNode(text.slice(rg[0], rg[1])));
+          parent.appendChild(wj);
+          pos = rg[1];
+        });
+        if (pos < text.length) parent.appendChild(document.createTextNode(text.slice(pos)));
+      }
+      /* One chapter of the print rendering: book line, chapter
+         heading, big-idea line where the chapter has one, its
+         section headings, and its verses — nothing else. */
+      function appendPrintChapter(parent, bi, ci) {
+        var bk = bookData(bi);
+        if (!bk || !bk.c[ci]) return;
+        var wrap = el("div", "pc-chap");
+        wrap.appendChild(el("p", "pc-book", META[bi][0]));
+        wrap.appendChild(el("h2", "pc-title", "Chapter " + (ci + 1)));
+        var idea = chapterIdea(bi, ci);
+        if (idea) wrap.appendChild(el("p", "pc-idea", idea));
+        var woc = window.__WEB_NT_WOC__ || null;
+        var secHeads = chapterHeadings(bi, ci);
+        var p = el("p", "pc-text");
+        bk.c[ci].split("\n").forEach(function (text, vi) {
+          if (!text) return;
+          if (secHeads && secHeads[vi + 1]) p.appendChild(el("span", "pc-sec", secHeads[vi + 1]));
+          var span = el("span", "pc-verse");
+          span.appendChild(el("sup", "pc-vn", String(vi + 1)));
+          appendPrintText(span, text, woc ? woc[bi + "," + ci + "," + (vi + 1)] : null);
+          span.appendChild(document.createTextNode(" "));
+          p.appendChild(span);
+        });
+        wrap.appendChild(p);
+        parent.appendChild(wrap);
+      }
+      /* Build the chosen scope into #print-chapter from whatever
+         text is loaded; returns false when nothing could be built
+         (no reader open, or the scope's text not fetched yet). */
+      function buildPrintScope() {
+        var pc = $("print-chapter");
+        if (!pc) return false;
+        pc.textContent = "";
+        if ($("view-reader").hidden) return false;
+        var bi, ci;
+        if (printScope === "chapter") {
+          if (!bookData(current.b)) return false;
+          appendPrintChapter(pc, current.b, current.c);
+          return pc.children.length > 0;
+        }
+        if (printScope === "book") {
+          var bk = bookData(current.b);
+          if (!bk) return false;
+          for (ci = 0; ci < bk.c.length; ci++) appendPrintChapter(pc, current.b, ci);
+          return pc.children.length > 0;
+        }
+        var any = false;
+        for (bi = 0; bi < META.length; bi++) {
+          var bk2 = bookData(bi);
+          if (!bk2) continue;
+          any = true;
+          pc.appendChild(el("h2", "pc-booktitle", META[bi][0]));
+          for (ci = 0; ci < bk2.c.length; ci++) appendPrintChapter(pc, bi, ci);
+        }
+        return any;
+      }
+      /* Print and Save as PDF are the same door: fetch the scope's
+         text if it isn't here yet, build the identical rendering,
+         and open the browser's print flow. */
+      function runPrint() {
+        var ready = printScope === "bible" ? ensureAll() : ensureBook(current.b);
+        ready.then(function () { if (buildPrintScope()) window.print(); })
+          .catch(function () { if (buildPrintScope()) window.print(); });
+      }
+      try { $("print-open-btn").addEventListener("click", openPrintPanel); } catch (e) {}
+      try { $("pp-cancel-btn").addEventListener("click", function () { $("print-panel").hidden = true; }); } catch (e) {}
+      ["chapter", "book", "bible"].forEach(function (s) {
+        try {
+          $("pp-scope-" + s).addEventListener("click", function () {
+            printScope = s;
+            markPrintScope();
+          });
+        } catch (e) {}
+      });
+      try { $("pp-print-btn").addEventListener("click", runPrint); } catch (e) {}
+      try { $("pp-pdf-btn").addEventListener("click", runPrint); } catch (e) {}
+      try { window.addEventListener("beforeprint", buildPrintScope); } catch (e) {}
 
       /* ---- listen to this chapter (optional audio Bible) ----
          Reads the open chapter aloud with the device's own speech (the
@@ -8072,7 +8684,7 @@
           if (!plan || !plan.days[di] || !plan.days[di].length) return;
           var pl = { chapters: plan.days[di].slice(), idx: 0 };
           var first = pl.chapters[0];
-          openChapter(first.b, first.c, 0, { plan: pi, day: di });
+          openChapter(first.b, first.c, planDayMark(plan.days[di]), { plan: pi, day: di });
           /* openChapter passed through showView, whose stopListening
              clears any queue — set this day's queue now that the way
              in is done, and flag the render to start listening when
@@ -8267,8 +8879,17 @@
              fromVerse set ("Listen from here"), the verses before it
              are left out and the reading begins there instead. */
           var queue = [{ v: 0, text: META[bi][0] + " chapter " + (ci + 1) + "." }];
+          /* A plan day that names a run of verses within the chapter
+             (the Advent plan's passages) is spoken as just that run.
+             The intro still names only the book and chapter — a plan
+             or day title is never spoken. */
+          var vFrom = fromVerse || 0, vTo = 0;
+          if (fromPlan && planListen && planListen.chapters[planListen.idx]) {
+            var pch = planListen.chapters[planListen.idx];
+            if (pch.b === bi && pch.c === ci && pch.v0) { vFrom = pch.v0; vTo = pch.v1 || pch.v0; }
+          }
           bk.c[ci].split("\n").forEach(function (text, vi) {
-            if (text && (!fromVerse || vi + 1 >= fromVerse)) queue.push({ v: vi + 1, text: text });
+            if (text && (!vFrom || vi + 1 >= vFrom) && (!vTo || vi + 1 <= vTo)) queue.push({ v: vi + 1, text: text });
           });
           if (queue.length < 2) return;
           /* Starting over always stops what was playing, and stopping
@@ -8998,7 +9619,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610191510";
+      var APP_BUILD_STAMP = "202610202113";
       (function () {
         try {
           var btn = $("update-btn");
