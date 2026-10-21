@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610202240" />
+    <meta name="app-build" content="202610210152" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -1169,6 +1169,11 @@
       .book-listen-btn { min-height: 48px; font-size: 16px; padding: 10px 20px; }
       .book-listen-note { color: var(--ink-soft); font-size: 14.5px; }
 
+      /* ---------- share a whole book (chapter grid) ---------- */
+      .book-share-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 0 0 16px; }
+      .book-share-btn { min-height: 48px; font-size: 16px; padding: 10px 20px; }
+      .book-share-note { color: var(--ink-soft); font-size: 14.5px; }
+
       /* ---------- listen to my saved verses ---------- */
       .saved-listen-btn { width: 100%; font-size: 16.5px; margin: 0 0 16px; }
       .listen-mini {
@@ -1376,6 +1381,10 @@
         <div class="book-listen-row" id="book-listen-row" hidden>
           <button type="button" class="btn book-listen-btn" id="book-listen-btn">▶ Listen</button>
           <span class="book-listen-note">Hear the whole book, chapter by chapter.</span>
+        </div>
+        <div class="book-share-row" id="book-share-row">
+          <button type="button" class="btn book-share-btn" id="book-share-btn">Share this book</button>
+          <span class="book-share-note">A link that opens this book, to send to anyone.</span>
         </div>
         <div class="chap-grid" id="chap-grid"></div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
@@ -7770,6 +7779,10 @@
           blBtn.textContent = "▶ Listen to " + META[bi][0];
           blBtn.onclick = function () { startBookListen(bi); };
         }
+        /* Share this book: always offered — it shares a link that
+           opens the app at this book (see shareBookLink). */
+        var bsBtn = $("book-share-btn");
+        if (bsBtn) bsBtn.onclick = function () { shareBookLink(bi); };
         var grid = $("chap-grid");
         grid.textContent = "";
         for (var ci = 0; ci < META[bi][1]; ci++) {
@@ -8761,6 +8774,23 @@
         }).catch(function () {
           try { showToast("Couldn't prepare the PDF — check your connection and try again."); } catch (e) {}
         });
+      }
+      /* ---- Share this book (the chapter grid's button) ----
+         A link, not a file: the app's deep link for the book.
+         The hash scheme names a place by book and chapter, so a
+         book is shared by its first chapter (#Luke/1) — a fresh
+         visitor following the link lands right there, in the
+         book. It goes out the app's usual share way, the same
+         shape verse-sharing takes (shareTextBlock): a title, one
+         line naming the book, and the link inline at the end of
+         the text. No PDF is generated here — a book's PDF still
+         lives in the print panel's book scope, unchanged. */
+      function shareBookLink(bi) {
+        var link = "";
+        try { link = location.href.split("#")[0] + hashFor(bi, 0); } catch (e) {}
+        var text = "Read " + META[bi][0] + " with me — the whole book (World English Bible)" +
+          (link ? " " + link : "");
+        shareTextBlock(META[bi][0] + " — World English Bible", text);
       }
       try { $("print-open-btn").addEventListener("click", openPrintPanel); } catch (e) {}
       try { $("pp-cancel-btn").addEventListener("click", function () { $("print-panel").hidden = true; }); } catch (e) {}
@@ -10326,7 +10356,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610202240";
+      var APP_BUILD_STAMP = "202610210152";
       (function () {
         try {
           var btn = $("update-btn");
