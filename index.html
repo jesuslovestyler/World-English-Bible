@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610210600" />
+    <meta name="app-build" content="202610211100" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -902,6 +902,14 @@
       .gal-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
       .gal-credit { color: var(--ink-soft); font-size: 13.5px; line-height: 1.45; margin: 10px 0 0; }
       .credit-note { color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; margin: 16px 0 6px; }
+      /* one-tap offline saving for a gallery: the save button in the
+         app's ordinary button dress, a quiet status line under it,
+         and the remove control in the surface style of the app's
+         secondary buttons */
+      .gal-off-box { margin: 2px 0 18px; }
+      .gal-off-btn { width: 100%; font-size: 16.5px; }
+      .gal-off-remove { width: 100%; font-size: 15.5px; margin-top: 10px; background: var(--surface); color: var(--accent); border-color: var(--line); }
+      .gal-off-status { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
       .fs-overlay {
         position: fixed; inset: 0; z-index: 200; background: rgba(14, 11, 6, 0.95);
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1817,6 +1825,11 @@
           <h2>Bible Maps</h2>
           <p>The lands of the Bible, drawn by mapmakers of long ago. Tap a map to see it full-screen, and tap a passage to read the story where it happened.</p>
         </div>
+        <div class="gal-off-box">
+          <button class="btn gal-off-btn" id="maps-off-btn" type="button">⬇ Save maps for offline</button>
+          <p class="gal-off-status" id="maps-off-status" hidden></p>
+          <button class="btn gal-off-remove" id="maps-off-remove" type="button" hidden>Remove offline copy</button>
+        </div>
         <div id="maps-body"></div>
         <p class="credit-note">All six maps are public-domain works, shared through Wikimedia Commons: Heinrich Bünting (1581), Tobias Lotter (1762), Athanase Coquerel (1843), Kent &amp; Madsen (1912), the American Tract Society, and Johnson &amp; Ward (1862).</p>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
@@ -1832,6 +1845,11 @@
         <div class="search-head">
           <h2>Bible Illustrations</h2>
           <p>The story of the Bible in sixty-four engravings by Gustave Doré. Tap a picture to see it full-screen, and tap its passage to read the chapter.</p>
+        </div>
+        <div class="gal-off-box">
+          <button class="btn gal-off-btn" id="plates-off-btn" type="button">⬇ Save gallery for offline</button>
+          <p class="gal-off-status" id="plates-off-status" hidden></p>
+          <button class="btn gal-off-remove" id="plates-off-remove" type="button" hidden>Remove offline copy</button>
         </div>
         <div id="plates-body"></div>
         <p class="credit-note">Engravings by Gustave Doré for the Bible de Tours (1866), public domain, shared through Wikimedia Commons. A few plates are Doré's same engravings as reprinted in The Bible Panorama (1891), also public domain.</p>
@@ -7154,6 +7172,7 @@
          — kept exactly as written. */
       var GLOSSARY = [
         ["Abba", "An Aramaic word for \"father\" — the intimate family name, warm like \"Dad\" but never casual. Jesus used it in Gethsemane, and the Spirit teaches God's adopted children to cry it too (Romans 8:15): it is the sound of belonging."],
+        ["Acacia", "A hard desert tree whose wood built the ark, the altars, and the tabernacle itself. God chose what grows in the wilderness — tough, lasting, and close at hand — for the furniture of His house."],
         ["Adoption", "God taking people who believe in Jesus into His own family as His sons and daughters, with all the love and inheritance of children."],
         ["Advocate", "One who pleads another’s case. “We have an advocate with the Father, Jesus Christ, the righteous” (1 John 2:1) — the same word the Gospels use for the Holy Spirit, our Counselor and Helper."],
         ["Alabaster", "A white, marble-like stone carved into jars for precious perfume. A woman anointed Jesus from an alabaster jar, and some thought the costly ointment wasted; Jesus called it a beautiful thing, done for His burial."],
@@ -7162,17 +7181,29 @@
         ["Amen", "A Hebrew word meaning 'so be it' or 'truly' — our way of saying, 'Yes, Lord, we agree.'"],
         ["Angel", "A messenger from God. Angels serve God, carry His words to people, and watch over His children."],
         ["Anoint", "To pour oil on someone’s head as God’s public sign that He has chosen them for a task — priests, kings, and prophets were anointed."],
+        ["Ant", "The tiny teacher of Proverbs: “Go to the ant, you sluggard. Consider her ways, and be wise.” She stores up food in summer with no boss over her — diligence in a creature the size of a crumb."],
         ["Antichrist", "Anyone who denies that Jesus is the Christ come in the flesh, and the final deceiver John and Paul warn will arise before Christ returns. The spirit of antichrist was already at work in the first century: false teachers who confess a different Jesus."],
+        ["Antioch", "A great city of Syria where the disciples were first called Christians, and where Paul and Barnabas taught for a whole year. From Antioch the church first deliberately sent missionaries out to the nations."],
         ["Apostasy", "Deliberately turning away from the faith once professed — not a stumble or a season of doubt, but a settled departure from Christ. Scripture warns against it soberly (Hebrews 6; 2 Thessalonians 2) and urges believers to hold fast and encourage one another daily."],
         ["Apostle", "One sent out by Jesus Himself. The first apostles were the twelve men Jesus chose to witness His resurrection and found the church."],
         ["Ark", "Two famous ‘arks’ in Scripture: Noah’s great boat that carried his family through the flood, and the ark of the covenant, the golden chest where God’s presence rested among Israel."],
         ["Armageddon", "The Hebrew name (Har Megiddo, Mount Megiddo) for the place where the kings of the earth gather for the last battle in Revelation 16. Megiddo’s plain had seen many battles; this one ends with the coming of the King."],
         ["Ascension", "Jesus' return to heaven forty days after His resurrection, when He rose bodily before His disciples' eyes, blessing them, and was taken up in a cloud. He sits now at the Father's right hand, interceding for His people, until He comes again the same way He went."],
+        ["Assyria", "The empire of the northeast, centered on Nineveh, whose armies swallowed the northern kingdom of Israel in 722 BC. Isaiah calls Assyria “the rod of my anger” — God’s tool, though the tool boasted as if it swung itself."],
         ["Atonement", "The price paid to bring sinners back to God. In the Old Testament it was animal sacrifices; finally and fully, it is Jesus' death on the cross for us."],
+        ["Awl", "A sharp tool for piercing. Under the Law a servant who loved his master and chose to stay forever had his ear pierced with an awl at the doorpost — willing bondage, marked in the ear."],
+        ["Babylon", "The empire that destroyed Jerusalem and carried Judah into exile — and so Scripture’s name for every proud world power set against God, down to Revelation’s fallen Babylon the great. Its king learned humility eating grass."],
         ["Baptism", "Being washed in water as a sign of new life: buried with Jesus in His death, and raised with Him to walk in newness of life."],
+        ["Barley", "The poorer person’s grain, harvested a month before the wheat. Ruth gleaned barley in Boaz’s fields, a boy’s five barley loaves fed the five thousand, and barley measures run through the Law’s offerings."],
+        ["Basket", "An everyday woven container that keeps turning up at great moments: baby Moses in a basket among the reeds, Paul lowered in a basket over Damascus’s wall, and twelve baskets of leftovers after the loaves were shared."],
+        ["Bear", "A great wild animal of the hills, fierce when robbed of her cubs — Scripture’s picture of desperate anger. David fought a bear as a shepherd boy, and Amos asks what it is like to flee a lion and meet a bear."],
         ["Beatitudes", "The blessings that open the Sermon on the Mount (Matthew 5): \"Blessed are the poor in spirit... the meek... those who hunger and thirst for righteousness.\" Each one reverses the world's values and describes the person God's kingdom delights to honor."],
+        ["Bee", "Bees fill the Bible’s hills with honey. Samson found a swarm in a lion’s carcass, and the psalmist’s enemies “surrounded me like bees” — many, angry, and soon gone like burning thorns."],
         ["Beelzebub", "A mocking name for the prince of demons, borrowed from a Philistine god. The Pharisees accused Jesus of casting out demons by Beelzebub’s power — as if God’s Spirit and Satan could be partners."],
+        ["Beggar", "One who lives by asking others for help. Lazarus the beggar lay at the rich man’s gate, full of sores, longing for crumbs — and angels carried him to Abraham’s side. Heaven keeps the accounts earth reverses."],
+        ["Behemoth", "The mighty land creature of Job 40, made by God alongside Job himself, eating grass like an ox with bones like bronze. Whether hippopotamus or something grander retold, its lesson stands: only its Maker can master it."],
         ["Believe", "To trust — not just to know facts about Jesus, but to rest your whole weight on Him and what He promised."],
+        ["Bethany", "A village on the Mount of Olives, a short walk from Jerusalem — home of Mary, Martha, and Lazarus, where Jesus was anointed and from which He ascended. A place of friends, tears, and resurrection."],
         ["Bethlehem", "The little town in Judah where David was born and, as Micah foretold, where Jesus was born too: “out of you one will come to me who is to be ruler in Israel.” Small place, eternal King."],
         ["Blasphemy", "Speaking of God with contempt, or claiming God’s name and honors for yourself. It is treating the Holy One as if He were nothing."],
         ["Blessing", "God's goodness given as a gift. To bless someone is to speak and give God's good over their life."],
@@ -7183,23 +7214,36 @@
         ["Branch", "A name for the coming Messiah: the shoot that springs from Jesse's cut-down family tree, righteous and fruitful, on whom the Spirit rests (Isaiah 11). Jeremiah calls Him \"a righteous Branch\" who will reign as King; Zechariah, \"my servant the Branch,\" who builds the temple of the LORD."],
         ["Breastplate", "The chest armor of a soldier — and of Israel’s high priest, who wore a jeweled breastpiece bearing the tribes’ names over his heart. Paul gives believers “the breastplate of righteousness,” and of faith and love."],
         ["Calling", "God’s summons into His service and His family. Scripture speaks of a holy calling not earned by works but given by His purpose and grace — and urges us to walk worthy of it."],
+        ["Camel", "The ship of the desert: a tall beast of burden that can cross dry country for days. Camels carried Abraham’s servant to find Rebekah, the queen of Sheba’s spices, and the wise men’s gifts."],
+        ["Canaan", "The land God promised Abraham’s descendants — the strip between the Jordan and the sea, named for Noah’s grandson Canaan. Israel crossed the Jordan into it under Joshua after forty wilderness years."],
+        ["Capernaum", "A fishing town on the Sea of Galilee’s north shore — Jesus’ own town after He left Nazareth, scene of many miracles and much teaching in its synagogue. He pronounced woe on it anyway: much light, little repentance."],
+        ["Cave", "A hollow in the rock used for burial, hiding, and refuge. David hid in caves from Saul, Elijah lodged in a cave on Horeb, and Jesus’ body was laid in a rich man’s rock-hewn tomb."],
+        ["Cedar", "The tall, fragrant king of trees, grown on Lebanon’s mountains. Cedar built Solomon’s temple and palace, and the righteous are promised to “grow like a cedar in Lebanon” — upright, rooted, and lasting."],
         ["Censer", "A pan or vessel for carrying burning coals and incense into holy places. Aaron’s sons Nadab and Abihu offered “strange fire” with theirs and died; in Revelation an angel’s golden censer carries the prayers of the saints."],
         ["Centurion", "A Roman officer commanding about a hundred soldiers. The Gospels treat centurions remarkably kindly — one had faith greater than any in Israel; one confessed at the cross, \"Truly this was the Son of God\"; and Cornelius became the first Gentile household gathered into the church."],
         ["Chaff", "The dry husks blown away when grain is threshed and winnowed. John the Baptist said Jesus would clear His threshing floor, gather the wheat, and burn the chaff — a picture of judgment sorting true from empty."],
+        ["Chain", "Links of metal for binding prisoners — Paul wore them for the hope of Israel and called himself an ambassador in chains. In Revelation an angel binds Satan with a great chain for a thousand years."],
+        ["Chariot", "The war machine of the ancient world: a light two-wheeled car drawn by horses. Pharaoh’s chariots drowned in the sea, Elijah was parted from Elisha by a chariot of fire, and an Ethiopian official read Isaiah in his chariot."],
         ["Cherubim", "Mighty angels shown with wings, set to guard holy places — they watched over Eden’s entrance and above the ark of the covenant."],
         ["Church", "Not a building — the people who belong to Jesus, gathered to worship Him and love one another, all over the world."],
         ["Circumcision", "The cutting sign God gave Abraham and his family as the mark of the old covenant — a sign in the body of belonging to God’s people."],
+        ["Cistern", "A pit dug (often in rock) to catch and store rainwater — Jerusalem’s lifeline in dry months. Joseph was thrown into an empty cistern, and Jeremiah sank into a muddy one for telling the truth."],
+        ["Cloak", "The heavy outer garment worn over the tunic — so valuable that the Law forbade keeping a poor man’s cloak overnight, since it was his blanket. Jesus says: if someone takes your cloak, do not withhold your coat also."],
         ["Commandment", "Something God tells us to do. His commandments are not burdens; they show us His heart and the shape of a good life."],
+        ["Compassion", "Being moved in the heart by another’s suffering, in a way that moves the hands too. Jesus was moved with compassion for crowds, lepers, the bereaved, and the hungry — and each time, the feeling became a deed."],
         ["Condemnation", "God’s guilty verdict over sin. The gospel’s wonder: ‘There is therefore now no condemnation to those who are in Christ Jesus.’"],
         ["Confess", "To say the same thing God says — to admit our sins honestly to Him, and to say out loud that Jesus is Lord."],
         ["Conscience", "The inner witness God built into us, which accuses or excuses our own thoughts. A good conscience is a treasure to keep; faith itself can be shipwrecked by pushing conscience aside (1 Timothy 1:19)."],
+        ["Contentment", "Resting in what God has given, without grasping for more. Paul learned to be content in whatever state he was — in plenty and in hunger alike. It is not having everything, but needing nothing more than Christ."],
         ["Cornerstone", "The first and governing stone of a building, by which every wall is aligned. Scripture calls the Messiah the cornerstone God laid in Zion — precious to those who believe, a stone of stumbling to those who reject Him — and Jesus applied the words to Himself before the rulers who rejected Him."],
         ["Covenant", "God's solemn promise-bond with people, like a marriage vow from His side. The old covenant came through Moses; the new covenant comes through Jesus' blood."],
         ["Cross", "Where Jesus died for our sins. In the Bible 'the cross' often means the whole saving work Jesus did there."],
         ["Crown of thorns", "The mock crown Roman soldiers twisted from thorns and pressed onto Jesus’ head, with a reed for a scepter and “Hail, King of the Jews!” for a joke. He wore the curse’s own plant — thorns came with the fall — as His crown."],
         ["Crucifixion", "Execution by being nailed to a wooden cross — a slow, shaming Roman death. It is how Jesus died for us, bearing our curse in our place."],
         ["Cubit", "The everyday measure of the Bible: the length from elbow to fingertip, about eighteen inches. Noah’s ark was three hundred cubits long; Goliath stood six cubits and a span."],
+        ["Cumin", "A small seed used as a spice. Jesus rebuked scribes who tithed even garden herbs like mint and cumin yet neglected justice, mercy, and faith — the little things weighed, the weighty things left undone."],
         ["Curse", "God’s judgment spoken against sin and evil. At the cross, Jesus became a curse for us, so that blessing could come to us instead."],
+        ["Damascus", "One of the world’s oldest cities, capital of Syria, and enemy of Israel in many wars. On its road, the risen Jesus stopped Saul of Tarsus with a light from heaven — and a persecutor became an apostle."],
         ["Darnel", "A weed that looks like wheat while it grows — the “tares” of older translations. In Jesus’ parable an enemy sows darnel in a man’s field, and the master lets both grow together until the harvest sorts them."],
         ["Day of Atonement", "The holiest day of Israel’s year (Leviticus 16): the high priest alone entered the Most Holy Place with blood, and a scapegoat carried the people’s sins into the wilderness. Hebrews says Jesus entered heaven itself, once for all, with His own blood."],
         ["Day of the Lord", "The coming day when God acts openly in judgment and salvation — darkness and wrath for the proud, deliverance for His people. The prophets used it for near judgments (on Babylon, Egypt, Israel) and for the final day when Christ returns; the New Testament calls it \"the day of the Lord Jesus.\""],
@@ -7209,14 +7253,20 @@
         ["Demon", "An evil spirit who serves Satan and works against God and people. Demons fear Jesus, and His name drives them out."],
         ["Denarius", "A Roman silver coin, worth about a day's wage for a laborer — the coin of the vineyard parable, the coin with Caesar's image shown to Jesus, and the measure in Revelation's famine prices: \"A quart of wheat for a denarius.\""],
         ["Devil", "Another name for Satan. ‘Devil’ means the slanderer, the accuser — the enemy who lies about God to us and about us to God."],
+        ["Dew", "The gentle night moisture that waters the land without rain. It falls in Gideon’s fleece test, pictures God’s blessing (“I will be like the dew to Israel”), and vanishes by morning like Israel’s fleeting love."],
         ["Disciple", "A student and follower of Jesus — someone learning His ways and obeying Him, day by day, for life."],
         ["Dispersion", "God's people scattered among the nations — also called the Diaspora. It began with the exiles to Assyria and Babylon and continued in Jewish communities across the Roman world; James and Peter write their letters \"to the Dispersion,\" and God used those scattered seeds to prepare the gospel's roads."],
         ["Divination", "Seeking knowledge or power from spirits — fortune-telling, omens, spells. Israel was forbidden it entirely: their knowledge was to come from God’s word, not from the dead or the stars."],
         ["Doctrine", "Teaching — the body of truth handed down and believed. Scripture prizes sound doctrine: it is to be guarded, taught, and adorned by our lives (Titus 2:10), and never traded for teaching that merely suits itching ears (2 Timothy 4:3)."],
+        ["Dog", "In Bible days dogs were mostly wild scavengers, not pets, so “dog” is often an insult for something low or unclean. Yet Jesus lets the Syrophoenician woman’s faith shine: even the dogs eat the children’s crumbs."],
+        ["Donkey", "The humble work animal of Scripture — carrying loads, grinding grain, and bearing kings. Balaam’s donkey saw the angel he could not, and Jesus rode into Jerusalem on a donkey’s colt, in peace."],
         ["Dove", "The gentle bird that returned to Noah with an olive leaf, the offering of the poor at the Temple, and the form in which the Holy Spirit descended on Jesus at His baptism, “like a dove.”"],
         ["Dragon", "Scripture's picture of Satan in his rage: the great red dragon of Revelation, \"that ancient serpent, who is called the devil and Satan, the deceiver of the whole world\" (Revelation 12:9). Old Testament poetry uses dragon imagery for the chaos powers God mastered at creation and will slay at the end (Isaiah 27:1)."],
+        ["Earthquake", "The ground shaking — at Sinai when God descended, at the cross when Jesus died, at the tomb when He rose, and in Philippi’s jail at midnight. Heaven and earth both tremble when God draws near."],
+        ["Egypt", "The great land of the Nile: cradle, refuge, and prison of God’s people in turn. Abraham went down there, Joseph ruled there, Israel groaned there as slaves — and the infant Jesus found shelter there: “Out of Egypt I called my son.”"],
         ["Elder", "A mature, godly leader in a local church — a shepherd who teaches, guards, and cares for God’s people."],
         ["Election", "God’s choosing of His people in love before time began — He saw us fully, sins and all, and set His love on us in Christ anyway."],
+        ["Endurance", "Holding fast under trial without letting go of God. James points to Job, who endured to the end and saw the Lord’s compassion; the Christian race is run with endurance, looking to Jesus."],
         ["Ephah", "A dry measure for grain and flour — about 22 liters, or some five gallons. Gideon baked with an ephah of flour, Ruth gleaned “about an ephah of barley” in a day, and the manna was measured in omers, tenths of an ephah."],
         ["Ephod", "The richly woven vest worn by Israel's high priest (Exodus 28), bearing the breastpiece with twelve stones for the tribes and the Urim and Thummim for discerning God's will. Gideon tragically made a golden ephod that became a snare — a reminder that even God-ward things can be turned into idols."],
         ["Epistle", "A letter. Most of the New Testament is epistles — real letters from apostles to real churches, kept for us as Scripture."],
@@ -7225,43 +7275,66 @@
         ["Evangelist", "One who carries the good news to people who have not heard it — a herald of the gospel, like Philip in the book of Acts."],
         ["Exile", "Israel’s punishment of being carried off to Babylon for their sins — and God’s promise, kept, to bring His people home again."],
         ["Faith", "Trust in God that acts on what He said. Faith receives His promises as gifts; even faith itself is His gift to us."],
+        ["Faithfulness", "Steady trustworthiness over the long haul. God is faithful — He cannot deny Himself — and He asks the same of His stewards: it is required of stewards, Paul says, that they be found faithful."],
         ["False prophet", "One who claims to speak for God but lies — Jesus warned they come in sheep’s clothing while inwardly ravening wolves. The test is fruit: a false prophet’s teaching and life eventually show what he is."],
         ["Fasting", "Going without food for a time in order to seek God — humbling the body to pray with your whole heart."],
+        ["Fatherless", "A child with no father to protect or provide — Scripture’s shorthand for the most defenseless people in the land. God is a father of the fatherless, and pure religion visits them in their trouble."],
         ["Fear of the LORD", "Not cringing terror but reverent awe — standing before God’s holiness with your whole heart awake. It is “the beginning of wisdom,” the fountain of life, and the Old Testament’s shortest summary of true religion."],
         ["Feast of Tabernacles", "The joyful autumn feast when Israel lived in booths for a week, remembering the wilderness tents and thanking God for the harvest. It was at this feast that Jesus stood and cried, “If anyone thirsts, let him come to me and drink.”"],
         ["Feast of Weeks", "The harvest feast seven weeks after Passover, when the firstfruits of wheat were offered — also called Pentecost (fifty days), the very day the Holy Spirit fell on the church."],
         ["Fellowship", "Sharing life with God and with His people — praying, eating, giving, and walking together as one family in Christ."],
+        ["Fig", "A sweet fruit and a shady tree; “every man under his vine and under his fig tree” is the Bible’s picture of peace. Jesus cursed a fruitless fig tree as a sign against showy, barren religion."],
         ["Fig tree", "Israel’s tree of peace and plenty — “every man under his vine and fig tree.” Jesus cursed a fruitless fig tree as a sermon against empty show, and used its budding as a sign to watch for His return."],
         ["Firstborn", "The first son, who held the birthright: a double portion and headship of the family. God claimed Israel's firstborn as His own after the Exodus, calls Israel itself \"My firstborn son,\" and names Jesus \"the firstborn over all creation\" and \"firstborn from the dead\" — the heir to whom everything belongs."],
         ["Firstfruits", "The first and best of the harvest, offered to God before the rest was used — a confession that the whole crop was His gift. Jesus' resurrection is called the firstfruits of those who sleep: the first sheaf of the great harvest of the dead that God will gather at His return."],
+        ["Fish", "Food from the Sea of Galilee and picture of the kingdom’s catch. Jesus fed thousands with a few small fish, filled Peter’s nets to breaking, and ate broiled fish after rising to prove He was no ghost."],
+        ["Fisherman", "One who catches fish for a living — the trade of Peter, Andrew, James, and John before Jesus called them from their nets: “Follow me, and I will make you fishers of men.”"],
+        ["Flax", "The plant whose fibers are woven into linen. Rahab hid Israel’s spies under stalks of flax on her roof, and the excellent wife of Proverbs 31 “seeks wool and flax” with willing hands."],
         ["Flesh", "In Paul's letters, usually not the body itself but human nature left to itself — life organized around appetite, pride, and self, at war with the Spirit. \"The flesh\" cannot please God; believers are commanded to walk by the Spirit so they do not gratify its desires."],
         ["Foreknowledge", "God’s knowing beforehand — not bare information, but knowing with love and purpose: those He foreknew He also predestined, called, and glorified (Romans 8:29). Christ Himself was “foreknown before the foundation of the world.”"],
         ["Forgiveness", "God canceling the debt of our sins completely, for Jesus' sake — not holding them against us anymore, ever."],
         ["Frankincense", "A fragrant resin from a desert tree, burned as pure incense on the golden altar and treasured as a royal gift — the wise men brought it to the child Jesus, with gold and myrrh."],
         ["Fruit of the Spirit", "The character the Holy Spirit grows in a believer, named in Galatians 5: love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control. It is fruit, not manufacture — one crop with nine flavors, grown by abiding in Christ, against which \"there is no law.\""],
+        ["Furnace", "A blazing oven for smelting metal or firing bricks. Egypt is God’s “iron furnace” of slavery remembered; Nebuchadnezzar’s furnace, heated seven times hotter, could not burn the three who trusted God."],
         ["Galilee", "The green northern region of Israel around the great lake, where Jesus grew up (in Nazareth) and did much of His ministry. Looked down on by Judea — “Can anything good come out of Nazareth?” — it was where the light dawned first."],
         ["Gall", "A bitter, poisonous plant; in Scripture, bitterness itself. Israel’s unfaithfulness turns wine to gall; soldiers offered Jesus wine mixed with gall at the cross, and He refused it."],
+        ["Garden", "An enclosed, watered plot — and the Bible’s first and last address for mankind. God walked with Adam in Eden’s garden; Jesus prayed in a garden and rose near a garden tomb; the story ends with a river and a tree."],
+        ["Garment", "Clothing in general, often with spiritual colors: garments of praise, robes of righteousness, the filthy garments taken off Joshua the priest. To tear one’s garments was grief or horror; heaven’s wedding guests are dressed by the King."],
+        ["Gate", "The city gate was courthouse, marketplace, and council room in one — Boaz settled Ruth’s redemption at the gate, and wisdom cries out at the gates. Jesus calls men to the narrow gate, and hell’s gates shall not prevail against His church."],
         ["Gehenna", "Jesus' word for hell: the valley of Hinnom south of Jerusalem, where children had once been burned to Molech and refuse later smoldered. He used it of the final judgment — a real place of fire and loss, spoken of more by Jesus than by anyone else in Scripture, and always as a warning."],
         ["Gentile", "Anyone who is not a Jew by birth. The gospel’s surprise and glory: the Gentiles — most of us — are welcomed into God’s family through Jesus."],
+        ["Gentleness", "Strength kept under control: a soft answer, a careful hand. Gentleness is fruit of the Spirit, the mark of Christ Himself (“gentle and lowly in heart”), and the way the Lord’s servant must correct those who oppose him."],
         ["Gethsemane", "The olive garden across the Kidron from Jerusalem — its name means “oil press” — where Jesus prayed in agony the night He was betrayed, and surrendered: “Not my will, but yours, be done.”"],
         ["Glory", "The shining weight of who God is — His beauty, power, and worth, seen most fully in Jesus."],
+        ["Goat", "A sure-footed animal kept for milk, meat, and hair for tents. On the Day of Atonement one goat bore Israel’s sins into the wilderness; in Jesus’ parable the sheep and goats are separated at the judgment."],
         ["Godliness", "A life shaped by reverence for God — devotion that shows in conduct. Paul calls it great gain when joined with contentment, and urges training in it the way athletes train, for it holds promise for the present life and also for the life to come."],
         ["Golgotha", "The place outside Jerusalem’s wall where Jesus was crucified — Aramaic for “the skull” (in Latin, Calvary), from the hill’s bare, skull-like look."],
         ["Gospel", "Good news! The message that Jesus died for our sins, rose again, and that everyone who believes in Him receives eternal life."],
+        ["Governor", "The ruler of a province under a higher king — Joseph in Egypt, Nehemiah in Judah, Pilate and Felix in Judea. Governors in Scripture hold real power and still answer to a higher throne."],
         ["Grace", "God's kindness to people who deserve the opposite — His gifts given freely because He loves, not because we earned."],
+        ["Grape", "The fruit of the vine, gathered at vintage for wine and raisins. Israel itself is God’s vine and vineyard in the prophets — planted with care, watched for fruit, and judged when it bears only wild grapes."],
         ["Guilt offering", "The sacrifice for sins needing repayment (Leviticus 5) — where something holy was damaged or someone wronged, restitution was added to the offering. Isaiah borrows the word for the Servant: God makes His soul “an offering for sin.”"],
         ["Hades", "The Greek word for the realm of the dead — the place of departed spirits before the final judgment, corresponding to the Hebrew Sheol. In Jesus' story of the rich man and Lazarus, Hades holds both torment and comfort; its keys now belong to the risen Christ."],
+        ["Hail", "Ice falling from the sky in judgment: the seventh plague on Egypt mingled hail and fire; Joshua’s battle saw great hailstones do what swords could not; Revelation’s plagues end with hailstones weighing about a talent."],
         ["Hallelujah", "A Hebrew shout meaning \"Praise the LORD!\" (hallelu = praise, Yah = the LORD). It opens and closes many Psalms, and in Revelation 19 heaven's multitude thunders it four times over Babylon's fall and the marriage of the Lamb."],
+        ["Harp", "David’s instrument — the lyre he played before Saul and for the Psalms. Harps hang silent on willows in exile, when the captives could not sing Zion’s songs beside Babylon’s rivers, and sound again in heaven around the throne."],
+        ["Harvest", "The ingathering of ripe grain — joy, provision, and judgment in one picture. “The harvest indeed is plentiful, but the laborers are few,” says Jesus; at the end of the age, the harvest is the world itself."],
         ["Heaven", "God's home, where Jesus now is, and where His people will live with Him forever — no more death, tears, or pain."],
         ["Heir", "One who receives an inheritance. Believers are heirs of God and joint heirs with Christ — everything the Father gives the Son, He shares with His adopted children, “heirs according to the hope of eternal life.”"],
         ["Hell", "The place of final judgment and separation from God for those who refuse His mercy. It is real, and it is why the gospel is urgent."],
+        ["Helmet", "Armor for the head. Goliath wore a bronze helmet; in the armor of God the helmet is salvation itself — the mind guarded by what Christ has done, as a soldier’s head is guarded by bronze."],
+        ["Hen", "A mother bird gathering her chicks. Jesus longed to gather Jerusalem’s children “even as a hen gathers her chicks under her wings” — and they would not. It is one of His tenderest self-portraits."],
         ["High places", "Hilltop shrines where sacrifices were offered — condemned when used for idols, and a chronic temptation even for kings otherwise faithful to God. Again and again the histories add the sad refrain, \"yet the high places were not removed\": half-obedience in stone."],
+        ["High priest", "The chief priest of Israel, head of the temple order, who alone entered the Holy of Holies once a year on the Day of Atonement. Jesus is our great high priest — passed through the heavens, tempted as we are, yet without sin."],
         ["Hin", "A liquid measure — about a gallon (some four liters). Drink offerings of wine and oil were poured out by the hin beside the sacrifices of the tabernacle."],
         ["Holiness", "The state of being holy: set apart from sin and set apart for God. Scripture calls God “holy, holy, holy” and calls His people to the same: “Be holy, for I am holy” — a gift received in Christ, and a life grown into by the Spirit."],
         ["Holy", "Set apart and perfectly pure. God is holy — completely other, completely good — and He makes His people holy too."],
         ["Holy Spirit", "God the Spirit, who lives in every believer: comforting, teaching, convicting, and making us more like Jesus."],
+        ["Honey", "Sweetness itself in a land of few sweets: “a land flowing with milk and honey.” Samson ate honey from a lion, John’s food was locusts and wild honey, and God’s words are “sweeter than honey.”"],
         ["Hope", "In the Bible, hope is not a wish — it is a confident expectation of what God has promised and will surely do."],
+        ["Horse", "The war animal of kings and armies — Pharaoh’s chariots, Solomon’s stables, the riders of Revelation. Scripture keeps warning where trust belongs: some trust in chariots and horses, but the wise trust in the name of the LORD our God."],
         ["Hosanna", "A Hebrew cry meaning \"Save us, we pray!\" that became a shout of praise. The crowds cried it to Jesus entering Jerusalem, waving palm branches (Psalm 118:25–26) — a plea and a coronation in one word."],
+        ["Hour", "A measure of time — and in John’s Gospel, the word for destiny itself. “My hour has not yet come,” Jesus says again and again, until the hour arrives: the cross, where the Son of Man is glorified."],
         ["Humility", "Lowly-mindedness: not thinking little of yourself, but thinking of yourself little, because your eyes are on God and on others. God opposes the proud and gives grace to the humble; Jesus, who washed feet, is the pattern."],
         ["Hypocrite", "From the Greek word for a stage actor: one who performs religion for an audience. Jesus used it of those who prayed, gave, and fasted to be seen — they have their reward, He said: being seen was all it was."],
         ["Hyssop", "A bushy plant used to sprinkle blood and water in Israel's cleansing rites — the Passover blood was painted on with it. David prayed, \"Purge me with hyssop, and I shall be clean\" (Psalm 51:7), and a sponge on a hyssop branch lifted sour wine to Jesus' lips at the cross."],
@@ -7271,50 +7344,79 @@
         ["Incense", "Fragrant spices burned on the altar of incense morning and evening, its rising smoke a picture of prayer: \"Let my prayer be counted as incense before you\" (Psalm 141:2). In Revelation, golden bowls of incense are \"the prayers of the saints,\" rising before God's throne."],
         ["Inheritance", "What God gives His children as family wealth: not wages but a birthright — an inheritance “imperishable, undefiled, and unfading, kept in heaven for you” (1 Peter 1:4)."],
         ["Iniquity", "Sin in its bent, twisted character — not only the wrong deed but the crookedness beneath it. “He was wounded for our transgressions; he was bruised for our iniquities” (Isaiah 53:5)."],
+        ["Inn", "A lodging place for travelers. There was no room in Bethlehem’s inn for Jesus’ birth, and the good Samaritan left the wounded man at an inn, paying the keeper to care for him."],
         ["Intercession", "Praying for someone else, pleading their case before God. Jesus Himself intercedes for us, always."],
+        ["Jericho", "The first city of Canaan to fall to Israel, its walls collapsing after seven days of marching and a shout. Centuries later it heard a blind man cry “Son of David!” and hosted a small tax collector up a sycamore tree."],
         ["Jew", "A descendant of Abraham through Judah and Israel, one of God’s chosen people — the family through whom the Messiah came to the whole world."],
+        ["Jordan", "Israel’s eastern river, running from Galilee’s hills to the Dead Sea. Israel crossed it on dry ground into promise; Naaman washed in it and was healed; Jesus was baptized in it, and the heavens opened."],
         ["Jubilee", "The fiftieth year in Israel's calendar (Leviticus 25), when debts were released, slaves freed, and land returned to its families — heralded by a trumpet on the Day of Atonement. Jesus opened His ministry by proclaiming \"the year of the LORD's favor,\" the true Jubilee of release for captives."],
         ["Judgment seat", "The raised platform where a Roman judge sat — and Paul’s name for Christ’s tribunal, before which we must all appear. For believers it is where works are weighed and rewards given; the verdict of condemnation has already been settled at the cross."],
         ["Justified", "Declared righteous by God. When you believe in Jesus, God counts you as right with Him — as if you had never sinned — because Jesus paid it all."],
+        ["Kindness", "Goodness in action toward others, especially the undeserving. God’s kindness leads people to repentance and appeared in person in Christ; toward one another we are to be kind, tenderhearted, and forgiving."],
         ["Kingdom of God", "God's rule and reign — wherever Jesus is King. It came with Jesus, grows now in hearts, and will fill the earth when He returns."],
         ["Kingdom of heaven", "Matthew’s name for the kingdom of God — the same reign, named with a Jewish reverence that avoided speaking God’s name lightly. “Heaven” here is a respectful way of saying “God.”"],
+        ["Lamb", "A young sheep, the Bible’s great picture of innocence offered up. A lamb was killed at Passover, Isaiah saw the Servant “as a lamb led to the slaughter,” and John pointed to Jesus: “Behold, the Lamb of God!”"],
         ["Lamb of God", "John the Baptist's name for Jesus: \"Behold, the Lamb of God, who takes away the sin of the world!\" It joins the Passover lamb, Abraham's \"God will provide himself the lamb,\" and Isaiah's lamb led to slaughter — one sacrifice, once for all, in whom the book of Revelation sees a Lamb standing as though slain, forever."],
+        ["Lamp", "A small clay dish of oil with a wick — the light of every ancient home. Jesus sets a lamp on a stand, not under a basket; the wise virgins kept oil in their lamps; and God’s word is “a lamp to my feet.”"],
         ["Lampstand", "The golden seven-branched menorah that burned day and night in the tabernacle and Temple, the only light in the holy place. In Revelation the lampstands are the churches, and Christ walks among His own lights."],
         ["Law", "God's instructions given through Moses in the Old Testament. The law shows us God's holiness and our sin, and points us to Jesus."],
         ["Leaven", "The yeast that works silently through a whole lump of dough. Jesus used it both ways: the kingdom spreads like leaven hidden in flour — and hypocrisy spreads like “the leaven of the Pharisees,” to be watched and avoided."],
         ["Legion", "A Roman army unit of some five to six thousand soldiers — and the name the demons gave themselves in the man of the Gadarenes: \"My name is Legion, for we are many\" (Mark 5:9). Jesus sent them out with a word, and left the man clothed, seated, and in his right mind."],
+        ["Lentils", "Small, protein-rich seeds cooked into a stew — the “red stuff” for which Esau sold his birthright. Lentils also appear in David’s supplies: humble food that keeps people alive on the run."],
+        ["Leopard", "A swift spotted hunter. Jeremiah asks, “Can the leopard change his spots?” — sin’s habits run deep. In Daniel and Revelation the leopard pictures empires quick and cruel in their power."],
         ["Leprosy", "A dreaded skin disease (a broader category in the Bible than modern leprosy) that made a person ceremonially unclean — cut off from worship and community, crying \"Unclean!\" Jesus touched lepers and cleansed them anyway, and sent the healed to the priests as a testimony."],
         ["Leviathan", "A mighty sea creature of poetry — the twisting serpent God will punish at the end (Isaiah 27:1), the dragon of Psalm 74, and the untamable beast of Job 41 whom only God can face. Crocodile, chaos-monster, or both, Leviathan stands for every power too great for man and nothing to God."],
         ["Levite", "A member of Levi’s tribe, set apart to serve in the tabernacle and Temple — carrying, guarding, singing, assisting the priests. A Levite passes by on the other side in the parable of the Good Samaritan."],
+        ["Lightning", "The sky’s sudden fire. It streaks from God’s throne in Revelation and blazed on Sinai’s top; and the Son of Man’s coming, Jesus says, will be like lightning flashing from one side of heaven to the other."],
+        ["Lily", "A flower of the fields and valleys. “Consider the lilies,” Jesus says — they neither toil nor spin, yet Solomon in all his glory was not dressed like one of them. Trust, taught by a flower."],
+        ["Linen", "Fine cloth woven from flax, white and clean: the priests’ garments, the tabernacle’s curtains, Joseph’s burial wrap for Jesus. In Revelation the bride’s fine linen, bright and pure, “is the righteous acts of the saints.”"],
+        ["Lion", "The king of beasts in Scripture: strength, courage, and danger. Samson and David killed lions; Daniel slept unharmed among them; Satan prowls like a roaring lion, and Jesus is the Lion of the tribe of Judah."],
         ["Living water", "Spring water, moving and fresh, as against a stagnant cistern. Jesus offered the Samaritan woman “living water” that becomes “a well of water springing up to eternal life” — the Holy Spirit, given to everyone who believes."],
         ["Locust", "The swarming grasshopper that eats a land bare — one of Egypt’s plagues and Joel’s invading army. John the Baptist ate locusts and wild honey in the wilderness, as poor men did."],
         ["Lord", "Master and ruler. Calling Jesus 'Lord' means He is God, He is in charge, and we gladly belong to Him."],
         ["Lord's Supper", "The meal Jesus gave His church on the night He was betrayed: bread, \"This is my body,\" and the cup, \"the new covenant in my blood.\" Paul calls it proclaiming the Lord's death until He comes; it is eaten together, in self-examination and gratitude, looking back at the cross and forward to the feast."],
         ["Love", "God's own nature — He IS love. Real love gives itself for the good of another, as Jesus did at the cross."],
+        ["Mandrake", "A plant whose roots and fruit were prized in the ancient world as a help toward having children. Rachel bargained with Leah for mandrakes in Genesis 30 — longing for a child, in a story only God resolves."],
         ["Manger", "A feeding trough for animals. The newborn Jesus was laid in one in Bethlehem because there was no room at the inn — the sign the angel gave the shepherds: the bread of heaven, found where animals feed."],
         ["Manna", "The bread from heaven God fed Israel with for forty years in the wilderness — appearing fresh every morning, impossible to hoard."],
         ["Maranatha", "An Aramaic prayer meaning \"Our Lord, come!\" (or \"Our Lord has come\"), left untranslated by Paul at the end of 1 Corinthians and echoed in Revelation's \"Come, Lord Jesus.\" It is the church's oldest watchword of hope: everything held, everything endured, facing the door."],
+        ["Marketplace", "The town square where goods were sold, workers waited for hire, and children played. Jesus compares His generation to children in the marketplace, and Paul reasoned daily in Athens’ marketplace with whoever would listen."],
         ["Martyr", "A witness for Jesus who would rather die than deny Him. Stephen was the first; the church has honored their courage ever since."],
         ["Mediator", "A go-between who brings two parties together. Moses mediated the old covenant at Sinai; \"there is one God, and one mediator between God and men, the man Christ Jesus\" (1 Timothy 2:5) — fully God and fully man, He alone can lay a hand on both."],
         ["Meekness", "Strength held gently: not weakness but power under God’s control. Moses was “very meek, above all men”; the meek, Jesus promises, will inherit the earth; and He invites the weary to learn meekness from Him."],
         ["Mercy", "God NOT giving us the punishment we deserve. Grace gives us good we don't deserve; mercy withholds the bad we do."],
         ["Mercy seat", "The pure gold lid of the Ark of the Covenant, flanked by golden cherubim, where God's presence rested and where the high priest sprinkled blood once a year on the Day of Atonement. Paul's word for Jesus' sacrifice points back here (Romans 3:25): the place where God meets sinners is now a Person."],
         ["Messiah", "Hebrew for 'the Anointed One' — God's promised King and Savior. In Greek the word is 'Christ.' Jesus is the Messiah."],
+        ["Midnight", "The deep middle of the night, hour of wonders: the destroyer struck Egypt at midnight, Paul sang in jail at midnight, the bridegroom’s cry came at midnight. God does much of His best work in the dark."],
+        ["Milk", "A staple of the promised land and the first food of babies — so the apostles use it for the first food of faith: “as newborn babies, long for the pure milk of the Word.”"],
         ["Millstone", "One of the great round stones that grind grain — the upper one turned by hand or by a donkey. Jesus’ warning is unforgettable: better a great millstone hung around the neck and drowned in the sea than to stumble one of His little ones."],
+        ["Ministry", "Service — waiting on others’ needs. The word belongs to table-servers before it belongs to preachers: Jesus came “not to be served, but to serve,” and every gift in His church is given for ministry to the saints."],
+        ["Mint", "A fragrant garden herb. It appears in Jesus’ rebuke of those who tithed mint and every tiny herb while passing over justice and the love of God — precision in small things, blindness in great ones."],
         ["Miracle", "An act of God beyond the ordinary course of nature — a sign pointing to who Jesus is and what His kingdom is like."],
         ["Mite", "The smallest coin in Jesus’ world — two mites were all the poor widow put into the Temple treasury, and Jesus said she had given more than all the rich: everything she had to live on."],
+        ["Moth", "A tiny insect whose larvae eat stored cloth, ruining earthly wardrobes. In the Sermon on the Mount it stands with rust and thieves: “Do not store up treasures on earth, where moth and rust destroy.”"],
         ["Mount of Olives", "The ridge east of Jerusalem across the Kidron valley, where Jesus often withdrew, taught of His return, and prayed in Gethsemane, and from which He ascended — and where His feet will stand when He comes again (Zechariah 14:4)."],
+        ["Mule", "The strong cross between a horse and a donkey, prized for carrying kings — David’s own mule bore Solomon to his anointing. Absalom’s mule famously ran out from under him at the end of his pride."],
         ["Mustard seed", "The tiny seed Jesus used twice: faith \"like a grain of mustard seed\" moves mountains, and God's kingdom itself is mustard-like — beginning smaller than every seed, ending as a tree where the birds come and nest. God's great things habitually start embarrassingly small."],
         ["Myrrh", "A costly, bitter resin used in holy anointing oil, in perfumes, and in burial spices. The wise men brought it to Jesus as a gift; Nicodemus brought it to His tomb — kingship and suffering in one present."],
         ["Mystery", "In Paul’s letters, not a puzzle but a secret God kept hidden for ages and has now revealed: Christ in you, the hope of glory — and the gospel going out to Jew and Gentile together in one body."],
         ["Nard", "A precious perfumed oil from a Himalayan plant — “pure nard” was in the alabaster jar Mary of Bethany poured on Jesus’ feet, worth a year’s wages, filling the house with its fragrance."],
         ["Nazarene", "One from Nazareth. “He will be called a Nazarene” (Matthew 2:23) sums up the prophets’ picture of a despised, lowly Messiah — Nathanael’s question hangs over it: “Can anything good come out of Nazareth?”"],
+        ["Nazareth", "The small Galilean village where Jesus grew up — so obscure that Nathanael asked, “Can anything good come from Nazareth?” God’s answer was to raise the Savior there, in a carpenter’s ordinary home."],
         ["Nazirite", "A man or woman under a special vow to God (Numbers 6): no wine, no haircut, no contact with the dead, for a set season or for life. Samson and Samuel were Nazirites from birth. The vow said with the whole body: wholly the LORD's."],
+        ["Needle", "A small sewing tool with an eye for thread. “It is easier for a camel to go through a needle’s eye than for a rich man to enter God’s kingdom” — Jesus’ picture of the impossible that God makes possible."],
+        ["Net", "The fisherman’s great tool, cast or dragged through the water. Jesus called net-menders to fish for people, and His parable of the dragnet gathers fish of every kind, sorted at the end — like the kingdom’s judgment."],
         ["New moon", "The first day of each Hebrew month, marked with trumpets and sacrifices — a monthly Sabbath of sorts. Paul warns believers not to be judged over new moons and feast days: they were shadows; the substance is Christ."],
+        ["Nineveh", "The huge capital of Assyria, to which Jonah was sent, much against his will. To Jonah’s disgust the whole city repented in sackcloth — and Jesus cites Nineveh as a witness against His own generation."],
+        ["Oak", "A great, long-lived tree marking holy and historic places: Abraham camped by the oaks of Mamre, Jacob buried idols under an oak, and Absalom’s hair caught in an oak’s branches at his end."],
         ["Oath", "A solemn promise calling God to witness. God Himself swore an oath to Abraham — coming down to our weakness so we would be sure — but Jesus teaches His people a plainness beyond oaths: let your “yes” be yes."],
         ["Obedience", "Hearing that turns into doing. “To obey is better than sacrifice,” Samuel told Saul; Jesus was “obedient to the point of death,” and those who love Him, He says, will keep His commandments — gladly, as children, not slaves."],
         ["Offering", "A gift presented to God in worship. Under the old covenant these were animals and grain; now we offer Him our money, our work, our very lives."],
+        ["Oil", "Olive oil: food, fuel for lamps, medicine for wounds, and the substance of anointing. Its richness makes it a picture of the Holy Spirit’s gladness — “the oil of gladness” instead of mourning."],
+        ["Olive", "The tree of peace and plenty. A dove brought Noah an olive leaf; olives were pressed for oil in Gethsemane (the “oil press”); and Paul pictures Gentile believers as wild olive branches grafted into God’s tree."],
         ["Omer", "A small dry measure — about two quarts. Israel gathered an omer of manna per person each morning: exactly enough, no hoarding, a daily lesson in trusting God for daily bread."],
+        ["Overseer", "One who watches over God’s people and work — in the New Testament another name for the elders who shepherd the flock. An overseer must be sober, gentle, and able to teach: the office is an honorable work."],
+        ["Ox", "The farmer’s engine: an ox plowed, threshed grain, and pulled carts, and was worth guarding by law. “You shall not muzzle the ox when he treads out the grain” became Paul’s plea for caring for God’s workers."],
         ["Parable", "A story Jesus told from everyday life — seeds, sheep, lost coins — carrying a truth about God's kingdom inside it."],
         ["Paradise", "A Persian word for a king’s walled garden, used of heaven itself. Jesus promised the dying thief, “Today you will be with me in Paradise”; Paul was caught up to it; and its tree of life stands in Revelation’s city."],
         ["Passover", "The feast remembering how God rescued Israel from Egypt, when the lamb's blood covered His people's homes. Jesus is our Passover Lamb."],
@@ -7324,82 +7426,148 @@
         ["Pentecost", "The feast fifty days after Passover when the Holy Spirit came upon the church in wind and fire (Acts 2) — the church’s birthday."],
         ["Persecution", "Being hated, harmed, or hunted for following Jesus. He told us to expect it — and to rejoice when it comes for His sake."],
         ["Pharisee", "A member of the strictest Jewish party in Jesus' day — devoted to the Law and its traditions, and respected by the people. Jesus honored their zeal for Scripture but warned against their pride and outward show; a few of them, like Nicodemus and Paul, became His followers."],
+        ["Philistine", "The sea peoples of Canaan’s coast, Israel’s enemies through the judges and early kings — Goliath of Gath the most famous. The name later became a byword for an enemy of all that is fine and good."],
         ["Phylacteries", "Small leather boxes holding written Scripture, worn on the forehead and arm in prayer, from the command to bind God’s words there (Deuteronomy 6). Jesus condemned making them wide for show — the practice was fine; the pride was not."],
+        ["Pit", "A deep hole in the ground — for storing water, trapping animals, or throwing people you want forgotten: Joseph, Jeremiah, and Daniel (among lions) all went into pits, and God lifted each one out."],
+        ["Plow", "The farmer’s tool for opening the soil, pulled by oxen. Elisha was plowing when Elijah called him; and Jesus warns that no one who puts his hand to the plow and looks back is fit for the kingdom."],
         ["Plumb line", "A mason’s cord with a weight, used to check whether a wall stands true. In Amos 7, God sets a plumb line among His people: they have leaned too far from upright to stand."],
+        ["Pomegranate", "A fruit packed with seeds, carved on the temple’s pillars and worked in blue, purple, and scarlet on the high priest’s robe, where golden bells and pomegranates alternated around the hem."],
+        ["Potter", "The craftsman who shapes clay on a wheel. Jeremiah watched one and heard God’s word: “as the clay in the potter’s hand, so are you in my hand.” The image holds both our frailty and His rights over us."],
+        ["Praise", "Telling out loud what God is worth. Praise fills the Psalms (“Let everything that has breath praise Yahweh!”), surrounds God’s throne, and is something His people offer continually — a sacrifice of lips and lives."],
         ["Prayer", "Talking with God — honestly, about everything, as Jesus taught us: as children to a Father who hears."],
         ["Priest", "One appointed to stand between God and people: offering sacrifices and praying for them. Jesus is our great High Priest forever, and all His people are called a royal priesthood."],
         ["Priesthood", "The order of those who stand between God and people. Aaron’s line served the old covenant; Christ is high priest forever after Melchizedek’s order; and all believers are made “a royal priesthood” — priests who offer spiritual sacrifices and declare God’s praises."],
+        ["Prince", "A son of a king, or a ruler and leader more broadly — from Egypt’s princes fleeing Pharaoh’s court to the Prince of Peace, whose government and peace will have no end."],
+        ["Prison", "A place of locked doors that keeps failing to hold God’s people: Joseph rose from one to rule Egypt; Peter walked out of one past sleeping guards; and Paul sang hymns in one at midnight."],
         ["Prophet", "A person God sends to speak His words to people — calling them back to God and, often, pointing ahead to Jesus."],
+        ["Propitiation", "The turning away of God’s wrath by a sacrifice that satisfies His justice. God put Jesus forward as that sacrifice: in Christ, the Father’s love and the Judge’s holiness meet, and wrath is spent, not stored."],
         ["Providence", "God's quiet rule over all things — He works every event, even the hard ones, together for the good of His people and for His purposes."],
         ["Psalm", "A sacred song or poem to God. There are 150 in the book of Psalms — Israel’s hymnbook, and still the church’s prayer book today."],
         ["Purification", "Cleansing, by water or by blood, that made a person or thing fit to draw near to God. The old rites purified the flesh; the blood of Christ, Hebrews says, purifies the conscience itself."],
         ["Quail", "The small game birds God drove in from the sea to feed Israel in the wilderness — a mercy the first time, and a judgment the second, when the people’s craving came with complaint."],
         ["Rabbi", "A Hebrew title meaning \"my teacher\" or \"my master,\" used for respected teachers of the Law — and for Jesus, by disciples, crowds, and even opponents. Jesus is the church's one Rabbi in the deepest sense: \"You have one teacher, and you are all brothers\" (Matthew 23:8)."],
+        ["Rainbow", "The bow God set in the clouds after the flood as the sign of His covenant with every living creature — His promise remembered whenever it rains. It circles His throne in Ezekiel and Revelation: mercy over judgment."],
+        ["Ram", "A male sheep, offered in countless sacrifices — and one ram, caught in a thicket, died in Isaac’s place on Moriah. Rams’ horns made trumpets, and a ram in Daniel’s vision pictures the Medo-Persian empire."],
         ["Ransom", "The price paid to set a captive free. Jesus said He came ‘to give his life as a ransom for many’ — we are the freed captives."],
+        ["Raven", "A black carrion bird. Ravens carried bread and meat to Elijah by the brook, and Jesus points to them still: they neither sow nor reap, yet God feeds them — so do not be anxious."],
         ["Reconciliation", "Enemies made friends again. Through Christ’s death God reconciled the world to Himself, “not counting their trespasses against them” — and gave His people the ministry and the message of reconciliation to carry."],
         ["Redeem", "To buy back. Jesus redeemed us — He paid the price (His own life) to free us from sin and make us God's own."],
         ["Redemption", "The buying-back of something enslaved or lost, at a price. Israel was redeemed from Egypt by God’s outstretched arm; we are redeemed not with silver or gold, but with the precious blood of Christ (1 Peter 1)."],
+        ["Reed", "A hollow grass of riverbanks — light, bendable, and easily broken: “a bruised reed he will not break.” Reeds became pens, measuring rods, and the mock scepter put into Jesus’ hand before the cross."],
         ["Remnant", "The small, faithful part of God’s people that He preserves through every age of falling away and judgment. God always keeps a remnant."],
         ["Repentance", "Turning around: changing your mind about sin, turning away from it and toward God. Its fruit is a changed life."],
         ["Resurrection", "Being raised from the dead, body and all. Jesus rose first; everyone who belongs to Him will rise too."],
         ["Righteousness", "Being right with God and living rightly. We receive righteousness as a gift through Jesus, then grow in it day by day."],
+        ["Robe", "A fine, flowing outer garment of honor: Joseph’s many-colored robe woke his brothers’ envy; the prodigal’s father called for “the best robe”; and heaven’s martyrs are given white robes as they wait."],
+        ["Rod", "A straight staff or stick for guiding, defending, and correcting. Moses’ rod became a serpent and split the sea; Aaron’s rod budded; and the shepherd’s rod and staff are the psalmist’s comfort in the dark valley."],
+        ["Roof", "Flat rooftops were living space — for drying flax, evening prayer (Peter at Joppa), and desperate friendship: four men dug through a roof to lower their paralyzed friend to Jesus."],
         ["Sabbath", "The seventh day, set apart by God for rest and worship — a gift reminding us that God, not our work, holds our lives."],
         ["Sackcloth", "Coarse cloth woven from goat hair, worn in mourning, grief, and repentance — Nineveh put even its cattle in it. To sit in sackcloth and ashes was to say with the whole body: we are sorry, we are dust."],
         ["Sacrifice", "An offering given to God. In the Old Testament, animals died in the sinner's place; Jesus is the final, once-for-all sacrifice."],
         ["Sadducee", "The wealthy, priestly party of Jesus’ day, who accepted only the written Law and denied the resurrection, angels, and spirits. The Sadducees helped bring Jesus to trial; their “no resurrection” riddle gave Him an occasion to teach it plainly."],
         ["Saint", "A holy one — in the New Testament, simply every believer, set apart for God by Jesus. Saints are not a special class; they are the whole family."],
+        ["Salt", "For seasoning, preserving, and covenant — every grain offering was seasoned with “the salt of the covenant.” “You are the salt of the earth,” Jesus tells His disciples; salt that loses its flavor is good for nothing."],
         ["Salvation", "Being rescued by God — from sin, death, and judgment — and brought into His family forever. It is all by grace, through faith in Jesus."],
+        ["Samaria", "The capital of the northern kingdom, then the region between Judea and Galilee, home of the Samaritans — despised by Jews, yet Jesus crossed through it, talked theology at its well, and made a Samaritan his parable’s hero."],
         ["Samaritan", "An inhabitant of Samaria, the land between Galilee and Judea, whose people mixed Israelite descent with foreign settlers and worshiped on Mount Gerizim. Jews and Samaritans despised each other — which is why Jesus' parable of the Good Samaritan, and His kindness to the Samaritan woman, shocked their hearers."],
         ["Sanctify", "To be set apart for God and made holy over time — the Spirit's daily work of making us more like Jesus."],
+        ["Sandal", "The everyday footwear of the Bible — straps and a sole. Removing sandals marked holy ground for Moses and Joshua; John the Baptist counted himself unworthy to untie Jesus’ sandals; the prodigal got shoes for the road home."],
+        ["Sanhedrin", "The supreme council of Jewish elders, priests, and scribes in Jerusalem, which tried Jesus by night and later hauled the apostles before it. It could judge Israel’s religious life, but not execute without Rome’s leave."],
         ["Satan", "God's enemy, a fallen angel called the devil and the tempter. He lies, accuses, and steals — and Jesus has already defeated him."],
         ["Scapegoat", "On the Day of Atonement, one goat was sacrificed and a second — the scapegoat — had Israel's sins confessed over its head and was sent bearing them into the wilderness (Leviticus 16). It pictures what Christ does: God lays our sin on another, and it is carried away, remembered no more."],
+        ["Scepter", "A king’s staff of authority. Esther trembled until the king held out his golden scepter; and of the Son it is written that His scepter is a scepter of uprightness — He rules in perfect fairness."],
+        ["Scorpion", "A desert creature whose tail carries a painful sting. Jesus asks what father would give his son a scorpion instead of an egg — God’s gifts are never traps — and Revelation’s locusts torment like a scorpion’s sting."],
         ["Scribe", "An expert who copied Scripture by hand and taught the Law. In Jesus’ day the scribes were respected — and often His sharpest opponents."],
         ["Scripture", "God's written word, the Bible itself — breathed out by God and given to teach us, correct us, and train us in doing right."],
         ["Scroll", "The Bible’s own form for most of its history: a long sheet of papyrus or parchment, rolled on rods, read aloud in synagogue and church. Jesus unrolled Isaiah’s scroll in Nazareth and read, “The Spirit of the Lord is on me.”"],
         ["Sea of Galilee", "The great freshwater lake of northern Israel — also called Gennesaret and Tiberias — on whose shores Jesus called fishermen, calmed a storm with a word, and cooked breakfast for His disciples after the resurrection."],
+        ["Seal", "A stamp pressed into wax or clay to mark ownership and make a document binding. Believers are sealed with the Holy Spirit; Revelation’s book is shut with seven seals only the Lamb can open."],
+        ["Seed", "What is sown to grow a harvest — and so a picture of descendants, of God’s word in the parable of the sower, and of resurrection: the seed dies in the ground and rises as a plant."],
         ["Selah", "A musical marking found 71 times in the Psalms and three times in Habakkuk. Its exact meaning is uncertain — likely a pause, a lift of the voice, or an instrumental break: an invitation to stop and let what was just sung sink in."],
+        ["Self-control", "Rule over one’s own appetites and temper — the last-named fruit of the Spirit and the first business of the disciplined life. A person without self-control, says Proverbs, is like a city broken down and without walls."],
         ["Seraphim", "The burning ones: six-winged angels Isaiah saw above God's throne, crying \"Holy, holy, holy\" and veiling their faces and feet (Isaiah 6). One touched Isaiah's lips with a coal from the altar, and his guilt was taken away — heaven's fire, sent to cleanse rather than consume."],
         ["Serpent", "The snake — in Eden, the crafty tempter through whom sin entered; yet God also made the bronze serpent whose lifting up healed snake-bitten Israel, and Jesus took it as a picture of His own lifting up on the cross."],
+        ["Servant", "One who belongs to another and does his will — the Bible’s most surprising title of honor. Moses is God’s servant, Israel is God’s servant, and Jesus took the form of a servant — Paul signed his letters with the word."],
+        ["Sheep", "The Bible’s favorite picture of God’s people: prone to wander, quick to follow a voice, helpless without a shepherd. “We are his people, and the sheep of his pasture” — and Jesus lays down His life for the sheep."],
         ["Shekel", "Israel’s standard weight and coin — about 11 grams of silver. The Temple tax was a half-shekel per man; Judas was paid thirty pieces of silver — the price of a slave in the Law."],
         ["Sheol", "The Hebrew name for the realm of the dead — the grave's shadowy depth where all the dead went, righteous and wicked alike. The Old Testament only glimpses beyond it (\"You will not abandon my soul to Sheol\"), until resurrection morning: death and Sheol themselves are thrown into the lake of fire (Revelation 20)."],
+        ["Shepherd", "One who tends, leads, defends, and searches for sheep. God is Israel’s shepherd (“The LORD is my shepherd”), David was taken from the sheepfolds to the throne, and Jesus is the good shepherd who lays down His life."],
+        ["Shield", "The soldier’s broad defense, carried into battle beside the sword. In God’s armor the shield is faith, “with which you will be able to quench all the fiery darts of the evil one.”"],
         ["Showbread", "Twelve loaves laid fresh every Sabbath on the golden table in the tabernacle and temple — \"the bread of the Presence,\" bread set before God's face continually. David once ate it in need, and Jesus cited that day to show that mercy outranks ritual scruple."],
+        ["Sickle", "The curved blade for cutting grain at harvest. Deuteronomy lets you pluck handfuls from a neighbor’s field but forbids putting the sickle to his standing grain; Joel and Revelation picture the final judgment itself as a sickle swung over the earth."],
         ["Signet", "A seal ring engraved with its owner’s mark, pressed into clay or wax to sign and secure. Pharaoh gave Joseph his signet; God calls Zerubbabel His signet ring — the kingly line sealed in God’s hand."],
         ["Sin", "Anything we think, say, or do against God's will — and the bent toward it in every human heart. Sin is why we need a Savior."],
         ["Sin offering", "The sacrifice for sins committed unintentionally and for cleansing from defilement (Leviticus 4–5). Paul reaches for its world when he writes of Christ: God made Him who knew no sin to be sin on our behalf, so that in Him we might become the righteousness of God."],
+        ["Sinai", "The mountain (also called Horeb) where God gave Israel the Law amid fire and thunder, and where Elijah later heard the still small voice. Paul calls Sinai a picture of slavery to law, answered by Jerusalem above."],
+        ["Slave", "A person owned by a master, the ancient world’s hardest lot — and the word Paul chooses for our bondage to sin and our freedom in Christ: no longer slaves of sin, but slaves of righteousness, set free by a better Master."],
         ["Sling", "The shepherd’s weapon of woven cords that whirls a stone with deadly aim — David’s weapon against Goliath, chosen over Saul’s armor: five smooth stones, and complete trust."],
+        ["Snow", "Rare, white, and startling in Israel’s hills. Its whiteness is Scripture’s picture of cleansed sin: “though your sins are as scarlet, they shall be white as snow” — and of Christ’s garments at the Transfiguration."],
+        ["Sodom", "The city of the plain destroyed by fire from heaven for its wickedness and pride, escaped only by Lot’s household. Its name became Scripture’s shorthand for corruption — and for the shock of sudden judgment."],
         ["Sojourner", "A resident foreigner — one who lives in a land not his own, under its protection but without its inheritance. Israel was told to love the sojourner, “for you were sojourners in Egypt”; and God’s people still call themselves sojourners whose citizenship is in heaven."],
         ["Sorcery", "Magic arts — potions, spells, and traffic with spirits — listed by Paul among the works of the flesh and barred from God’s city. Simon the sorcerer tried to buy the Holy Spirit with money, and heard Peter’s rebuke."],
         ["Soul", "The inner, living you — your mind, heart, and will — the part of you made for God and made to live forever."],
+        ["Spear", "A long-shafted weapon with a pointed head — Goliath’s was like a weaver’s beam. A Roman spear pierced Jesus’ side on the cross; in the coming peace, spears are beaten into pruning hooks."],
+        ["Spice", "Costly fragrant goods from far away — the queen of Sheba’s camels were loaded with them. Spices anointed the tabernacle and were used in burial: Nicodemus brought about a hundred pounds of myrrh and aloes for Jesus’ body."],
+        ["Staff", "The walker’s and shepherd’s long stick — support, defense, and identity in one: Jacob crossed the Jordan with only a staff; Moses’ staff was God’s chosen instrument; “your rod and your staff, they comfort me.”"],
+        ["Star", "Heaven’s lights, hung on the fourth day and beyond counting — God’s promise to Abraham measured in them. A star led the wise men to Bethlehem, and Jesus names Himself “the bright morning star.”"],
         ["Steward", "The trusted servant who manages another’s household and goods, and must give an account. Jesus’ parables make stewards of us all: it is required of stewards that they be found faithful."],
+        ["Storm", "Wind and wave at war: the flood, Jonah’s tempest, the gale on Galilee that Jesus stilled with a word. “Peace, be still” over the storm is one of Scripture’s standing comforts for frightened hearts."],
         ["Stumbling block", "Anything that trips another into sin or unbelief. Paul warns that even a Christian freedom — food, drink, a strong opinion — becomes a stumbling block when it wounds a weaker brother; love, he says, would rather give the thing up."],
+        ["Supplication", "Humble, earnest asking — prayer that pleads. Daniel made supplications; the church is told to pray with all prayer and supplication; and God’s peace guards hearts that make their requests known instead of carrying them alone."],
+        ["Sword", "The Bible’s standard weapon of war and judgment — and its picture for God’s word, “sharper than any two-edged sword.” Jesus came not to send peace but a sword, yet told Peter to put his away."],
         ["Sycamore", "A broad fig tree of the lowlands, easy to climb — Zacchaeus climbed one to see Jesus over the crowd. Amos was a dresser of sycamore figs before God called him."],
         ["Synagogue", "The local Jewish house of prayer and Scripture reading in every town — where Jesus often taught, and where Paul preached first in each new city."],
         ["Tabernacle", "God’s tent among Israel in the wilderness before the Temple was built — a movable holy place where His presence lived in their midst."],
         ["Talent", "A huge unit of money — a weight of silver worth roughly twenty years of a laborer's wages. In Jesus' parables a talent is a fortune entrusted to a servant; one man buried his master's talent in the ground and heard the saddest verdict: \"You wicked and slothful servant.\" (Our word \"talent\" for abilities descends from this parable.)"],
+        ["Tax collector", "One who gathered Rome’s taxes from his own people, often growing rich by taking extra — Matthew at his booth, Zacchaeus in his tree, and the praying tax collector who went home justified rather than the Pharisee."],
         ["Temple", "The house of God in Jerusalem, where Israel worshiped and offered sacrifices. Now God's Spirit lives in His people — we are His temple."],
         ["Temptation", "Being drawn toward sin. God never tempts anyone to evil; when we are tempted, He always makes a way out."],
+        ["Tent", "The movable dwelling of nomads, soldiers, and worshipers: Abraham lived in tents all his life, and God’s first house among Israel was a tent. Paul made tents for a living; our earthly body is a tent awaiting a house."],
         ["Testament", "Another word for covenant. The Old Testament is God's dealings with Israel before Jesus; the New Testament is the good news of Jesus and His church."],
         ["Testimony", "A witness’s solemn declaration of what is true. The tabernacle was “the tent of testimony,” the ark held “the testimony” of the covenant, and Revelation’s conquerors overcome “by the word of their testimony.”"],
+        ["Tetrarch", "A ruler of a fourth part of a kingdom — Herod Antipas, who heard John the Baptist, beheaded him anyway, and later mocked Jesus, was tetrarch of Galilee. Small kings under Caesar’s shadow."],
+        ["Thanksgiving", "Gratitude spoken out — to God first of all. It brackets the Christian life: in everything give thanks; enter His gates with thanksgiving; let the peace of Christ rule in your hearts, and be thankful."],
+        ["Thief", "One who steals in secret, by night. Judgment comes “like a thief in the night” — sudden and unannounced — yet one thief on a cross heard instead: “Today you will be with me in Paradise.”"],
+        ["Thistle", "A prickly weed of fallen ground, named in Eden’s curse beside the thorn. Jesus’ test for false prophets uses it plainly: grapes are not gathered from thorns, and figs are not gathered from thistles. Fruit tells the truth."],
+        ["Thorn", "The sharp growth of the curse, woven into the crown mocked onto Jesus’ head. Paul’s “thorn in the flesh” — some weakness God would not remove — became the place where grace proved sufficient."],
         ["Threshing floor", "The flat, hard, open place where grain was beaten and winnowed — often on a hilltop for the wind. David bought Araunah’s threshing floor for an altar; it became the site of Solomon’s Temple."],
+        ["Throne", "The seat of a king, and the Bible’s word for rule itself. Earthly thrones totter; God’s throne stands forever — the mercy seat of heaven where grace is found, and the great white throne before which the dead are judged."],
+        ["Thunder", "Heaven’s voice in Scripture: God answers Job out of the storm, the seven thunders speak in Revelation, and at Sinai the whole mountain shook with thunder. Two disciples were nicknamed “Sons of Thunder.”"],
         ["Tithe", "A tenth, given to God. Abraham gave a tenth to Melchizedek; the Law assigned tithes to the Levites, the poor, and the feasts. Jesus affirms tithing while insisting the weightier matters — justice, mercy, faithfulness — must never be neglected."],
+        ["Tomb", "A burial place, often a cave cut into rock with a stone at its mouth. Kings were buried in tombs at Jerusalem; Jesus was laid in Joseph’s new tomb — and walked out of it on the third day."],
         ["Tongues", "Languages. At Pentecost the Spirit gave the apostles speech in real languages they had never learned, so every nation heard the gospel in its own tongue. Paul also describes a gift of tongues needing interpretation in church; his rule is order: intelligible words that build others up."],
+        ["Tower", "A tall strongpoint in a wall or vineyard, for watchmen and refuge. Babel’s tower reached for heaven in pride; “The name of Yahweh is a strong tower; the righteous run to it, and are safe.”"],
         ["Transfiguration", "The moment on the mountain when Jesus shone with heaven’s glory before Peter, James, and John, and the Father’s voice said, ‘Listen to him.’"],
         ["Tribulation", "Great trouble and suffering. Jesus promised His followers tribulation in this world — and promised, in the same breath, that He has overcome the world."],
         ["Trinity", "The one true God is three Persons — Father, Son, and Holy Spirit — one God, forever, in perfect love."],
+        ["Trumpet", "An instrument of ram’s horn or silver, blown for feasts, warnings, and war. Trumpets announced the Jubilee and will announce the King: “for the trumpet will sound, and the dead will be raised incorruptible.”"],
+        ["Truth", "What is real, as God is real. Jesus did not merely teach it: “I am the way, the truth, and the life.” God’s word is truth, the Spirit is the Spirit of truth, and the truth known sets people free."],
+        ["Tunic", "The long inner garment worn against the skin, like a long shirt. Jesus’ tunic at the cross was woven in one piece, so the soldiers cast lots rather than tear it — fulfilling the psalm."],
+        ["Tyre", "A rich island port city of Phoenicia, proud in its trading wealth. Ezekiel prophesied its fall in detail; yet Tyre’s king once supplied cedar and craftsmen for God’s temple, and Jesus found faith even in its region."],
         ["Unclean", "Ceremonially unfit to join in worship — through disease, decay, death’s touch, or certain foods. Jesus turned the whole idea inside out: it is what comes out of the heart that defiles a person, and in Him the unclean are touched and made clean."],
         ["Unleavened Bread", "Bread made without yeast, baked in haste the night Israel fled Egypt — and eaten through the seven days of the Feast of Unleavened Bread that follows Passover. Paul takes up the picture: purge out the old leaven of malice; Christ, our Passover, has been sacrificed."],
         ["Veil", "The great curtain that hid the Most Holy Place in tabernacle and Temple — only the high priest passed it, once a year, with blood. At Jesus’ death it was torn in two from top to bottom: the way into God’s presence stands open."],
         ["Vengeance", "Payback — which God reserves for Himself: “Vengeance is mine; I will repay, says the Lord.” Believers are forbidden it and commanded the opposite: overcome evil with good, and leave room for God’s just wrath."],
         ["Vine", "Israel's emblem and Jesus' great \"I am\": \"I am the true vine, and my Father is the vinedresser.\" Israel as God's vine often bore wild grapes; in Christ the true Vine, branches bear fruit by abiding — remaining — in Him, apart from whom we can do nothing."],
+        ["Vineyard", "A walled field of grapevines, tended with towers, walls, and a winepress. Israel is God’s vineyard in Isaiah; Jesus’ parables of tenants and laborers play out in vineyards; He is the true vine, and we are the branches."],
+        ["Viper", "A poisonous snake. John the Baptist called the proud religious leaders a “brood of vipers,” and Paul shook a viper off his hand into the fire on Malta, unharmed — a quiet sign of a promise kept."],
         ["Virgin", "Mary, the mother of Jesus, was a virgin when the Holy Spirit caused her to conceive — so Jesus is both truly God’s Son and truly human, born of a woman."],
         ["Vow", "A solemn promise made to God — Hannah’s, the Nazirite’s, the returned exiles’. Scripture treats vows gravely: better not to vow than to vow and not pay. God never requires them, but He hears them."],
         ["Watchman", "The sentinel on the city wall who blows the trumpet at approaching danger. Ezekiel was made a watchman for Israel — to warn was his duty, and the blood of the unwarned would be on his hands."],
+        ["Well", "A deep shaft dug to groundwater — life itself in dry country. Wells name encounters: Hagar by a well, Rebekah at a well, and Jesus at Jacob’s well, offering a thirsty woman living water."],
+        ["Wheat", "The chief bread grain, harvested after the barley. John the Baptist saw Jesus with a winnowing fork, gathering wheat into the barn; and Jesus’ own death is a grain of wheat falling into the earth to bear much fruit."],
+        ["Widow", "A woman whose husband has died, left in Bible days with no income and little protection — so God commands His people to defend her cause, and the church is charged to honor widows who are truly alone."],
         ["Wilderness", "The dry, trackless country between Egypt and Canaan where Israel wandered forty years — a place of testing, hunger, and manna; where John preached and Jesus was tempted; where God speaks tenderly to His bride (Hosea 2)."],
+        ["Wind", "Moving air, from a gentle breeze in Eden’s evening to the rushing mighty wind of Pentecost. The Hebrew and Greek words for wind are also the words for breath and Spirit — God breathing where He wills."],
+        ["Wine", "The fruit of the vine pressed and fermented — gladness at weddings (Jesus’ first miracle supplied it) and danger in excess (Proverbs warns the drunkard). At the Last Supper it became the cup of the new covenant."],
         ["Wineskin", "A bottle made of a whole animal skin, which stretched as new wine fermented. Jesus’ picture: new wine bursts old skins — His new covenant life cannot be poured into the brittle forms of the old order."],
+        ["Winter", "The cold, rainy season in Israel — a time of closed roads and indoor fires. Jesus asks prayer that the flight from coming trouble not fall in winter, and Paul hurries to reach Rome before winter closes the sea."],
         ["Wisdom", "The skill of living well under God: seeing life as He sees it and walking accordingly. It begins with the fear of the LORD, cries aloud in Proverbs’ streets as a woman calling, and is found fully in Christ, who became our wisdom from God."],
         ["Wise men", "The Magi: learned men from the East — astronomers, counselors of kings — who followed a star to Bethlehem and worshiped the child Jesus with gold, frankincense, and myrrh. Scripture never says there were three, or that they were kings."],
         ["Witness", "Someone who tells what they have seen and heard. Every Christian is Christ’s witness — with words, and with a life that backs them."],
+        ["Wolf", "The sheep’s great enemy, and so Scripture’s picture of danger from within and without: false prophets come in sheep’s clothing, but inwardly are ravening wolves. In the kingdom’s peace, the wolf dwells with the lamb."],
         ["Word of God", "God’s speech: by it the worlds were made; through the prophets it came to Israel; in Scripture it is written for us; and supremely, Jesus Himself is the Word made flesh. It is living and active, sharper than any two-edged sword."],
+        ["Worm", "A small, low creature — and a name for deep humiliation. Job, rotting in sickness, calls the worm his mother and sister; and the psalm of the cross says, “I am a worm, and no man.”"],
         ["Wormwood", "A bitter desert plant, and Scripture’s taste-word for bitterness and judgment. In Revelation a burning star named Wormwood falls and makes a third of the waters bitter."],
         ["Worship", "Giving God the worth He deserves — with songs, prayers, obedience, and our whole lives offered to Him."],
         ["Wrath", "God's settled, holy anger against evil. It is not a temper tantrum; it is the judgment sin deserves — which Jesus bore for us at the cross."],
@@ -7471,7 +7639,7 @@
       function openFullImage(src, caption) {
         var ov = $("fs-overlay"), im = $("fs-img");
         if (!ov || !im) return;
-        im.src = src;
+        galServeImage(im, src);
         im.alt = caption || "";
         $("fs-cap").textContent = caption || "";
         ov.hidden = false;
@@ -7479,7 +7647,7 @@
       function closeFullImage() {
         var ov = $("fs-overlay"), im = $("fs-img");
         if (ov) ov.hidden = true;
-        if (im) im.removeAttribute("src");
+        if (im) { im.removeAttribute("src"); galReleaseImage(im); }
       }
       try { $("fs-close").addEventListener("click", closeFullImage); } catch (e) {}
       try { $("fs-overlay").addEventListener("click", function (ev) { if (ev.target === $("fs-overlay")) closeFullImage(); }); } catch (e) {}
@@ -7496,7 +7664,7 @@
         var img = document.createElement("img");
         img.className = "gal-img";
         img.loading = "lazy";
-        img.src = item.img;
+        galServeImage(img, item.img);
         img.alt = item.title;
         img.addEventListener("click", function () { openFullImage(item.img, item.title); });
         card.appendChild(img);
@@ -7551,6 +7719,7 @@
       }
       function openMaps() {
         renderMaps();
+        galRefreshUI(GAL_MAPS);
         showView("view-maps");
         setPageMeta("Bible Maps — World English Bible", DEFAULT_DESC);
       }
@@ -7633,11 +7802,208 @@
       }
       function openIllustrations() {
         renderPlates();
+        galRefreshUI(GAL_PLATES);
         showView("view-illustrations");
         setPageMeta("Bible Illustrations — World English Bible", DEFAULT_DESC);
       }
       try { $("illustrations-btn").addEventListener("click", openIllustrations); } catch (e) {}
       try { $("illustrations-back").addEventListener("click", function () { goBackFrom("view-illustrations"); }); } catch (e) {}
+
+      /* ---- galleries saved for offline ----
+         One tap on a gallery page saves every picture in it into
+         the app's own Cache Storage — a runtime cache kept beside
+         the app, never the install precache, which stays exactly as
+         it is — so the whole gallery then works with no connection.
+         Serving is cache-first: galServeImage (used for the gallery
+         cards and the full-screen viewer alike) asks the saved copy
+         before the network, and falls back to the network address
+         exactly as the galleries have always loaded. Progress is
+         counted out loud as it goes; the saved state reports the
+         true size of the bytes actually stored; and if a save is
+         interrupted, what did save stays saved and the next tap
+         picks up where it left off. Removing a gallery deletes
+         only that gallery's cache and reports the space it freed. */
+      function galUrl(u) {
+        try { return new URL(u, window.location.href).href; } catch (e) { return u; }
+      }
+      function galReleaseImage(imgEl) {
+        try {
+          if (imgEl && imgEl._galObjUrl) {
+            URL.revokeObjectURL(imgEl._galObjUrl);
+            imgEl._galObjUrl = null;
+          }
+        } catch (e) {}
+      }
+      function galServeImage(imgEl, url) {
+        if (!imgEl) return;
+        function fromNetwork() { try { imgEl.src = url; } catch (e) {} }
+        if (!("caches" in window) || !caches.match) { fromNetwork(); return; }
+        caches.match(galUrl(url)).then(function (resp) {
+          if (!resp) { fromNetwork(); return; }
+          resp.blob().then(function (blob) {
+            if (!blob || !blob.size) { fromNetwork(); return; }
+            try {
+              galReleaseImage(imgEl);
+              var objUrl = URL.createObjectURL(blob);
+              imgEl._galObjUrl = objUrl;
+              imgEl.src = objUrl;
+            } catch (e) { fromNetwork(); }
+          }).catch(fromNetwork);
+        }).catch(fromNetwork);
+      }
+      function galFmtMB(bytes) {
+        var mb = bytes / 1048576;
+        return mb >= 10 ? String(Math.round(mb)) : String(Math.round(mb * 10) / 10);
+      }
+      /* how many of this gallery's pictures are actually stored,
+         and the true total of their bytes — read back from the
+         cache itself, never estimated */
+      function galState(gal) {
+        if (!("caches" in window) || !caches.open) return Promise.resolve({ count: 0, bytes: 0 });
+        return caches.open(gal.cacheName).then(function (cache) {
+          var count = 0, bytes = 0, chain = Promise.resolve();
+          gal.items.forEach(function (item) {
+            chain = chain.then(function () {
+              return cache.match(galUrl(item.img)).then(function (resp) {
+                if (!resp) return;
+                count++;
+                return resp.blob().then(function (b) { if (b) bytes += b.size; }).catch(function () {});
+              }).catch(function () {});
+            });
+          });
+          return chain.then(function () { return { count: count, bytes: bytes }; });
+        }).catch(function () { return { count: 0, bytes: 0 }; });
+      }
+      function galSetStatus(gal, msg) {
+        var s = $(gal.statusId);
+        if (!s) return;
+        if (msg) { s.textContent = msg; s.hidden = false; }
+        else { s.textContent = ""; s.hidden = true; }
+      }
+      /* point this gallery's already-drawn pictures at the saved
+         copy (after a save) or back at the network (after a removal) */
+      function galReserving(gal) {
+        var body = $(gal.bodyId);
+        if (!body) return;
+        var imgs = body.querySelectorAll("img.gal-img");
+        gal.items.forEach(function (item, i) {
+          if (imgs[i]) galServeImage(imgs[i], item.img);
+        });
+      }
+      function galRefreshUI(gal) {
+        if (!gal || gal.saving) return;
+        galState(gal).then(function (st) {
+          if (gal.saving) return;
+          var btn = $(gal.btnId), rm = $(gal.removeId), total = gal.items.length;
+          if (st.count >= total) {
+            if (btn) btn.hidden = true;
+            if (rm) rm.hidden = false;
+            galSetStatus(gal, "Saved for offline · about " + galFmtMB(st.bytes) + " MB ✓");
+          } else if (st.count > 0) {
+            if (btn) { btn.hidden = false; btn.disabled = false; btn.textContent = gal.resumeLabel; }
+            if (rm) rm.hidden = false;
+            galSetStatus(gal, st.count + " of " + total + " saved so far — tap the button to finish saving the rest.");
+          } else {
+            if (btn) { btn.hidden = false; btn.disabled = false; btn.textContent = gal.saveLabel; }
+            if (rm) rm.hidden = true;
+            galSetStatus(gal, "");
+          }
+        }).catch(function () {});
+      }
+      function galSave(gal) {
+        if (gal.saving) return;
+        if (!("caches" in window) || !caches.open || typeof window.fetch !== "function") {
+          galSetStatus(gal, "Offline saving isn't available in this browser.");
+          return;
+        }
+        gal.saving = true;
+        var btn = $(gal.btnId), rm = $(gal.removeId), total = gal.items.length;
+        if (rm) rm.hidden = true;
+        caches.open(gal.cacheName).then(function (cache) {
+          var done = 0, failed = 0, idx = 0;
+          function report() {
+            var msg = "Saving " + (done + failed) + " of " + total + "…";
+            if (btn) btn.textContent = msg;
+            galSetStatus(gal, msg);
+          }
+          function finish() {
+            gal.saving = false;
+            if (failed === 0 && done >= total) {
+              galState(gal).then(function (st) {
+                if (btn) { btn.hidden = true; btn.disabled = false; btn.textContent = gal.saveLabel; }
+                if (rm) rm.hidden = false;
+                galSetStatus(gal, "Saved for offline · about " + galFmtMB(st.bytes) + " MB ✓");
+                galReserving(gal);
+              }).catch(function () {});
+            } else {
+              if (btn) { btn.hidden = false; btn.disabled = false; btn.textContent = gal.resumeLabel; }
+              if (rm) rm.hidden = done > 0 ? false : true;
+              galSetStatus(gal, "Saved " + done + " of " + total + " — " + failed + (failed === 1 ? " picture" : " pictures") + " couldn't be saved. Check your connection, then tap the button to finish the rest.");
+              galReserving(gal);
+            }
+          }
+          function step() {
+            if (idx >= gal.items.length) { finish(); return; }
+            var item = gal.items[idx++];
+            var key = galUrl(item.img);
+            cache.match(key).then(function (hit) {
+              if (hit) { done++; report(); step(); return; }
+              window.fetch(key).then(function (resp) {
+                if (!resp || !resp.ok) throw new Error("fetch failed");
+                return resp.blob().then(function (blob) {
+                  var headers = {};
+                  try {
+                    var ct = resp.headers.get("Content-Type");
+                    if (ct) headers["Content-Type"] = ct;
+                  } catch (e) {}
+                  return cache.put(key, new Response(blob, { headers: headers })).then(function () {
+                    done++; report(); step();
+                  });
+                });
+              }).catch(function () { failed++; report(); step(); });
+            }).catch(function () { failed++; report(); step(); });
+          }
+          report();
+          step();
+        }).catch(function () {
+          gal.saving = false;
+          if (btn) { btn.disabled = false; btn.textContent = gal.saveLabel; }
+          galSetStatus(gal, "Saving couldn't start — check your connection and tap again.");
+        });
+      }
+      function galRemove(gal) {
+        if (gal.saving) return;
+        if (!("caches" in window) || !caches.delete) {
+          galSetStatus(gal, "Offline saving isn't available in this browser.");
+          return;
+        }
+        galState(gal).then(function (st) {
+          var freed = st.bytes;
+          return caches.delete(gal.cacheName).then(function () { return freed; }).catch(function () { return freed; });
+        }).then(function (freed) {
+          var btn = $(gal.btnId), rm = $(gal.removeId);
+          if (btn) { btn.hidden = false; btn.disabled = false; btn.textContent = gal.saveLabel; }
+          if (rm) rm.hidden = true;
+          galSetStatus(gal, freed > 0 ? "Offline copy removed — freed about " + galFmtMB(freed) + " MB." : "Offline copy removed.");
+          galReserving(gal);
+        }).catch(function () {
+          galSetStatus(gal, "Couldn't remove the offline copy — please try again.");
+        });
+      }
+      var GAL_MAPS = {
+        cacheName: "web-gallery-maps-v1", items: MAPS,
+        btnId: "maps-off-btn", statusId: "maps-off-status", removeId: "maps-off-remove", bodyId: "maps-body",
+        saveLabel: "⬇ Save maps for offline", resumeLabel: "⬇ Finish saving maps for offline", saving: false
+      };
+      var GAL_PLATES = {
+        cacheName: "web-gallery-illustrations-v1", items: PLATES,
+        btnId: "plates-off-btn", statusId: "plates-off-status", removeId: "plates-off-remove", bodyId: "plates-body",
+        saveLabel: "⬇ Save gallery for offline", resumeLabel: "⬇ Finish saving gallery for offline", saving: false
+      };
+      try { $("maps-off-btn").addEventListener("click", function () { galSave(GAL_MAPS); }); } catch (e) {}
+      try { $("maps-off-remove").addEventListener("click", function () { galRemove(GAL_MAPS); }); } catch (e) {}
+      try { $("plates-off-btn").addEventListener("click", function () { galSave(GAL_PLATES); }); } catch (e) {}
+      try { $("plates-off-remove").addEventListener("click", function () { galRemove(GAL_PLATES); }); } catch (e) {}
 
       /* ---- bible timeline ---- */
       var ERAS = [
@@ -7874,23 +8240,35 @@
         if (b) b.setAttribute("aria-expanded", "false");
       }); } catch (e) {}
 
-      /* ---- the verse of the day paints its own sky ----
+      /* ---- the verse of the day paints its own picture ----
          The card's background is a small painted scene the app
          draws itself, from the day itself: the seed is the
-         calendar day, so the same day paints the same sky for
+         calendar day, so the same day paints the same picture for
          every reader everywhere, and each new day paints a new
-         one. The scenes are no longer dawn alone — the seed
-         chooses among a dozen kinds of day (golden dawn, bright
-         midday, warm afternoon, ember sunset, violet dusk, a
-         starry night with a moon, a soft grey morning, and the
-         season's own lights among them), the pools drift with
-         the seasons, and sun, clouds, hills and foreground take
-         seeded shapes within the scene. Nothing is fetched and
-         no file is stored: it works offline exactly as it does
-         online. A wash in the theme's own tones (see .votd-scrim)
-         lies over the painting, its strength fitted to each
-         scene's brightness, so the verse stays easy to read on
-         the brightest noon and the darkest night alike. The same
+         one. The painter's library is the whole creation, not
+         the sky alone: a dozen skies and hours (golden dawn,
+         bright midday, ember sunset, violet dusk, a starry night
+         with a moon, a soft grey morning, and the seasons' own
+         lights among them) stand beside lands and creatures —
+         a wildflower meadow in drifting bands of color, the
+         ocean and its shore, a wheat field, green hills with a
+         river running through them, forest light, desert gold,
+         a snowfield under a pale sky, and animals drawn as clean
+         silhouettes: a deer at a meadow's edge, birds crossing
+         the light, sheep in green pasture, a cardinal on a
+         branch. The year deals the kinds out in blocks (see
+         votdSceneFor): every block of days holds every kind
+         once, in a seeded order of its own, so neighboring days
+         never share a kind — each morning differs from the one
+         before it in kind, not merely in palette — and the year
+         keeps turning through all of them. Within
+         a scene, sun, clouds, hills and every painted shape take
+         seeded forms. Nothing is fetched and no file is stored:
+         it works offline exactly as it does online. A wash in
+         the theme's own tones (see .votd-scrim) lies over the
+         painting, its strength fitted to each scene's
+         brightness, so the verse stays easy to read on the
+         brightest noon and the darkest night alike. The same
          drawing paints the shareable picture (shareVotdImage). */
       function votdRand(seed) {
         var t = seed >>> 0;
@@ -7901,13 +8279,18 @@
           return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
         };
       }
-      /* The kinds of day the painter knows. sunMode places the
-         sun — "low" on the horizon, "mid" up the sky, "high" near
-         noon, "moon" for the night scene, "hidden" under cloud.
-         stars is how full the sky is of them, glow how wide the
-         light blooms around the sun, cloud the tint the clouds
-         take, and fg the foreground the hills look over: water,
-         meadow, a harvested field, or snow. */
+      /* The scenes the painter knows. The first twelve are skies
+         and hours; the rest are lands and creatures, told apart
+         by kind, which chooses the land painted below the sky.
+         sunMode places the sun — "low" on the horizon, "mid" up
+         the sky, "high" near noon, "moon" for the night scene,
+         "hidden" under cloud. stars is how full the sky is of
+         them, glow how wide the light blooms around the sun,
+         cloud the tint the clouds take, fg the foreground a sky
+         scene's hills look over (water, meadow, a harvested
+         field, or snow), horY where the land begins (a fraction
+         of the height; the sky scenes keep the painter's old
+         0.74), and sil the dark a silhouette is cut from. */
       var VOTD_SCENES = [
         { name: "golden dawn",    top: "#33477a", mid: "#c98a68", hor: "#ffd9a0", sun: "#ffe3ae", sunMode: "low",    glow: 0.55, stars: 0.25, cloud: [255, 240, 214], far: "#5d5570", near: "#38324a", fg: "water" },
         { name: "bright midday",  top: "#2a6fc4", mid: "#79b4e0", hor: "#dceef7", sun: "#fff6d8", sunMode: "high",   glow: 0.40, stars: 0,    cloud: [255, 255, 255], far: "#4e7c59", near: "#2d5537", fg: "water" },
@@ -7920,19 +8303,97 @@
         { name: "autumn amber",   top: "#4a3a63", mid: "#c06a3a", hor: "#ffb85c", sun: "#ffd08a", sunMode: "low",    glow: 0.55, stars: 0.1,  cloud: [255, 205, 150], far: "#6e4630", near: "#40281e", fg: "field" },
         { name: "pale winter light", top: "#7e93ad", mid: "#bcc9d6", hor: "#f2ead8", sun: "#fff6e0", sunMode: "low", glow: 0.35, stars: 0,    cloud: [244, 246, 250], far: "#7c8aa0", near: "#55617a", fg: "snow" },
         { name: "rose dawn",      top: "#46589e", mid: "#d98a9e", hor: "#ffd9b0", sun: "#ffe8c0", sunMode: "low",    glow: 0.55, stars: 0.2,  cloud: [255, 224, 224], far: "#6a5570", near: "#40344a", fg: "water" },
-        { name: "clear teal morning", top: "#14607a", mid: "#5fb3b0", hor: "#ffe9b8", sun: "#fff3c4", sunMode: "mid", glow: 0.50, stars: 0,   cloud: [240, 255, 248], far: "#2f6e5e", near: "#1d463c", fg: "water" }
+        { name: "clear teal morning", top: "#14607a", mid: "#5fb3b0", hor: "#ffe9b8", sun: "#fff3c4", sunMode: "mid", glow: 0.50, stars: 0,   cloud: [240, 255, 248], far: "#2f6e5e", near: "#1d463c", fg: "water" },
+        { name: "wildflower meadow", kind: "flowers", top: "#3d6ea5", mid: "#a8c6d8", hor: "#ffe3ae", sun: "#fff0b3", sunMode: "mid", glow: 0.50, stars: 0,    cloud: [255, 250, 226], far: "#7a9a52", near: "#3f6128", horY: 0.60 },
+        { name: "ocean shore", kind: "ocean", top: "#2f6db3", mid: "#7fb6dd", hor: "#ffe9c0", sun: "#ffedb3", sunMode: "low", glow: 0.55, stars: 0,    cloud: [255, 252, 240], far: "#4e7c9a", near: "#1d4e79", horY: 0.52 },
+        { name: "deer at the meadow's edge", kind: "deer", top: "#46589e", mid: "#c98a68", hor: "#ffd9a0", sun: "#ffe3ae", sunMode: "low", glow: 0.50, stars: 0.15, cloud: [255, 240, 214], far: "#5d5570", near: "#2e4630", sil: "#241c14", horY: 0.66 },
+        { name: "birds in flight", kind: "birds", top: "#3a2a5e", mid: "#b34a3c", hor: "#ff9a4d", sun: "#ffc46b", sunMode: "low", glow: 0.60, stars: 0.1,  cloud: [255, 196, 150], far: "#59383e", near: "#33202a", sil: "#2a1620", horY: 0.84 },
+        { name: "sheep in green pasture", kind: "sheep", top: "#3a7cc0", mid: "#9cc8e0", hor: "#fdf3c8", sun: "#fff6d8", sunMode: "mid", glow: 0.45, stars: 0,    cloud: [255, 255, 255], far: "#6a9a4e", near: "#3c6b2f", horY: 0.60 },
+        { name: "cardinal on a branch", kind: "cardinal", top: "#7ba7cc", mid: "#cfdde8", hor: "#ffe9c4", sun: "#fff3c4", sunMode: "mid", glow: 0.45, stars: 0,    cloud: [255, 252, 244], far: "#8aa58e", near: "#4a6b52", sil: "#3a2a20", horY: 0.86 },
+        { name: "wheat field", kind: "wheat", top: "#5a7fb8", mid: "#e0a75e", hor: "#ffd98a", sun: "#ffedb3", sunMode: "low", glow: 0.60, stars: 0,    cloud: [255, 240, 200], far: "#8a6a34", near: "#6b4d1e", horY: 0.56 },
+        { name: "hills and a river", kind: "river", top: "#3f83b8", mid: "#a5cfe0", hor: "#eaf3d0", sun: "#fff6d8", sunMode: "mid", glow: 0.50, stars: 0,    cloud: [255, 255, 255], far: "#5d8a4a", near: "#33512a", horY: 0.58 },
+        { name: "forest light", kind: "forest", top: "#6d9a63", mid: "#cfe0a0", hor: "#ffedb3", sun: "#fff3c4", sunMode: "mid", glow: 0.70, stars: 0,    cloud: [250, 250, 230], far: "#4a7040", near: "#274a26", sil: "#1e3319", horY: 0.62 },
+        { name: "desert gold", kind: "desert", top: "#3f6fb4", mid: "#e8b06a", hor: "#ffd98a", sun: "#fff0b3", sunMode: "mid", glow: 0.60, stars: 0,    cloud: [255, 244, 214], far: "#c98f3a", near: "#a8731f", sil: "#42511f", horY: 0.60 },
+        { name: "snowfield", kind: "snowfield", top: "#8fa8c4", mid: "#cfdce8", hor: "#f6efe0", sun: "#fff6e0", sunMode: "low", glow: 0.30, stars: 0,    cloud: [248, 250, 252], far: "#aebfd4", near: "#7e93ad", sil: "#5a5148", horY: 0.56 }
       ];
-      /* Which scenes a season deals from — each pool holds six,
-         so no two days near each other need ever match, and the
-         year still turns through its own lights. */
-      var VOTD_POOLS = [
-        [9, 6, 0, 5, 4, 10],   /* winter */
-        [7, 1, 0, 11, 2, 10],  /* spring */
-        [1, 2, 11, 0, 3, 5],   /* summer */
-        [8, 3, 4, 6, 0, 5]     /* autumn */
-      ];
+      /* Which scene a day gets: the kinds are dealt out in
+         blocks, the way cards are dealt — the year is cut into
+         blocks of as many days as there are kinds, each block
+         is shuffled with its own seed, and the day takes the
+         next card. Every block therefore holds every kind
+         exactly once, and where a fresh block would open with
+         the kind the last block closed on, its first two cards
+         trade places — so no two neighboring days ever share a
+         kind, within the year or across its turning. A kind
+         that holds several scenes (the twelve skies) deals
+         those among its own days by the same trick, counted
+         from New Year's Day. The dealing depends on the
+         calendar day alone, so a given date is dealt the same
+         scene for every reader, exactly as the painter's
+         shapes are seeded by that same day. */
+      var VOTD_KINDS = ["sky", "flowers", "ocean", "deer", "birds", "sheep", "cardinal", "wheat", "river", "forest", "desert", "snowfield"];
+      function votdDayOfYear(date) {
+        return Math.round((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 86400000) - 1;
+      }
+      function votdDeal(seed, n) {
+        var rnd = votdRand(seed);
+        var perm = [];
+        for (var i = 0; i < n; i++) perm.push(i);
+        for (var j = n - 1; j > 0; j--) {
+          var k = Math.floor(rnd() * (j + 1));
+          var t = perm[j]; perm[j] = perm[k]; perm[k] = t;
+        }
+        return perm;
+      }
+      function votdKindSeed(block) {
+        return (Math.imul(block + 1, 2654435761) ^ 0x85EBCA6B) >>> 0;
+      }
+      function votdKindPerm(block) {
+        var B = VOTD_KINDS.length;
+        var perm = votdDeal(votdKindSeed(block), B);
+        /* the card before this block: the last card of the
+           block before, or — for the year's first block —
+           December 31st's card from the year's last block */
+        var prev;
+        if (block > 0) prev = votdDeal(votdKindSeed(block - 1), B)[B - 1];
+        else {
+          var lastBlock = Math.floor(364 / B);
+          prev = votdDeal(votdKindSeed(lastBlock), B)[364 - lastBlock * B];
+        }
+        if (perm[0] === prev) { var t = perm[0]; perm[0] = perm[1]; perm[1] = t; }
+        return perm;
+      }
+      function votdKindFor(date) {
+        var doy = votdDayOfYear(date);
+        var B = VOTD_KINDS.length;
+        var block = Math.floor(doy / B), pos = doy - block * B;
+        return VOTD_KINDS[votdKindPerm(block)[pos]];
+      }
+      function votdSceneFor(date) {
+        var kind = votdKindFor(date);
+        var group = [];
+        for (var i = 0; i < VOTD_SCENES.length; i++) {
+          if ((VOTD_SCENES[i].kind || "sky") === kind) group.push(i);
+        }
+        if (group.length === 1) return VOTD_SCENES[group[0]];
+        /* several scenes share this kind: deal them among the
+           year's days of the kind, counted from New Year's Day */
+        var doy = votdDayOfYear(date);
+        var idx = 0;
+        for (var d0 = 0; d0 < doy; d0++) {
+          if (votdKindFor(new Date(date.getFullYear(), 0, 1 + d0)) === kind) idx++;
+        }
+        var M = group.length;
+        var block = Math.floor(idx / M), pos = idx - block * M;
+        var perm = votdDeal((Math.imul(block + 1, 2246822519) ^ 0x27D4EB2F) >>> 0, M);
+        return VOTD_SCENES[group[perm[pos]]];
+      }
       function votdHexRgb(hex) {
         return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+      }
+      function votdHexA(hex, a) {
+        var c = votdHexRgb(hex);
+        return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")";
       }
       function votdLum(hex) {
         var c = votdHexRgb(hex);
@@ -7944,12 +8405,9 @@
       function drawVotdSky(ctx, W, H, date) {
         var seed = (Math.imul((date.getMonth() + 1) * 100 + date.getDate(), 2654435761) ^ 0x9E3779B9) >>> 0;
         var rnd = votdRand(seed);
-        var month = date.getMonth();
-        var season = (month === 11 || month <= 1) ? 0 : month <= 4 ? 1 : month <= 7 ? 2 : 3;
-        var pool = VOTD_POOLS[season];
-        var P = VOTD_SCENES[pool[Math.floor(rnd() * pool.length)]];
+        var P = votdSceneFor(date);
         var S = W / 880; /* sizes were tuned on the card's 880-wide canvas */
-        var horizon = Math.round(H * 0.74);
+        var horizon = Math.round(H * (P.horY || 0.74));
         var sky = ctx.createLinearGradient(0, 0, 0, horizon);
         sky.addColorStop(0, P.top);
         sky.addColorStop(0.62, P.mid);
@@ -8021,41 +8479,644 @@
         }
         ridge(horizon - H * 0.02, H * 0.10, P.far);
         ridge(horizon + H * 0.015, H * 0.06, P.near);
-        /* the foreground the scene calls for */
-        var fg = ctx.createLinearGradient(0, horizon, 0, H);
-        if (P.fg === "water") {
-          fg.addColorStop(0, P.hor);
-          fg.addColorStop(0.25, P.mid);
-          fg.addColorStop(1, P.top);
-        } else if (P.fg === "snow") {
-          fg.addColorStop(0, "#e9edf4");
-          fg.addColorStop(1, "#b9c5d6");
-        } else if (P.fg === "field") {
-          fg.addColorStop(0, P.hor);
-          fg.addColorStop(1, P.near);
-        } else {
-          fg.addColorStop(0, P.near);
-          fg.addColorStop(1, "#141a12");
+        /* ---- the lands ----
+           Each kind below the skies paints its own ground under
+           the same sky, sun and clouds. Helpers first, then one
+           painter per kind; the dispatch after them sends the
+           sky scenes to the floor they have always had. */
+        function fillGround(c0, c1) {
+          var gr = ctx.createLinearGradient(0, horizon, 0, H);
+          gr.addColorStop(0, c0);
+          gr.addColorStop(1, c1);
+          ctx.fillStyle = gr;
+          ctx.fillRect(0, horizon, W, H - horizon);
         }
-        ctx.fillStyle = fg;
-        ctx.fillRect(0, horizon, W, H - horizon);
-        if (P.fg === "water") {
-          ctx.fillStyle = "rgba(255,240,190,0.5)";
-          for (var g = 0; g < 26; g++) {
-            var gy = horizon + 4 + rnd() * (H - horizon - 8);
-            var gw = (6 + rnd() * 26) * S;
-            ctx.fillRect(sunX - gw / 2 + (rnd() - 0.5) * 14 * S, gy, gw, Math.max(1.4, 1.6 * S));
+        function grassSpeckle(n, colA) {
+          ctx.fillStyle = colA;
+          for (var gs = 0; gs < n; gs++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 1.6 * S);
+        }
+        /* a wavy band of color drifting across the field */
+        function wavyBand(y, h, fill) {
+          var pts = 8, offs = [], bk;
+          for (bk = 0; bk <= pts; bk++) offs.push((rnd() - 0.5) * h * 0.9);
+          ctx.beginPath();
+          ctx.moveTo(0, y + offs[0]);
+          for (bk = 1; bk <= pts; bk++) ctx.lineTo((W / pts) * bk, y + offs[bk]);
+          for (bk = pts; bk >= 0; bk--) ctx.lineTo((W / pts) * bk, y + offs[bk] + h);
+          ctx.closePath();
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        function landFlowers() {
+          ridge(horizon - H * 0.01, H * 0.05, P.far);
+          fillGround("#5d8140", "#2c4a20");
+          /* bands of flower color drifting across the meadow */
+          var bandCols = ["#e77fa2", "#ffd94d", "#fff6ec", "#9a7fd4", "#ff8a5c", "#e75a7a"];
+          var bands = 4 + Math.floor(rnd() * 2);
+          for (var bi = 0; bi < bands; bi++) {
+            var by = horizon + (H - horizon) * (0.16 + 0.78 * (bi + rnd() * 0.5) / bands);
+            var bh = (H - horizon) * (0.09 + rnd() * 0.05) * (0.7 + (by - horizon) / Math.max(1, H - horizon));
+            wavyBand(by, bh, votdHexA(bandCols[Math.floor(rnd() * bandCols.length)], 0.30));
           }
-        } else if (P.fg === "snow") {
-          ctx.fillStyle = "rgba(255,255,255,0.55)";
-          for (var w2 = 0; w2 < 200; w2++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.8 * S, 1.8 * S);
-        } else if (P.fg === "field") {
-          ctx.fillStyle = "rgba(255,214,130,0.28)";
-          for (var f2 = 0; f2 < 240; f2++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 2.6 * S);
-        } else {
-          ctx.fillStyle = "rgba(214,235,180,0.20)";
-          for (var s = 0; s < 260; s++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 1.6 * S);
+          /* a sowing of small blooms, thicker toward the front */
+          for (var d = 0; d < 650; d++) {
+            var fy = horizon + Math.pow(rnd(), 0.6) * (H - horizon - 2);
+            ctx.fillStyle = votdHexA(bandCols[Math.floor(rnd() * bandCols.length)], 0.5 + rnd() * 0.5);
+            ctx.beginPath();
+            ctx.arc(rnd() * W, fy, (0.8 + rnd() * 1.8) * S * (0.6 + (fy - horizon) / Math.max(1, H - horizon)), 0, Math.PI * 2);
+            ctx.fill();
+          }
+          /* larger blossoms near the front, with dark hearts */
+          for (var bq = 0; bq < 42; bq++) {
+            var bx = rnd() * W, byy = horizon + (H - horizon) * (0.72 + rnd() * 0.26);
+            var br = (2.6 + rnd() * 2.4) * S;
+            ctx.fillStyle = votdHexA(bandCols[Math.floor(rnd() * bandCols.length)], 0.95);
+            ctx.beginPath();
+            ctx.arc(bx, byy, br, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "rgba(120,70,20,0.55)";
+            ctx.beginPath();
+            ctx.arc(bx, byy, br * 0.38, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
+        function landOcean() {
+          var shoreY = Math.round(H * 0.86);
+          var wg = ctx.createLinearGradient(0, horizon, 0, shoreY);
+          wg.addColorStop(0, P.hor);
+          wg.addColorStop(0.3, P.mid);
+          wg.addColorStop(1, P.near);
+          ctx.fillStyle = wg;
+          /* the water runs a little under the shore's curve, so
+             the sand always lands on water, never on whatever an
+             earlier day painted there */
+          ctx.fillRect(0, horizon, W, shoreY + Math.round(H * 0.04) - horizon);
+          /* the sun's path glittering on the water */
+          ctx.fillStyle = "rgba(255,240,190,0.5)";
+          for (var og = 0; og < 30; og++) {
+            var ogy = horizon + 4 + rnd() * (shoreY - horizon - 8);
+            var ogw = (6 + rnd() * 30) * S;
+            ctx.fillRect(sunX - ogw / 2 + (rnd() - 0.5) * 16 * S, ogy, ogw, Math.max(1.4, 1.6 * S));
+          }
+          /* wave lines, longer as they come nearer */
+          ctx.strokeStyle = "rgba(255,255,255,0.35)";
+          ctx.lineWidth = Math.max(1.2, 1.6 * S);
+          ctx.lineCap = "round";
+          for (var wv = 0; wv < 42; wv++) {
+            var wy = horizon + 6 + rnd() * (shoreY - horizon - 10);
+            var wx = rnd() * W, wl = (14 + rnd() * 46) * S * (0.5 + (wy - horizon) / Math.max(1, shoreY - horizon));
+            ctx.beginPath();
+            ctx.moveTo(wx, wy);
+            ctx.quadraticCurveTo(wx + wl / 2, wy - 2.4 * S, wx + wl, wy);
+            ctx.stroke();
+          }
+          /* the shore: a sweep of sand with a foam edge */
+          var sg = ctx.createLinearGradient(0, shoreY, 0, H);
+          sg.addColorStop(0, "#ecd3a0");
+          sg.addColorStop(1, "#cfa96e");
+          ctx.fillStyle = sg;
+          ctx.beginPath();
+          ctx.moveTo(0, shoreY + H * 0.03);
+          ctx.quadraticCurveTo(W * 0.5, shoreY - H * 0.045, W, shoreY + H * 0.015);
+          ctx.lineTo(W, H);
+          ctx.lineTo(0, H);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "rgba(255,255,255,0.75)";
+          ctx.lineWidth = Math.max(1.6, 2.2 * S);
+          ctx.beginPath();
+          ctx.moveTo(0, shoreY + H * 0.03);
+          ctx.quadraticCurveTo(W * 0.5, shoreY - H * 0.045, W, shoreY + H * 0.015);
+          ctx.stroke();
+          /* foam flecks left on the wet sand */
+          ctx.fillStyle = "rgba(255,255,255,0.5)";
+          for (var ff = 0; ff < 36; ff++) ctx.fillRect(rnd() * W, shoreY + rnd() * (H - shoreY - 3), (2 + rnd() * 5) * S, Math.max(1.2, 1.4 * S));
+        }
+        function treeSil(x, baseY, h) {
+          ctx.fillStyle = P.sil;
+          var tw = Math.max(2, h * 0.07);
+          ctx.fillRect(x - tw / 2, baseY - h * 0.55, tw, h * 0.55);
+          for (var tb = 0; tb < 5; tb++) {
+            ctx.beginPath();
+            ctx.arc(x + (rnd() - 0.5) * h * 0.34, baseY - h * (0.55 + rnd() * 0.4), h * (0.16 + rnd() * 0.12), 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        /* a deer standing side-on, drawn in units of its height */
+        function deerSil(dx, groundY, u) {
+          ctx.save();
+          ctx.translate(dx, groundY);
+          ctx.scale(u, u);
+          ctx.fillStyle = P.sil;
+          ctx.fillRect(-0.21, -0.46, 0.05, 0.46);
+          ctx.fillRect(-0.13, -0.46, 0.05, 0.46);
+          ctx.fillRect(0.13, -0.46, 0.05, 0.46);
+          ctx.fillRect(0.21, -0.46, 0.05, 0.46);
+          ctx.beginPath();
+          ctx.ellipse(0, -0.60, 0.31, 0.175, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(-0.24, -0.52);
+          ctx.lineTo(-0.13, -0.68);
+          ctx.lineTo(-0.30, -0.94);
+          ctx.lineTo(-0.42, -0.90);
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(-0.50, -0.88);
+          ctx.lineTo(-0.38, -1.00);
+          ctx.lineTo(-0.28, -0.97);
+          ctx.lineTo(-0.33, -0.86);
+          ctx.lineTo(-0.45, -0.82);
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(-0.30, -0.97);
+          ctx.lineTo(-0.22, -1.03);
+          ctx.lineTo(-0.27, -0.92);
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(0.29, -0.68);
+          ctx.lineTo(0.37, -0.60);
+          ctx.lineTo(0.30, -0.52);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = P.sil;
+          ctx.lineWidth = 0.028;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(-0.36, -0.98);
+          ctx.quadraticCurveTo(-0.30, -1.12, -0.20, -1.20);
+          ctx.moveTo(-0.28, -1.08);
+          ctx.lineTo(-0.22, -1.17);
+          ctx.moveTo(-0.335, -1.03);
+          ctx.lineTo(-0.30, -1.13);
+          ctx.stroke();
+          ctx.restore();
+        }
+        function landDeer() {
+          fillGround(P.near, "#131f0e");
+          grassSpeckle(200, "rgba(214,235,180,0.16)");
+          treeSil(W * 0.06, horizon + (H - horizon) * 0.14, (H - horizon) * 0.95);
+          treeSil(W * 0.14, horizon + (H - horizon) * 0.09, (H - horizon) * 0.68);
+          deerSil(W * (0.58 + rnd() * 0.14), horizon + (H - horizon) * 0.60, (H - horizon) * 0.62);
+        }
+        /* one bird: two shallow wing-curves on a single stroke */
+        function birdSil(x, y, w) {
+          ctx.lineWidth = Math.max(1.8, w * 0.20);
+          ctx.beginPath();
+          ctx.moveTo(x - w, y);
+          ctx.quadraticCurveTo(x - w * 0.45, y - w * 0.55, x, y);
+          ctx.quadraticCurveTo(x + w * 0.45, y - w * 0.55, x + w, y);
+          ctx.stroke();
+        }
+        function landBirds() {
+          ridge(horizon - H * 0.01, H * 0.04, P.far);
+          fillGround(P.near, "#17101c");
+          ctx.strokeStyle = P.sil;
+          ctx.lineCap = "round";
+          var flock = 9 + Math.floor(rnd() * 7);
+          var cx0 = W * (0.2 + rnd() * 0.5), cy0 = H * (0.16 + rnd() * 0.2);
+          for (var fb = 0; fb < flock; fb++) {
+            birdSil(cx0 + (rnd() - 0.5) * W * 0.55 + (fb - flock / 2) * W * 0.012,
+                    cy0 + (rnd() - 0.5) * H * 0.22 - Math.abs(fb - flock / 2) * H * 0.008,
+                    (13 + rnd() * 11) * S);
+          }
+          for (var lb = 0; lb < 4; lb++) birdSil(rnd() * W, H * (0.08 + rnd() * 0.3), (11 + rnd() * 9) * S);
+        }
+        /* a sheep in units of its body width; dir turns it round */
+        function sheepSil(x, groundY, u, dir) {
+          ctx.save();
+          ctx.translate(x, groundY);
+          ctx.scale(dir * u, u);
+          ctx.fillStyle = "#2e2a24";
+          ctx.fillRect(-0.30, -0.24, 0.07, 0.24);
+          ctx.fillRect(-0.19, -0.24, 0.07, 0.24);
+          ctx.fillRect(0.16, -0.24, 0.07, 0.24);
+          ctx.fillRect(0.27, -0.24, 0.07, 0.24);
+          ctx.fillStyle = "#f5efe2";
+          var wool = [[-0.26, -0.48, 0.20], [-0.08, -0.56, 0.23], [0.12, -0.56, 0.23], [0.30, -0.48, 0.19], [0.02, -0.44, 0.26], [-0.16, -0.40, 0.22], [0.20, -0.40, 0.21]];
+          for (var wi = 0; wi < wool.length; wi++) {
+            ctx.beginPath();
+            ctx.arc(wool[wi][0], wool[wi][1], wool[wi][2], 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.fillStyle = "#33302a";
+          ctx.beginPath();
+          ctx.ellipse(0.52, -0.42, 0.13, 0.105, 0.25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(0.44, -0.50, 0.07, 0.035, -0.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        function fenceLine(y, colA, postH) {
+          ctx.fillStyle = colA;
+          ctx.strokeStyle = colA;
+          ctx.lineWidth = Math.max(1.4, 2 * S);
+          for (var px = W * 0.04; px < W; px += W * 0.115) ctx.fillRect(px, y - postH * 0.6, Math.max(2, 3 * S), postH);
+          ctx.beginPath();
+          ctx.moveTo(0, y - postH * 0.4);
+          ctx.lineTo(W, y - postH * 0.2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, y + postH * 0.15);
+          ctx.lineTo(W, y + postH * 0.35);
+          ctx.stroke();
+        }
+        function landSheep() {
+          ridge(horizon - H * 0.02, H * 0.07, P.far);
+          fillGround("#639544", "#2c5222");
+          fenceLine(horizon + (H - horizon) * 0.32, "rgba(43,32,20,0.8)", 15 * S);
+          var ns = 4 + Math.floor(rnd() * 3);
+          for (var sh = 0; sh < ns; sh++) {
+            var depth = 0.45 + rnd() * 0.48;
+            sheepSil(W * (0.10 + rnd() * 0.78), horizon + (H - horizon) * depth, (34 + rnd() * 26) * S * (0.5 + depth), rnd() < 0.5 ? -1 : 1);
+          }
+          grassSpeckle(160, "rgba(230,245,190,0.18)");
+        }
+        /* a cardinal in units of its height, perched at the origin */
+        function cardinalSil(cx, cy, u) {
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.scale(u, u);
+          ctx.fillStyle = "#b02828";
+          ctx.beginPath();
+          ctx.moveTo(0.05, -0.30);
+          ctx.lineTo(0.17, -0.25);
+          ctx.lineTo(0.38, 0.13);
+          ctx.lineTo(0.26, 0.17);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#cf2e2e";
+          ctx.beginPath();
+          ctx.moveTo(-0.20, -0.10);
+          ctx.quadraticCurveTo(-0.30, -0.42, -0.13, -0.55);
+          ctx.quadraticCurveTo(0.10, -0.52, 0.16, -0.30);
+          ctx.quadraticCurveTo(0.10, -0.12, -0.02, -0.08);
+          ctx.quadraticCurveTo(-0.12, -0.05, -0.20, -0.10);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#a32424";
+          ctx.beginPath();
+          ctx.moveTo(-0.02, -0.44);
+          ctx.quadraticCurveTo(0.12, -0.36, 0.10, -0.20);
+          ctx.quadraticCurveTo(0.00, -0.14, -0.06, -0.26);
+          ctx.quadraticCurveTo(-0.06, -0.36, -0.02, -0.44);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#cf2e2e";
+          ctx.beginPath();
+          ctx.arc(-0.185, -0.60, 0.125, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(-0.27, -0.66);
+          ctx.lineTo(-0.10, -0.86);
+          ctx.lineTo(-0.09, -0.64);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#1d1a16";
+          ctx.beginPath();
+          ctx.arc(-0.285, -0.585, 0.052, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#e8873a";
+          ctx.beginPath();
+          ctx.moveTo(-0.315, -0.615);
+          ctx.lineTo(-0.45, -0.555);
+          ctx.lineTo(-0.31, -0.53);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#3a2a20";
+          ctx.lineWidth = 0.022;
+          ctx.beginPath();
+          ctx.moveTo(-0.08, -0.08);
+          ctx.lineTo(-0.08, 0.01);
+          ctx.moveTo(0.03, -0.07);
+          ctx.lineTo(0.04, 0.01);
+          ctx.stroke();
+          ctx.restore();
+        }
+        function landCardinal() {
+          ridge(horizon - H * 0.01, H * 0.04, P.far);
+          fillGround(P.near, "#22331f");
+          /* leaf shade in the top corners */
+          ctx.fillStyle = "rgba(34,58,32,0.85)";
+          for (var lf = 0; lf < 10; lf++) {
+            var lx = lf < 5 ? rnd() * W * 0.22 : W - rnd() * W * 0.22;
+            ctx.beginPath();
+            ctx.arc(lx, rnd() * H * 0.10, (13 + rnd() * 18) * S, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          /* the branch, sweeping down across the picture */
+          var p0 = [-10, H * 0.54], pc = [W * 0.45, H * 0.60], p1 = [W + 10, H * 0.74];
+          ctx.strokeStyle = P.sil;
+          ctx.lineCap = "round";
+          ctx.lineWidth = Math.max(3, 10 * S);
+          ctx.beginPath();
+          ctx.moveTo(p0[0], p0[1]);
+          ctx.quadraticCurveTo(pc[0], pc[1], p1[0], p1[1]);
+          ctx.stroke();
+          /* twigs reaching up, with leaves */
+          ctx.lineWidth = Math.max(1.6, 3.4 * S);
+          var twigs = [[0.24, -1], [0.46, -1], [0.80, -1]];
+          for (var tg = 0; tg < twigs.length; tg++) {
+            var tt = twigs[tg][0], aa = (1 - tt) * (1 - tt), bb2 = 2 * (1 - tt) * tt, cc = tt * tt;
+            var txp = aa * p0[0] + bb2 * pc[0] + cc * p1[0];
+            var typ = aa * p0[1] + bb2 * pc[1] + cc * p1[1];
+            ctx.beginPath();
+            ctx.moveTo(txp, typ);
+            ctx.lineTo(txp + W * 0.05 * twigs[tg][1], typ - H * 0.09);
+            ctx.stroke();
+            ctx.fillStyle = "rgba(44,74,42,0.9)";
+            for (var lf2 = 0; lf2 < 4; lf2++) {
+              ctx.beginPath();
+              ctx.arc(txp + W * 0.05 * twigs[tg][1] + (rnd() - 0.5) * 22 * S, typ - H * 0.09 + (rnd() - 0.5) * 16 * S, (7 + rnd() * 7) * S, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          /* the cardinal, perched a little past the middle */
+          var ct = 0.62, ca = (1 - ct) * (1 - ct), cb = 2 * (1 - ct) * ct, cc2 = ct * ct;
+          cardinalSil(ca * p0[0] + cb * pc[0] + cc2 * p1[0], ca * p0[1] + cb * pc[1] + cc2 * p1[1] - 4 * S, H * 0.21);
+        }
+        /* one wheat stalk with its sheaf of grains */
+        function wheatStalk(x, baseY, len, lean) {
+          ctx.strokeStyle = "rgba(146,98,26,0.85)";
+          ctx.lineWidth = Math.max(1.2, 1.8 * S);
+          ctx.beginPath();
+          ctx.moveTo(x, baseY);
+          ctx.quadraticCurveTo(x + lean * 0.4, baseY - len * 0.6, x + lean, baseY - len);
+          ctx.stroke();
+          ctx.fillStyle = "#eec25e";
+          for (var gi = 0; gi < 5; gi++) {
+            ctx.beginPath();
+            ctx.ellipse(x + lean - (gi % 2 ? 1 : -1) * 2.6 * S * (1 - gi * 0.12), baseY - len + gi * len * 0.045, 2.2 * S, 4.6 * S, gi % 2 ? -0.5 : 0.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        function landWheat() {
+          fillGround("#d9a83f", "#9c6d1d");
+          /* the far field: a texture of small heads */
+          for (var wh = 0; wh < 420; wh++) {
+            ctx.fillStyle = rnd() < 0.5 ? "rgba(255,226,140,0.5)" : "rgba(166,110,32,0.45)";
+            ctx.beginPath();
+            ctx.ellipse(rnd() * W, horizon + 4 + rnd() * (H - horizon) * 0.5, 1.5 * S, 3.2 * S, (rnd() - 0.5) * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          /* the near stand, rooted along the bottom */
+          for (var ws = 0; ws < 90; ws++) {
+            wheatStalk(rnd() * W, H - rnd() * (H - horizon) * 0.12, (H - horizon) * (0.34 + rnd() * 0.30), (rnd() - 0.5) * 8 * S);
+          }
+          /* a few tall stalks in the very front */
+          for (var wt = 0; wt < 16; wt++) {
+            wheatStalk(rnd() * W, H + 2, (H - horizon) * (0.72 + rnd() * 0.3), (rnd() - 0.5) * 10 * S);
+          }
+        }
+        function landRiver() {
+          ridge(horizon - H * 0.03, H * 0.10, P.far);
+          fillGround("#5d8a42", "#2c4a20");
+          /* the river's course: a point near the hills, widening
+             as it winds down to the front of the picture */
+          var vx = W * (0.40 + rnd() * 0.20);
+          var bend = (rnd() - 0.5) * W * 0.20;
+          var drift = (rnd() - 0.5) * W * 0.14;
+          function riverCxr(t) { return vx + bend * Math.sin(t * Math.PI * 0.85) + drift * t; }
+          function riverHw(t) { return 3 * S + t * t * W * 0.085 + t * W * 0.012; }
+          var steps = 12, left = [], right = [], ti;
+          for (ti = 0; ti <= steps; ti++) {
+            var tt2 = ti / steps;
+            var yy = horizon + 2 + tt2 * (H - horizon - 2);
+            left.push([riverCxr(tt2) - riverHw(tt2), yy]);
+            right.push([riverCxr(tt2) + riverHw(tt2), yy]);
+          }
+          var rg = ctx.createLinearGradient(0, horizon, 0, H);
+          rg.addColorStop(0, "#d6ecf7");
+          rg.addColorStop(1, "#7fb2d9");
+          ctx.fillStyle = rg;
+          ctx.beginPath();
+          ctx.moveTo(left[0][0], left[0][1]);
+          for (ti = 1; ti <= steps; ti++) ctx.lineTo(left[ti][0], left[ti][1]);
+          for (ti = steps; ti >= 0; ti--) ctx.lineTo(right[ti][0], right[ti][1]);
+          ctx.closePath();
+          ctx.fill();
+          /* sparkle on the water */
+          ctx.strokeStyle = "rgba(255,255,255,0.55)";
+          ctx.lineWidth = Math.max(1.2, 1.6 * S);
+          ctx.lineCap = "round";
+          for (var sp = 0; sp < 22; sp++) {
+            var t2 = 0.15 + rnd() * 0.85;
+            var sw = (4 + rnd() * 10) * S * (0.4 + t2);
+            var sx2 = riverCxr(t2) + (rnd() - 0.5) * riverHw(t2) * 1.2;
+            ctx.beginPath();
+            ctx.moveTo(sx2 - sw / 2, horizon + 2 + t2 * (H - horizon - 2));
+            ctx.lineTo(sx2 + sw / 2, horizon + 2 + t2 * (H - horizon - 2));
+            ctx.stroke();
+          }
+          /* bushes standing along the banks */
+          for (var bu = 0; bu < 16; bu++) {
+            var t3 = rnd();
+            var side = rnd() < 0.5 ? -1 : 1;
+            ctx.fillStyle = rnd() < 0.5 ? "#3f6b2c" : "#2c5222";
+            ctx.beginPath();
+            ctx.arc(riverCxr(t3) + side * (riverHw(t3) + (4 + rnd() * 14) * S), horizon + 4 + t3 * (H - horizon - 6), (5 + rnd() * 9) * S * (0.5 + t3), 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        function landForest() {
+          fillGround("#3a6030", "#1d3316");
+          /* trunks and canopies, leaving a shaft around the sun */
+          var greens = ["#2c5222", "#3a6b2e", "#477a35", "#24461a"];
+          var trees = 8 + Math.floor(rnd() * 4);
+          for (var tr = 0; tr < trees; tr++) {
+            var tx = rnd() * W;
+            if (Math.abs(tx - sunX) < W * 0.09) tx += (tx < sunX ? -1 : 1) * W * 0.11;
+            var twd = (5 + rnd() * 9) * S;
+            var tTop = H * (0.02 + rnd() * 0.16);
+            ctx.fillStyle = P.sil;
+            ctx.fillRect(tx - twd / 2, tTop, twd, H - tTop);
+            var blobs = 4 + Math.floor(rnd() * 3);
+            for (var bl = 0; bl < blobs; bl++) {
+              ctx.fillStyle = greens[Math.floor(rnd() * greens.length)];
+              ctx.beginPath();
+              ctx.arc(tx + (rnd() - 0.5) * twd * 7, tTop + (rnd() - 0.5) * H * 0.10, (16 + rnd() * 22) * S, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          /* canopy closing over the top corners */
+          for (var cn = 0; cn < 14; cn++) {
+            var cx4 = cn < 7 ? rnd() * W * 0.30 : W - rnd() * W * 0.30;
+            ctx.fillStyle = greens[Math.floor(rnd() * greens.length)];
+            ctx.beginPath();
+            ctx.arc(cx4, (rnd() - 0.3) * H * 0.10, (20 + rnd() * 26) * S, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          /* light slanting down through the trees */
+          ctx.fillStyle = "rgba(255,242,180,0.12)";
+          for (var ry = 0; ry < 3; ry++) {
+            var rx0 = sunX + (rnd() - 0.5) * W * 0.10;
+            var spread = W * (0.05 + rnd() * 0.07);
+            ctx.beginPath();
+            ctx.moveTo(rx0 - spread * 0.3, sunY);
+            ctx.lineTo(rx0 + spread * 0.3, sunY);
+            ctx.lineTo(rx0 + spread + W * 0.05, H);
+            ctx.lineTo(rx0 - spread + W * 0.05, H);
+            ctx.closePath();
+            ctx.fill();
+          }
+          /* dappled light on the floor, and motes in the air */
+          ctx.fillStyle = "rgba(255,240,170,0.10)";
+          for (var dp = 0; dp < 12; dp++) {
+            ctx.beginPath();
+            ctx.ellipse(rnd() * W, horizon + rnd() * (H - horizon), (14 + rnd() * 30) * S, (4 + rnd() * 6) * S, 0, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.fillStyle = "rgba(255,248,205,0.55)";
+          for (var mo = 0; mo < 42; mo++) ctx.fillRect(rnd() * W, rnd() * H * 0.8, 1.7 * S, 1.7 * S);
+        }
+        /* one smooth dune, its crest a seeded curve */
+        function dunePath(yBase, amp, color) {
+          var pts = 6, xs = [], ys = [], dk;
+          for (dk = 0; dk <= pts; dk++) { xs.push((W / pts) * dk); ys.push(yBase + (rnd() - 0.5) * amp); }
+          ctx.beginPath();
+          ctx.moveTo(0, ys[0]);
+          for (dk = 1; dk < pts; dk++) ctx.quadraticCurveTo(xs[dk], ys[dk], (xs[dk] + xs[dk + 1]) / 2, (ys[dk] + ys[dk + 1]) / 2);
+          ctx.lineTo(W, ys[pts]);
+          ctx.lineTo(W, H);
+          ctx.lineTo(0, H);
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+        /* a lone saguaro, in units of its height */
+        function cactusSil(x, baseY, h) {
+          var w = h * 0.16;
+          ctx.fillStyle = P.sil;
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(x - w / 2, baseY - h, w, h, w / 2);
+          else ctx.rect(x - w / 2, baseY - h, w, h);
+          ctx.fill();
+          function arm(side, topF, botF) {
+            var ax = x + side * w * 1.55;
+            var aw = w * 0.72;
+            ctx.fillRect(ax - aw / 2, baseY - h * topF, aw, h * (topF - botF) + w * 0.5);
+            ctx.fillRect(Math.min(x, ax), baseY - h * botF - w * 0.25, Math.abs(ax - x), w * 0.55);
+          }
+          arm(-1, 0.80, 0.55);
+          arm(1, 0.66, 0.68);
+        }
+        function landDesert() {
+          /* a base of sand first, so nothing an earlier day
+             painted can show between the dune crests */
+          ctx.fillStyle = "#e6c078";
+          ctx.fillRect(0, horizon, W, H - horizon);
+          dunePath(horizon + H * 0.01, H * 0.05, "#dcb264");
+          dunePath(horizon + H * 0.10, H * 0.07, P.far);
+          dunePath(H * 0.80, H * 0.06, P.near);
+          cactusSil(W * (0.70 + rnd() * 0.14), H * 0.815, H * 0.15);
+          ctx.fillStyle = "rgba(90,60,20,0.35)";
+          for (var pb = 0; pb < 40; pb++) ctx.fillRect(rnd() * W, horizon + (H - horizon) * (0.35 + rnd() * 0.6), (1.6 + rnd() * 2.4) * S, 1.6 * S);
+          ctx.strokeStyle = "rgba(120,84,26,0.6)";
+          ctx.lineWidth = Math.max(1, 1.3 * S);
+          for (var tf = 0; tf < 14; tf++) {
+            var tfx = rnd() * W, tfy = horizon + (H - horizon) * (0.4 + rnd() * 0.55);
+            for (var tbl = 0; tbl < 4; tbl++) {
+              ctx.beginPath();
+              ctx.moveTo(tfx, tfy);
+              ctx.lineTo(tfx + (rnd() - 0.5) * 7 * S, tfy - (4 + rnd() * 5) * S);
+              ctx.stroke();
+            }
+          }
+        }
+        /* a bare tree, branched by a small recursion */
+        function bareTree(x, baseY, h) {
+          ctx.strokeStyle = P.sil;
+          ctx.lineCap = "round";
+          function limb(x0, y0, len, ang, wdt, depth) {
+            var x1 = x0 + Math.sin(ang) * len, y1 = y0 - Math.cos(ang) * len;
+            ctx.lineWidth = Math.max(1, wdt);
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+            if (depth <= 0) return;
+            limb(x1, y1, len * 0.68, ang - 0.35 - rnd() * 0.2, wdt * 0.65, depth - 1);
+            limb(x1, y1, len * 0.62, ang + 0.30 + rnd() * 0.25, wdt * 0.65, depth - 1);
+          }
+          limb(x, baseY, h * 0.5, 0.05, h * 0.05, 3);
+        }
+        function landSnowfield() {
+          ridge(horizon - H * 0.02, H * 0.06, P.far);
+          fillGround("#ffffff", "#d7e2ef");
+          /* the soft shadows of drifts */
+          ctx.strokeStyle = "rgba(130,155,185,0.35)";
+          ctx.lineWidth = Math.max(1.6, 3 * S);
+          ctx.lineCap = "round";
+          for (var dr = 0; dr < 6; dr++) {
+            var dry = horizon + (H - horizon) * (0.15 + rnd() * 0.7);
+            var drx = rnd() * W * 0.6;
+            ctx.beginPath();
+            ctx.moveTo(drx, dry);
+            ctx.quadraticCurveTo(drx + W * 0.2, dry - H * 0.02, drx + W * (0.3 + rnd() * 0.15), dry);
+            ctx.stroke();
+          }
+          fenceLine(horizon + (H - horizon) * 0.40, votdHexA(P.sil, 0.75), 13 * S);
+          bareTree(W * (0.08 + rnd() * 0.06), horizon + (H - horizon) * 0.34, (H - horizon) * 0.85);
+          /* sparkle across the snow */
+          for (var sk = 0; sk < 220; sk++) {
+            ctx.fillStyle = rnd() < 0.6 ? "rgba(255,255,255,0.8)" : "rgba(170,200,235,0.6)";
+            ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.5 * S, 1.5 * S);
+          }
+        }
+        /* the foreground the scene calls for: the sky scenes keep
+           the water, snow, field or meadow floor they have always
+           had; every other kind paints its own land. */
+        var kind = P.kind || "sky";
+        if (kind === "sky") {
+          var fg = ctx.createLinearGradient(0, horizon, 0, H);
+          if (P.fg === "water") {
+            fg.addColorStop(0, P.hor);
+            fg.addColorStop(0.25, P.mid);
+            fg.addColorStop(1, P.top);
+          } else if (P.fg === "snow") {
+            fg.addColorStop(0, "#e9edf4");
+            fg.addColorStop(1, "#b9c5d6");
+          } else if (P.fg === "field") {
+            fg.addColorStop(0, P.hor);
+            fg.addColorStop(1, P.near);
+          } else {
+            fg.addColorStop(0, P.near);
+            fg.addColorStop(1, "#141a12");
+          }
+          ctx.fillStyle = fg;
+          ctx.fillRect(0, horizon, W, H - horizon);
+          if (P.fg === "water") {
+            ctx.fillStyle = "rgba(255,240,190,0.5)";
+            for (var g = 0; g < 26; g++) {
+              var gy = horizon + 4 + rnd() * (H - horizon - 8);
+              var gw = (6 + rnd() * 26) * S;
+              ctx.fillRect(sunX - gw / 2 + (rnd() - 0.5) * 14 * S, gy, gw, Math.max(1.4, 1.6 * S));
+            }
+          } else if (P.fg === "snow") {
+            ctx.fillStyle = "rgba(255,255,255,0.55)";
+            for (var w2 = 0; w2 < 200; w2++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.8 * S, 1.8 * S);
+          } else if (P.fg === "field") {
+            ctx.fillStyle = "rgba(255,214,130,0.28)";
+            for (var f2 = 0; f2 < 240; f2++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 2.6 * S);
+          } else {
+            ctx.fillStyle = "rgba(214,235,180,0.20)";
+            for (var s = 0; s < 260; s++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 1.6 * S);
+          }
+        } else if (kind === "flowers") landFlowers();
+        else if (kind === "ocean") landOcean();
+        else if (kind === "deer") landDeer();
+        else if (kind === "birds") landBirds();
+        else if (kind === "sheep") landSheep();
+        else if (kind === "cardinal") landCardinal();
+        else if (kind === "wheat") landWheat();
+        else if (kind === "river") landRiver();
+        else if (kind === "forest") landForest();
+        else if (kind === "desert") landDesert();
+        else if (kind === "snowfield") landSnowfield();
         P.lum = votdLum(P.mid) * 0.45 + votdLum(P.hor) * 0.4 + votdLum(P.top) * 0.15;
         return P;
       }
@@ -11456,7 +12517,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610210600";
+      var APP_BUILD_STAMP = "202610211100";
       (function () {
         try {
           var btn = $("update-btn");
