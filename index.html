@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610211100" />
+    <meta name="app-build" content="202610211130" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -8256,14 +8256,16 @@
          a snowfield under a pale sky, and animals drawn as clean
          silhouettes: a deer at a meadow's edge, birds crossing
          the light, sheep in green pasture, a cardinal on a
-         branch. The year deals the kinds out in blocks (see
-         votdSceneFor): every block of days holds every kind
-         once, in a seeded order of its own, so neighboring days
-         never share a kind — each morning differs from the one
-         before it in kind, not merely in palette — and the year
-         keeps turning through all of them. Within
-         a scene, sun, clouds, hills and every painted shape take
-         seeded forms. Nothing is fetched and no file is stored:
+         branch. Which kind a day gets is a draw from the day's
+         own seed (see votdSceneFor) — no cycle, no dealing in
+         blocks; the only rule is that a day never repeats the
+         kind of the day before it. And no day's painting is the
+         scene itself twice over: the day's seed breathes on the
+         scene's colors, loosens its horizon, and deals its sun,
+         clouds, hills, flowers, creatures and every painted
+         shape in fresh forms, so when a kind returns it returns
+         as a new painting of that kind. Nothing is fetched and
+         no file is stored:
          it works offline exactly as it does online. A wash in
          the theme's own tones (see .votd-scrim) lies over the
          painting, its strength fitted to each scene's
@@ -8316,58 +8318,52 @@
         { name: "desert gold", kind: "desert", top: "#3f6fb4", mid: "#e8b06a", hor: "#ffd98a", sun: "#fff0b3", sunMode: "mid", glow: 0.60, stars: 0,    cloud: [255, 244, 214], far: "#c98f3a", near: "#a8731f", sil: "#42511f", horY: 0.60 },
         { name: "snowfield", kind: "snowfield", top: "#8fa8c4", mid: "#cfdce8", hor: "#f6efe0", sun: "#fff6e0", sunMode: "low", glow: 0.30, stars: 0,    cloud: [248, 250, 252], far: "#aebfd4", near: "#7e93ad", sil: "#5a5148", horY: 0.56 }
       ];
-      /* Which scene a day gets: the kinds are dealt out in
-         blocks, the way cards are dealt — the year is cut into
-         blocks of as many days as there are kinds, each block
-         is shuffled with its own seed, and the day takes the
-         next card. Every block therefore holds every kind
-         exactly once, and where a fresh block would open with
-         the kind the last block closed on, its first two cards
-         trade places — so no two neighboring days ever share a
-         kind, within the year or across its turning. A kind
-         that holds several scenes (the twelve skies) deals
-         those among its own days by the same trick, counted
-         from New Year's Day. The dealing depends on the
-         calendar day alone, so a given date is dealt the same
-         scene for every reader, exactly as the painter's
-         shapes are seeded by that same day. */
+      /* Which kind a day gets: a draw from the day's own seed,
+         the way the painter's first skies were chosen — each
+         morning's kind is unpredictable from the ones around
+         it, and the kinds march in no cycle and are dealt in
+         no blocks. The one guard: a day never repeats the kind
+         of the day before it; where the raw draw would repeat
+         it, the day steps on to another of the kinds instead.
+         The year's sequence is walked from New Year's Day,
+         and the walk is repeated with the last kind of the
+         year carried over its turning until the two agree, so
+         the guard holds across the year boundary too. Every
+         seed comes from the calendar day alone, so a given
+         date is dealt the same kind for every reader, exactly
+         as the painter's shapes are seeded by that same day. */
       var VOTD_KINDS = ["sky", "flowers", "ocean", "deer", "birds", "sheep", "cardinal", "wheat", "river", "forest", "desert", "snowfield"];
       function votdDayOfYear(date) {
         return Math.round((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 86400000) - 1;
       }
-      function votdDeal(seed, n) {
-        var rnd = votdRand(seed);
-        var perm = [];
-        for (var i = 0; i < n; i++) perm.push(i);
-        for (var j = n - 1; j > 0; j--) {
-          var k = Math.floor(rnd() * (j + 1));
-          var t = perm[j]; perm[j] = perm[k]; perm[k] = t;
-        }
-        return perm;
+      function votdKindDaySeed(doy) {
+        return (Math.imul(doy + 1, 2654435761) ^ 0x51F15EED) >>> 0;
       }
-      function votdKindSeed(block) {
-        return (Math.imul(block + 1, 2654435761) ^ 0x85EBCA6B) >>> 0;
-      }
-      function votdKindPerm(block) {
+      var VOTD_KIND_SEQS = {};
+      function votdKindSequence(days) {
+        if (VOTD_KIND_SEQS[days]) return VOTD_KIND_SEQS[days];
         var B = VOTD_KINDS.length;
-        var perm = votdDeal(votdKindSeed(block), B);
-        /* the card before this block: the last card of the
-           block before, or — for the year's first block —
-           December 31st's card from the year's last block */
-        var prev;
-        if (block > 0) prev = votdDeal(votdKindSeed(block - 1), B)[B - 1];
-        else {
-          var lastBlock = Math.floor(364 / B);
-          prev = votdDeal(votdKindSeed(lastBlock), B)[364 - lastBlock * B];
+        var seq = [], prev = -1;
+        for (var pass = 0; pass < 6; pass++) {
+          seq = [];
+          var p = prev;
+          for (var d = 0; d < days; d++) {
+            var r = votdRand(votdKindDaySeed(d));
+            var k = Math.floor(r() * B);
+            if (k === p) k = (k + 1 + Math.floor(r() * (B - 1))) % B;
+            seq.push(k);
+            p = k;
+          }
+          if (p === prev) break;
+          prev = p;
         }
-        if (perm[0] === prev) { var t = perm[0]; perm[0] = perm[1]; perm[1] = t; }
-        return perm;
+        VOTD_KIND_SEQS[days] = seq;
+        return seq;
       }
       function votdKindFor(date) {
-        var doy = votdDayOfYear(date);
-        var B = VOTD_KINDS.length;
-        var block = Math.floor(doy / B), pos = doy - block * B;
-        return VOTD_KINDS[votdKindPerm(block)[pos]];
+        var y = date.getFullYear();
+        var days = Math.round((Date.UTC(y + 1, 0, 1) - Date.UTC(y, 0, 1)) / 86400000);
+        return VOTD_KINDS[votdKindSequence(days)[votdDayOfYear(date)]];
       }
       function votdSceneFor(date) {
         var kind = votdKindFor(date);
@@ -8376,17 +8372,11 @@
           if ((VOTD_SCENES[i].kind || "sky") === kind) group.push(i);
         }
         if (group.length === 1) return VOTD_SCENES[group[0]];
-        /* several scenes share this kind: deal them among the
-           year's days of the kind, counted from New Year's Day */
-        var doy = votdDayOfYear(date);
-        var idx = 0;
-        for (var d0 = 0; d0 < doy; d0++) {
-          if (votdKindFor(new Date(date.getFullYear(), 0, 1 + d0)) === kind) idx++;
-        }
-        var M = group.length;
-        var block = Math.floor(idx / M), pos = idx - block * M;
-        var perm = votdDeal((Math.imul(block + 1, 2246822519) ^ 0x27D4EB2F) >>> 0, M);
-        return VOTD_SCENES[group[perm[pos]]];
+        /* several scenes share this kind (the twelve skies):
+           the day's own seed picks which one, so the skies
+           arrive in no fixed order either */
+        var r = votdRand((Math.imul((date.getMonth() + 1) * 100 + date.getDate(), 2654435761) ^ 0x3C6EF372) >>> 0);
+        return VOTD_SCENES[group[Math.floor(r() * group.length)]];
       }
       function votdHexRgb(hex) {
         return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
@@ -8399,15 +8389,63 @@
         var c = votdHexRgb(hex);
         return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
       }
+      /* a color breathed on: the same family, turned a little
+         toward another hour — hue swung a few degrees, warmth
+         and light nudged by small seeded amounts — so a scene
+         that returns paints in different colors than it wore
+         last time, while staying itself */
+      function votdShiftHex(hex, dh, ds, dl) {
+        var c = votdHexRgb(hex);
+        var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+        var mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+        var l = (mx + mn) / 2, h = 0, s = 0;
+        if (mx !== mn) {
+          var dd = mx - mn;
+          s = l > 0.5 ? dd / (2 - mx - mn) : dd / (mx + mn);
+          if (mx === r) h = (g - b) / dd + (g < b ? 6 : 0);
+          else if (mx === g) h = (b - r) / dd + 2;
+          else h = (r - g) / dd + 4;
+          h *= 60;
+        }
+        h = (h + dh) % 360; if (h < 0) h += 360;
+        s = Math.min(1, Math.max(0, s * (1 + ds)));
+        l = Math.min(0.96, Math.max(0.04, l + dl));
+        var cc = (1 - Math.abs(2 * l - 1)) * s;
+        var xx = cc * (1 - Math.abs((h / 60) % 2 - 1));
+        var mm = l - cc / 2, rr = 0, gg = 0, bb = 0;
+        if (h < 60) { rr = cc; gg = xx; } else if (h < 120) { rr = xx; gg = cc; }
+        else if (h < 180) { gg = cc; bb = xx; } else if (h < 240) { gg = xx; bb = cc; }
+        else if (h < 300) { rr = xx; bb = cc; } else { rr = cc; bb = xx; }
+        function hx(v) { var s2 = Math.round((v + mm) * 255).toString(16); return s2.length < 2 ? "0" + s2 : s2; }
+        return "#" + hx(rr) + hx(gg) + hx(bb);
+      }
       /* Paint one day's scene into any canvas-sized context.
          Returns the scene, with its brightness (lum, 0 to 1)
          measured, so the caller can fit a reading wash to it. */
       function drawVotdSky(ctx, W, H, date) {
         var seed = (Math.imul((date.getMonth() + 1) * 100 + date.getDate(), 2654435761) ^ 0x9E3779B9) >>> 0;
         var rnd = votdRand(seed);
-        var P = votdSceneFor(date);
+        /* today's own copy of the scene: its colors breathed on
+           by the day's seed (see votdShiftHex), its glow widened
+           or narrowed, its horizon loosened a little — the
+           painting is this day's improvisation on the scene,
+           never the scene itself twice */
+        var base = votdSceneFor(date);
+        var P = {};
+        for (var pk in base) P[pk] = base[pk];
+        var dhue = (rnd() - 0.5) * 24, dwarm = (rnd() - 0.5) * 0.22, dlit = (rnd() - 0.5) * 0.06;
+        P.top = votdShiftHex(base.top, dhue, dwarm, dlit);
+        P.mid = votdShiftHex(base.mid, dhue * 0.8, dwarm, dlit * 0.7);
+        P.hor = votdShiftHex(base.hor, dhue * 0.6, dwarm * 0.7, dlit * 0.5);
+        P.sun = votdShiftHex(base.sun, dhue * 0.4, dwarm * 0.5, dlit * 0.4);
+        P.far = votdShiftHex(base.far, dhue * 0.7, dwarm * 0.8, dlit * 0.6);
+        P.near = votdShiftHex(base.near, dhue * 0.7, dwarm * 0.8, dlit * 0.6);
+        P.cloud = [Math.min(255, Math.max(0, Math.round(base.cloud[0] + (rnd() - 0.5) * 18))),
+                   Math.min(255, Math.max(0, Math.round(base.cloud[1] + (rnd() - 0.5) * 18))),
+                   Math.min(255, Math.max(0, Math.round(base.cloud[2] + (rnd() - 0.5) * 18)))];
+        P.glow = base.glow * (0.8 + rnd() * 0.45);
         var S = W / 880; /* sizes were tuned on the card's 880-wide canvas */
-        var horizon = Math.round(H * (P.horY || 0.74));
+        var horizon = Math.round(H * Math.min(0.88, Math.max(0.44, (base.horY || 0.74) + (rnd() - 0.5) * 0.08)));
         var sky = ctx.createLinearGradient(0, 0, 0, horizon);
         sky.addColorStop(0, P.top);
         sky.addColorStop(0.62, P.mid);
@@ -8440,9 +8478,9 @@
           ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
           ctx.fillStyle = P.sun;
           ctx.fill();
-          if (P.sunMode === "moon") { /* a soft shadow gives the moon its roundness */
+          if (P.sunMode === "moon") { /* a soft shadow gives the moon its roundness — and its phase, which the day's seed chooses */
             ctx.beginPath();
-            ctx.arc(sunX - sunR * 0.34, sunY - sunR * 0.18, sunR * 0.88, 0, Math.PI * 2);
+            ctx.arc(sunX - sunR * (0.18 + rnd() * 0.3), sunY - sunR * (rnd() * 0.3), sunR * (0.78 + rnd() * 0.16), 0, Math.PI * 2);
             ctx.fillStyle = "rgba(148,163,196,0.35)";
             ctx.fill();
           }
@@ -8454,7 +8492,7 @@
           ctx.fillRect(0, 0, W, horizon + 1);
         }
         /* clouds in seeded shapes, in the scene's own tint */
-        var clouds = 3 + Math.floor(rnd() * 4);
+        var clouds = 2 + Math.floor(rnd() * 5);
         for (var c = 0; c < clouds; c++) {
           var cx = rnd() * W, cy = H * (0.08 + rnd() * 0.38);
           var cw = (60 + rnd() * 150) * S, chh = (10 + rnd() * 14) * S;
@@ -8470,8 +8508,9 @@
         function ridge(base, amp, color) {
           ctx.beginPath();
           ctx.moveTo(0, horizon + 1);
-          var pts = 7;
-          for (var k = 0; k <= pts; k++) ctx.lineTo((W / pts) * k, base - rnd() * amp);
+          var pts = 5 + Math.floor(rnd() * 4);
+          var amp2 = amp * (0.6 + rnd() * 0.8);
+          for (var k = 0; k <= pts; k++) ctx.lineTo((W / pts) * k, base - rnd() * amp2);
           ctx.lineTo(W, horizon + 1);
           ctx.closePath();
           ctx.fillStyle = color;
@@ -8510,16 +8549,23 @@
         function landFlowers() {
           ridge(horizon - H * 0.01, H * 0.05, P.far);
           fillGround("#5d8140", "#2c4a20");
-          /* bands of flower color drifting across the meadow */
-          var bandCols = ["#e77fa2", "#ffd94d", "#fff6ec", "#9a7fd4", "#ff8a5c", "#e75a7a"];
-          var bands = 4 + Math.floor(rnd() * 2);
+          /* bands of flower color drifting across the meadow —
+             the day's seed turns the whole palette a little, so
+             no two meadows bloom in quite the same colors */
+          var baseCols = ["#e77fa2", "#ffd94d", "#fff6ec", "#9a7fd4", "#ff8a5c", "#e75a7a"];
+          var hueDrift = (rnd() - 0.5) * 44;
+          var bandCols = [];
+          for (var bc = 0; bc < baseCols.length; bc++) bandCols.push(votdShiftHex(baseCols[bc], hueDrift + (rnd() - 0.5) * 18, (rnd() - 0.5) * 0.1, (rnd() - 0.5) * 0.05));
+          var bands = 3 + Math.floor(rnd() * 3);
           for (var bi = 0; bi < bands; bi++) {
             var by = horizon + (H - horizon) * (0.16 + 0.78 * (bi + rnd() * 0.5) / bands);
             var bh = (H - horizon) * (0.09 + rnd() * 0.05) * (0.7 + (by - horizon) / Math.max(1, H - horizon));
             wavyBand(by, bh, votdHexA(bandCols[Math.floor(rnd() * bandCols.length)], 0.30));
           }
-          /* a sowing of small blooms, thicker toward the front */
-          for (var d = 0; d < 650; d++) {
+          /* a sowing of small blooms, thicker toward the front —
+             how thick is the day's own choice */
+          var dots = 430 + Math.floor(rnd() * 420);
+          for (var d = 0; d < dots; d++) {
             var fy = horizon + Math.pow(rnd(), 0.6) * (H - horizon - 2);
             ctx.fillStyle = votdHexA(bandCols[Math.floor(rnd() * bandCols.length)], 0.5 + rnd() * 0.5);
             ctx.beginPath();
@@ -8527,7 +8573,8 @@
             ctx.fill();
           }
           /* larger blossoms near the front, with dark hearts */
-          for (var bq = 0; bq < 42; bq++) {
+          var blooms = 26 + Math.floor(rnd() * 30);
+          for (var bq = 0; bq < blooms; bq++) {
             var bx = rnd() * W, byy = horizon + (H - horizon) * (0.72 + rnd() * 0.26);
             var br = (2.6 + rnd() * 2.4) * S;
             ctx.fillStyle = votdHexA(bandCols[Math.floor(rnd() * bandCols.length)], 0.95);
@@ -8541,7 +8588,7 @@
           }
         }
         function landOcean() {
-          var shoreY = Math.round(H * 0.86);
+          var shoreY = Math.round(H * (0.82 + rnd() * 0.08));
           var wg = ctx.createLinearGradient(0, horizon, 0, shoreY);
           wg.addColorStop(0, P.hor);
           wg.addColorStop(0.3, P.mid);
@@ -8553,7 +8600,8 @@
           ctx.fillRect(0, horizon, W, shoreY + Math.round(H * 0.04) - horizon);
           /* the sun's path glittering on the water */
           ctx.fillStyle = "rgba(255,240,190,0.5)";
-          for (var og = 0; og < 30; og++) {
+          var glints = 20 + Math.floor(rnd() * 22);
+          for (var og = 0; og < glints; og++) {
             var ogy = horizon + 4 + rnd() * (shoreY - horizon - 8);
             var ogw = (6 + rnd() * 30) * S;
             ctx.fillRect(sunX - ogw / 2 + (rnd() - 0.5) * 16 * S, ogy, ogw, Math.max(1.4, 1.6 * S));
@@ -8562,7 +8610,8 @@
           ctx.strokeStyle = "rgba(255,255,255,0.35)";
           ctx.lineWidth = Math.max(1.2, 1.6 * S);
           ctx.lineCap = "round";
-          for (var wv = 0; wv < 42; wv++) {
+          var waves = 28 + Math.floor(rnd() * 30);
+          for (var wv = 0; wv < waves; wv++) {
             var wy = horizon + 6 + rnd() * (shoreY - horizon - 10);
             var wx = rnd() * W, wl = (14 + rnd() * 46) * S * (0.5 + (wy - horizon) / Math.max(1, shoreY - horizon));
             ctx.beginPath();
@@ -8658,9 +8707,12 @@
         function landDeer() {
           fillGround(P.near, "#131f0e");
           grassSpeckle(200, "rgba(214,235,180,0.16)");
-          treeSil(W * 0.06, horizon + (H - horizon) * 0.14, (H - horizon) * 0.95);
-          treeSil(W * 0.14, horizon + (H - horizon) * 0.09, (H - horizon) * 0.68);
-          deerSil(W * (0.58 + rnd() * 0.14), horizon + (H - horizon) * 0.60, (H - horizon) * 0.62);
+          treeSil(W * (0.03 + rnd() * 0.06), horizon + (H - horizon) * (0.08 + rnd() * 0.12), (H - horizon) * (0.75 + rnd() * 0.4));
+          treeSil(W * (0.10 + rnd() * 0.10), horizon + (H - horizon) * (0.05 + rnd() * 0.10), (H - horizon) * (0.5 + rnd() * 0.35));
+          if (rnd() < 0.4) treeSil(W * (0.86 + rnd() * 0.08), horizon + (H - horizon) * (0.06 + rnd() * 0.10), (H - horizon) * (0.6 + rnd() * 0.3));
+          deerSil(W * (0.48 + rnd() * 0.30), horizon + (H - horizon) * (0.50 + rnd() * 0.22), (H - horizon) * (0.48 + rnd() * 0.28));
+          /* some mornings a second, smaller deer keeps it company */
+          if (rnd() < 0.35) deerSil(W * (0.16 + rnd() * 0.20), horizon + (H - horizon) * (0.42 + rnd() * 0.18), (H - horizon) * (0.34 + rnd() * 0.16));
         }
         /* one bird: two shallow wing-curves on a single stroke */
         function birdSil(x, y, w) {
@@ -8676,7 +8728,7 @@
           fillGround(P.near, "#17101c");
           ctx.strokeStyle = P.sil;
           ctx.lineCap = "round";
-          var flock = 9 + Math.floor(rnd() * 7);
+          var flock = 7 + Math.floor(rnd() * 12);
           var cx0 = W * (0.2 + rnd() * 0.5), cy0 = H * (0.16 + rnd() * 0.2);
           for (var fb = 0; fb < flock; fb++) {
             birdSil(cx0 + (rnd() - 0.5) * W * 0.55 + (fb - flock / 2) * W * 0.012,
@@ -8729,7 +8781,7 @@
           ridge(horizon - H * 0.02, H * 0.07, P.far);
           fillGround("#639544", "#2c5222");
           fenceLine(horizon + (H - horizon) * 0.32, "rgba(43,32,20,0.8)", 15 * S);
-          var ns = 4 + Math.floor(rnd() * 3);
+          var ns = 3 + Math.floor(rnd() * 5);
           for (var sh = 0; sh < ns; sh++) {
             var depth = 0.45 + rnd() * 0.48;
             sheepSil(W * (0.10 + rnd() * 0.78), horizon + (H - horizon) * depth, (34 + rnd() * 26) * S * (0.5 + depth), rnd() < 0.5 ? -1 : 1);
@@ -8808,8 +8860,10 @@
             ctx.arc(lx, rnd() * H * 0.10, (13 + rnd() * 18) * S, 0, Math.PI * 2);
             ctx.fill();
           }
-          /* the branch, sweeping down across the picture */
-          var p0 = [-10, H * 0.54], pc = [W * 0.45, H * 0.60], p1 = [W + 10, H * 0.74];
+          /* the branch, sweeping down across the picture — its
+             sweep, and where along it the bird sits, are the
+             day's own */
+          var p0 = [-10, H * (0.48 + rnd() * 0.10)], pc = [W * (0.38 + rnd() * 0.16), H * (0.55 + rnd() * 0.10)], p1 = [W + 10, H * (0.68 + rnd() * 0.10)];
           ctx.strokeStyle = P.sil;
           ctx.lineCap = "round";
           ctx.lineWidth = Math.max(3, 10 * S);
@@ -8835,9 +8889,9 @@
               ctx.fill();
             }
           }
-          /* the cardinal, perched a little past the middle */
-          var ct = 0.62, ca = (1 - ct) * (1 - ct), cb = 2 * (1 - ct) * ct, cc2 = ct * ct;
-          cardinalSil(ca * p0[0] + cb * pc[0] + cc2 * p1[0], ca * p0[1] + cb * pc[1] + cc2 * p1[1] - 4 * S, H * 0.21);
+          /* the cardinal, perched somewhere past the middle */
+          var ct = 0.52 + rnd() * 0.24, ca = (1 - ct) * (1 - ct), cb = 2 * (1 - ct) * ct, cc2 = ct * ct;
+          cardinalSil(ca * p0[0] + cb * pc[0] + cc2 * p1[0], ca * p0[1] + cb * pc[1] + cc2 * p1[1] - 4 * S, H * (0.17 + rnd() * 0.08));
         }
         /* one wheat stalk with its sheaf of grains */
         function wheatStalk(x, baseY, len, lean) {
@@ -8857,18 +8911,21 @@
         function landWheat() {
           fillGround("#d9a83f", "#9c6d1d");
           /* the far field: a texture of small heads */
-          for (var wh = 0; wh < 420; wh++) {
+          var heads = 300 + Math.floor(rnd() * 260);
+          for (var wh = 0; wh < heads; wh++) {
             ctx.fillStyle = rnd() < 0.5 ? "rgba(255,226,140,0.5)" : "rgba(166,110,32,0.45)";
             ctx.beginPath();
             ctx.ellipse(rnd() * W, horizon + 4 + rnd() * (H - horizon) * 0.5, 1.5 * S, 3.2 * S, (rnd() - 0.5) * 0.6, 0, Math.PI * 2);
             ctx.fill();
           }
           /* the near stand, rooted along the bottom */
-          for (var ws = 0; ws < 90; ws++) {
+          var stalks = 64 + Math.floor(rnd() * 56);
+          for (var ws = 0; ws < stalks; ws++) {
             wheatStalk(rnd() * W, H - rnd() * (H - horizon) * 0.12, (H - horizon) * (0.34 + rnd() * 0.30), (rnd() - 0.5) * 8 * S);
           }
           /* a few tall stalks in the very front */
-          for (var wt = 0; wt < 16; wt++) {
+          var tall = 10 + Math.floor(rnd() * 12);
+          for (var wt = 0; wt < tall; wt++) {
             wheatStalk(rnd() * W, H + 2, (H - horizon) * (0.72 + rnd() * 0.3), (rnd() - 0.5) * 10 * S);
           }
         }
@@ -8903,7 +8960,8 @@
           ctx.strokeStyle = "rgba(255,255,255,0.55)";
           ctx.lineWidth = Math.max(1.2, 1.6 * S);
           ctx.lineCap = "round";
-          for (var sp = 0; sp < 22; sp++) {
+          var sparks = 16 + Math.floor(rnd() * 16);
+          for (var sp = 0; sp < sparks; sp++) {
             var t2 = 0.15 + rnd() * 0.85;
             var sw = (4 + rnd() * 10) * S * (0.4 + t2);
             var sx2 = riverCxr(t2) + (rnd() - 0.5) * riverHw(t2) * 1.2;
@@ -8926,7 +8984,7 @@
           fillGround("#3a6030", "#1d3316");
           /* trunks and canopies, leaving a shaft around the sun */
           var greens = ["#2c5222", "#3a6b2e", "#477a35", "#24461a"];
-          var trees = 8 + Math.floor(rnd() * 4);
+          var trees = 7 + Math.floor(rnd() * 6);
           for (var tr = 0; tr < trees; tr++) {
             var tx = rnd() * W;
             if (Math.abs(tx - sunX) < W * 0.09) tx += (tx < sunX ? -1 : 1) * W * 0.11;
@@ -9012,7 +9070,9 @@
           dunePath(horizon + H * 0.01, H * 0.05, "#dcb264");
           dunePath(horizon + H * 0.10, H * 0.07, P.far);
           dunePath(H * 0.80, H * 0.06, P.near);
-          cactusSil(W * (0.70 + rnd() * 0.14), H * 0.815, H * 0.15);
+          cactusSil(W * (0.62 + rnd() * 0.22), H * (0.79 + rnd() * 0.05), H * (0.11 + rnd() * 0.09));
+          /* some days a second, smaller saguaro stands off in the sand */
+          if (rnd() < 0.45) cactusSil(W * (0.10 + rnd() * 0.20), H * (0.76 + rnd() * 0.05), H * (0.07 + rnd() * 0.06));
           ctx.fillStyle = "rgba(90,60,20,0.35)";
           for (var pb = 0; pb < 40; pb++) ctx.fillRect(rnd() * W, horizon + (H - horizon) * (0.35 + rnd() * 0.6), (1.6 + rnd() * 2.4) * S, 1.6 * S);
           ctx.strokeStyle = "rgba(120,84,26,0.6)";
@@ -9051,7 +9111,8 @@
           ctx.strokeStyle = "rgba(130,155,185,0.35)";
           ctx.lineWidth = Math.max(1.6, 3 * S);
           ctx.lineCap = "round";
-          for (var dr = 0; dr < 6; dr++) {
+          var drifts = 4 + Math.floor(rnd() * 5);
+          for (var dr = 0; dr < drifts; dr++) {
             var dry = horizon + (H - horizon) * (0.15 + rnd() * 0.7);
             var drx = rnd() * W * 0.6;
             ctx.beginPath();
@@ -9060,9 +9121,11 @@
             ctx.stroke();
           }
           fenceLine(horizon + (H - horizon) * 0.40, votdHexA(P.sil, 0.75), 13 * S);
-          bareTree(W * (0.08 + rnd() * 0.06), horizon + (H - horizon) * 0.34, (H - horizon) * 0.85);
+          bareTree(W * (0.05 + rnd() * 0.16), horizon + (H - horizon) * 0.34, (H - horizon) * (0.65 + rnd() * 0.45));
+          if (rnd() < 0.35) bareTree(W * (0.78 + rnd() * 0.14), horizon + (H - horizon) * 0.30, (H - horizon) * (0.45 + rnd() * 0.25));
           /* sparkle across the snow */
-          for (var sk = 0; sk < 220; sk++) {
+          var glisten = 150 + Math.floor(rnd() * 140);
+          for (var sk = 0; sk < glisten; sk++) {
             ctx.fillStyle = rnd() < 0.6 ? "rgba(255,255,255,0.8)" : "rgba(170,200,235,0.6)";
             ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.5 * S, 1.5 * S);
           }
@@ -9091,7 +9154,8 @@
           ctx.fillRect(0, horizon, W, H - horizon);
           if (P.fg === "water") {
             ctx.fillStyle = "rgba(255,240,190,0.5)";
-            for (var g = 0; g < 26; g++) {
+            var skyGlints = 18 + Math.floor(rnd() * 18);
+            for (var g = 0; g < skyGlints; g++) {
               var gy = horizon + 4 + rnd() * (H - horizon - 8);
               var gw = (6 + rnd() * 26) * S;
               ctx.fillRect(sunX - gw / 2 + (rnd() - 0.5) * 14 * S, gy, gw, Math.max(1.4, 1.6 * S));
@@ -12517,7 +12581,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610211100";
+      var APP_BUILD_STAMP = "202610211130";
       (function () {
         try {
           var btn = $("update-btn");
