@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610210152" />
+    <meta name="app-build" content="202610210238" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -186,6 +186,7 @@
       .download-box { margin: 20px 0 2px; }
       .download-btn { width: 100%; font-size: 16.5px; }
       .download-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
+      .explore-note { color: var(--ink-soft); font-size: 14.5px; text-align: center; margin: 9px 0 0; }
       .download-link { display: block; box-sizing: border-box; text-align: center; text-decoration: none; }
 
       .install-box { margin: 10px 0 2px; }
@@ -1298,30 +1299,8 @@
             </div>
           </div>
           <div class="saved-box">
-            <button class="btn saved-btn" id="saved-btn" type="button">🔖 Saved Verses</button>
-          </div>
-          <div class="saved-box">
-            <button class="btn saved-btn" id="plans-btn" type="button">📖 Reading Plans</button>
-          </div>
-          <div class="saved-box">
-            <button class="btn saved-btn" id="turn-btn" type="button">🧭 Where to turn</button>
-          </div>
-          <div class="saved-box">
-            <button class="btn saved-btn" id="prayers-btn" type="button">🙏 Prayers of the Bible</button>
-          </div>
-          <div class="saved-box">
-            <button class="btn saved-btn" id="journey-btn" type="button">🌱 My Journey</button>
-          </div>
-          <div class="saved-box">
-            <button class="btn saved-btn" id="words-btn" type="button">📚 Bible Words</button>
-          </div>
-          <div class="download-box">
-            <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
-            <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
-          </div>
-          <div class="download-box">
-            <a class="btn download-btn download-link" id="pdf-download-link" href="world-english-bible-large-print.pdf">⬇ The whole Bible as a large-print PDF</a>
-            <p class="download-note" id="pdf-download-note">All 66 books · 2,871 pages · about 17 MB · words of Christ in red.</p>
+            <button class="btn saved-btn" id="explore-btn" type="button">🚪 Explore</button>
+            <p class="explore-note">Reading plans, prayers, saved verses, downloads and more.</p>
           </div>
           <div class="install-box" id="install-box">
             <button class="btn install-btn" id="install-btn" type="button">📲 Add the Bible to your home screen</button>
@@ -1369,7 +1348,7 @@
       <!-- ============ CHAPTER GRID ============ -->
       <section id="view-chapters" hidden>
         <div class="topbar">
-          <button class="navbtn" id="chapters-back">‹ Books</button>
+          <button class="navbtn" id="chapters-back">‹ Dashboard</button>
           <span class="tb-title" id="chapters-bar-title"></span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1396,7 +1375,7 @@
           <button class="navbtn" id="reader-to-chapters">‹ Chapters</button>
           <span class="tb-title" id="reader-bar-title"></span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
-          <button class="navbtn" id="reader-to-books">Books</button>
+          <button class="navbtn" id="reader-to-books">‹ Dashboard</button>
         </div>
         <div class="reader-head">
           <p class="r-book" id="reader-book"></p>
@@ -1557,7 +1536,7 @@
       <!-- ============ SEARCH RESULTS ============ -->
       <section id="view-search" hidden>
         <div class="topbar">
-          <button class="navbtn" id="search-back">‹ Books</button>
+          <button class="navbtn" id="search-back">‹ Dashboard</button>
           <span class="tb-title">Search</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1576,7 +1555,7 @@
       <!-- ============ SAVED VERSES ============ -->
       <section id="view-saved" hidden>
         <div class="topbar">
-          <button class="navbtn" id="saved-back">‹ Books</button>
+          <button class="navbtn" id="saved-back">‹ Dashboard</button>
           <span class="tb-title">Saved Verses</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1591,7 +1570,7 @@
       <!-- ============ READING PLANS ============ -->
       <section id="view-plans" hidden>
         <div class="topbar">
-          <button class="navbtn" id="plans-back">‹ Books</button>
+          <button class="navbtn" id="plans-back">‹ Dashboard</button>
           <span class="tb-title">Reading Plans</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1606,7 +1585,7 @@
       <!-- ============ WHERE TO TURN ============ -->
       <section id="view-turn" hidden>
         <div class="topbar">
-          <button class="navbtn" id="turn-back">‹ Books</button>
+          <button class="navbtn" id="turn-back">‹ Dashboard</button>
           <span class="tb-title">Where to turn</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1625,7 +1604,7 @@
       <!-- ============ PRAYERS OF THE BIBLE ============ -->
       <section id="view-prayers" hidden>
         <div class="topbar">
-          <button class="navbtn" id="prayers-back">‹ Books</button>
+          <button class="navbtn" id="prayers-back">‹ Dashboard</button>
           <span class="tb-title">Prayers of the Bible</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1640,7 +1619,7 @@
       <!-- ============ MY JOURNEY ============ -->
       <section id="view-journey" hidden>
         <div class="topbar">
-          <button class="navbtn" id="journey-back">‹ Books</button>
+          <button class="navbtn" id="journey-back">‹ Dashboard</button>
           <span class="tb-title">My Journey</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1655,7 +1634,7 @@
       <!-- ============ BIBLE WORDS ============ -->
       <section id="view-glossary" hidden>
         <div class="topbar">
-          <button class="navbtn" id="words-back">‹ Books</button>
+          <button class="navbtn" id="words-back">‹ Dashboard</button>
           <span class="tb-title">Bible Words</span>
           <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
         </div>
@@ -1669,6 +1648,47 @@
         </div>
         <p class="filter-none" id="words-filter-none" hidden>No matches — try another word</p>
         <div id="glossary-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ EXPLORE ============ -->
+      <section id="view-explore" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="explore-back">‹ Dashboard</button>
+          <span class="tb-title">Explore</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Explore</h2>
+          <p>More ways into the Word — plans and prayers, your saved verses, and the whole Bible to keep.</p>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="saved-btn" type="button">🔖 Saved Verses</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="plans-btn" type="button">📖 Reading Plans</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="turn-btn" type="button">🧭 Where to turn</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="prayers-btn" type="button">🙏 Prayers of the Bible</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="journey-btn" type="button">🌱 My Journey</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="words-btn" type="button">📚 Bible Words</button>
+        </div>
+        <h2 class="testament">Downloads</h2>
+        <div class="download-box">
+          <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
+          <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
+        </div>
+        <div class="download-box">
+          <a class="btn download-btn download-link" id="pdf-download-link" href="world-english-bible-large-print.pdf">⬇ The whole Bible as a large-print PDF</a>
+          <p class="download-note" id="pdf-download-note">All 66 books · 2,871 pages · about 17 MB · words of Christ in red.</p>
+        </div>
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
 
@@ -4796,7 +4816,7 @@
         if (text != null) e.textContent = text;
         return e;
       }
-      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-prayers", "view-journey", "view-glossary"];
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-prayers", "view-journey", "view-glossary", "view-explore"];
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -7091,6 +7111,22 @@
       try { $("words-btn").addEventListener("click", openGlossary); } catch (e) {}
       try { $("words-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
       try { $("words-filter").addEventListener("input", applyWordsFilter); } catch (e) {}
+
+      /* ---- explore ----
+         The doors that used to stack down the home view live on
+         their own page now, behind one Explore door on home: saved
+         verses, reading plans, Where to Turn, prayers, My Journey,
+         Bible Words, and the two downloads below them. Their
+         buttons moved with their ids intact, so every listener and
+         behavior they had on home — the saved count included —
+         works exactly as before, and new doors can join this page
+         without crowding home again. */
+      function openExplore() {
+        showView("view-explore");
+        setPageMeta("Explore — World English Bible", DEFAULT_DESC);
+      }
+      try { $("explore-btn").addEventListener("click", openExplore); } catch (e) {}
+      try { $("explore-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
 
       /* ---- tap-a-word definitions (reader) ----
          In the reader, a tap that lands on a word the Bible Words
@@ -10195,6 +10231,16 @@
         if (h.charAt(0) === "#") h = h.slice(1);
         return h.trim().toLowerCase() === "plans";
       }
+      /* "#explore" is not a verse link either: it opens the Explore
+         view, the same way "#plans" opens Reading Plans. "explore"
+         is not a book name and carries no chapter, so it can never
+         collide with the deep-link format. */
+      function isExploreHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return false; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        return h.trim().toLowerCase() === "explore";
+      }
       /* "#plan/<plan>/<day>" is a shared plan day: day is 1-based as
          readers count days, and the plan is named by its stable id
          ("advent", "life-of-jesus", …). A link shared before ids
@@ -10239,6 +10285,7 @@
         try {
           if (followPlanHash()) return;
           if (isPlansHash()) { openPlans(); return; }
+          if (isExploreHash()) { openExplore(); return; }
           var link = parseHash();
           if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
         } catch (e) { /* a deep link that cannot be followed leaves the home view standing */ }
@@ -10276,7 +10323,7 @@
       (function () {
         try {
           if (wasWelcomed()) return;
-          if (parsePlanHash() || isPlansHash() || parseHash()) return;
+          if (parsePlanHash() || isPlansHash() || isExploreHash() || parseHash()) return;
           var w = $("welcome");
           if (w) w.hidden = false;
         } catch (e) {}
@@ -10288,6 +10335,7 @@
         try {
           if (followPlanHash()) return;
           if (isPlansHash()) { openPlans(); return; }
+          if (isExploreHash()) { openExplore(); return; }
           var link = parseHash();
           if (!link) return;
           if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
@@ -10356,7 +10404,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610210152";
+      var APP_BUILD_STAMP = "202610210238";
       (function () {
         try {
           var btn = $("update-btn");
