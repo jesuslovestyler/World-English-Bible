@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610210238" />
+    <meta name="app-build" content="202610210500" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -849,6 +849,88 @@
         text-decoration: underline; text-underline-offset: 3px;
       }
       .votd-todaylink:active { transform: translateY(1px); }
+      /* the painted sky behind the verse of the day (see
+         paintVotdSky): the canvas fills the card, a wash in the
+         theme's own tones lies over the painting, and the words
+         ride on top, readable in every theme */
+      :root { --votd-wash: rgba(255, 253, 246, 0.62); }
+      :root[data-theme="paper"] { --votd-wash: rgba(248, 241, 220, 0.62); }
+      :root[data-theme="dark"] { --votd-wash: rgba(23, 20, 16, 0.58); }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme]) { --votd-wash: rgba(23, 20, 16, 0.58); }
+      }
+      .votd-card { position: relative; overflow: hidden; }
+      .votd-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .votd-scrim { position: absolute; inset: 0; background: var(--votd-wash); }
+      .votd-card > .votd-head, .votd-card > .votd-main, .votd-card > .votd-nav { position: relative; }
+
+      /* ---------- reader settings sheet ----------
+         The reading controls that used to stack above every
+         chapter — text size, theme, spacing, font, listening
+         voice, the voice picker, auto-continue, print — now live
+         behind one Settings button in the reader. Listen, Speed
+         and the sleep timer stay out in the open, untouched. The
+         controls themselves are the same elements with the same
+         ids, moved, so every behavior and memory they had is
+         exactly the one they keep. */
+      .settings-row { text-align: center; margin: 0 0 14px; }
+      .settings-btn {
+        min-height: 50px; font-size: 16.5px; padding: 12px 22px; cursor: pointer;
+        background: var(--surface); color: var(--accent); border-color: var(--line);
+      }
+      .settings-sheet {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 12px; box-shadow: var(--shadow);
+        padding: 16px 14px 6px; margin: 0 0 16px;
+      }
+      .settings-sheet[hidden] { display: none; }
+      .settings-sheet .textsize-row { margin-bottom: 12px; }
+      .settings-sheet .comfort-row { margin-bottom: 6px; }
+      .settings-sheet .listen-voice { margin-top: 4px; margin-bottom: 10px; }
+      .settings-autocont { text-align: center; margin: 2px 0 12px; }
+      .settings-sheet .print-row { margin: 4px 0 10px; }
+
+      /* ---------- explore galleries: maps & illustrations ---------- */
+      .gal-card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+        box-shadow: var(--shadow); padding: 14px; margin: 0 0 18px;
+      }
+      .gal-title { font-family: "Newsreader", Georgia, serif; font-size: 20.5px; font-weight: 600; margin: 0 0 4px; }
+      .gal-ctx { color: var(--ink-soft); font-size: 15px; line-height: 1.5; margin: 0 0 10px; }
+      .gal-img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); cursor: zoom-in; }
+      .gal-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .gal-credit { color: var(--ink-soft); font-size: 13.5px; line-height: 1.45; margin: 10px 0 0; }
+      .credit-note { color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; margin: 16px 0 6px; }
+      .fs-overlay {
+        position: fixed; inset: 0; z-index: 200; background: rgba(14, 11, 6, 0.95);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 16px;
+      }
+      .fs-overlay[hidden] { display: none; }
+      .fs-overlay img { max-width: 100%; max-height: calc(100% - 64px); object-fit: contain; border-radius: 6px; }
+      .fs-cap { color: #f3ead2; font-size: 15.5px; margin-top: 12px; text-align: center; }
+      .fs-close {
+        position: absolute; top: 10px; right: 10px; font: inherit; font-size: 16px; font-weight: 700;
+        color: #f3ead2; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px; min-height: 44px; padding: 8px 16px; cursor: pointer;
+      }
+
+      /* ---------- bible timeline ---------- */
+      .tl { border-left: 2px solid var(--line); margin: 10px 0 0 8px; padding-left: 24px; }
+      .tl-era { position: relative; margin: 0 0 28px; }
+      .tl-era::before {
+        content: ""; position: absolute; left: -31px; top: 7px;
+        width: 12px; height: 12px; border-radius: 50%;
+        background: var(--accent); border: 2px solid var(--paper);
+      }
+      .tl-name { font-family: "Newsreader", Georgia, serif; font-size: 21.5px; font-weight: 600; margin: 0 0 2px; }
+      .tl-dates { color: var(--accent); font-size: 14px; font-weight: 700; margin: 0 0 6px; }
+      .tl-text { font-size: 16px; line-height: 1.55; margin: 0 0 10px; }
+      .tl-books { display: flex; flex-wrap: wrap; gap: 8px; }
+
+      /* who's who rows ride on the glossary styles, plus their
+         passage chips under each name */
+      .who-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
       .saved-box { margin: 12px 0 2px; }
       .saved-btn { width: 100%; font-size: 16.5px; background: var(--surface); color: var(--accent); border-color: var(--line); }
 
@@ -1261,6 +1343,8 @@
           <div class="today" id="today">
             <h2 class="today-title">Today</h2>
             <div class="votd-card" id="votd-card" hidden>
+            <canvas class="votd-sky" id="votd-sky" width="880" height="560" aria-hidden="true"></canvas>
+            <div class="votd-scrim" aria-hidden="true"></div>
             <div class="votd-head">
               <span class="votd-label">Verse of the Day</span>
               <button class="votd-share" id="votd-share" type="button">Share</button>
@@ -1383,39 +1467,65 @@
           <p class="reader-time" id="reader-time" hidden></p>
           <p class="reader-idea" id="reader-idea" hidden></p>
         </div>
-        <div class="textsize-row">
-          <span class="ts-label">Text size</span>
-          <button type="button" id="ts-down" aria-label="Smaller reading text">A−</button>
-          <button type="button" id="ts-up" aria-label="Larger reading text">A+</button>
+        <!-- the reader's settings, behind one button: text size,
+             theme, spacing, font, the listening voice and its
+             picker, auto-continue, and Print. The controls are the
+             same elements with the same ids they have always had —
+             only gathered into this sheet — so each one keeps its
+             behavior and its memory exactly. Listen, Speed and the
+             sleep timer stay out in the open in the listen bar. -->
+        <div class="settings-row">
+          <button class="btn settings-btn" id="settings-btn" type="button" aria-expanded="false" aria-controls="settings-sheet">⚙ Settings</button>
         </div>
-        <div class="comfort-row">
-          <span class="cf-group">
-            <label for="theme-select">Theme</label>
-            <select id="theme-select">
-              <option value="auto">Auto</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="paper">Paper</option>
+        <div class="settings-sheet" id="settings-sheet" hidden>
+          <div class="textsize-row">
+            <span class="ts-label">Text size</span>
+            <button type="button" id="ts-down" aria-label="Smaller reading text">A−</button>
+            <button type="button" id="ts-up" aria-label="Larger reading text">A+</button>
+          </div>
+          <div class="comfort-row">
+            <span class="cf-group">
+              <label for="theme-select">Theme</label>
+              <select id="theme-select">
+                <option value="auto">Auto</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="paper">Paper</option>
+              </select>
+            </span>
+            <span class="cf-group">
+              <label for="spacing-select">Spacing</label>
+              <select id="spacing-select">
+                <option value="0">Compact</option>
+                <option value="1" selected>Normal</option>
+                <option value="2">Airy</option>
+              </select>
+            </span>
+            <span class="cf-group">
+              <label for="font-select">Font</label>
+              <select id="font-select">
+                <option value="standard" selected>Standard</option>
+                <option value="dyslexia">Dyslexia-friendly</option>
+              </select>
+            </span>
+          </div>
+          <div class="listen-voice" id="listen-mode-row" hidden>
+            <label for="listen-mode-select">Listening voice</label>
+            <select id="listen-mode-select">
+              <option value="device" selected>Device voice</option>
+              <option value="recorded">Recorded voice</option>
             </select>
-          </span>
-          <span class="cf-group">
-            <label for="spacing-select">Spacing</label>
-            <select id="spacing-select">
-              <option value="0">Compact</option>
-              <option value="1" selected>Normal</option>
-              <option value="2">Airy</option>
-            </select>
-          </span>
-          <span class="cf-group">
-            <label for="font-select">Font</label>
-            <select id="font-select">
-              <option value="standard" selected>Standard</option>
-              <option value="dyslexia">Dyslexia-friendly</option>
-            </select>
-          </span>
-        </div>
-        <div class="print-row">
-          <button class="btn print-btn" id="print-open-btn" type="button">🖨 Print this chapter</button>
+          </div>
+          <div class="listen-voice" id="listen-voice-row" hidden>
+            <label for="listen-voice-select">Voice</label>
+            <select id="listen-voice-select"></select>
+          </div>
+          <div class="settings-autocont">
+            <button type="button" class="lo-toggle on" id="listen-autocont" aria-pressed="true">Auto-continue: On</button>
+          </div>
+          <div class="print-row">
+            <button class="btn print-btn" id="print-open-btn" type="button">🖨 Print this chapter</button>
+          </div>
         </div>
         <div class="print-panel" id="print-panel" hidden>
           <p class="pp-title">Print — choose how much</p>
@@ -1454,17 +1564,6 @@
             <button class="seek-step" id="seek-fwd" type="button" aria-label="Forward one verse">⏭</button>
             <span class="seek-time" id="seek-time">~0:00 / ~0:00</span>
           </div>
-          <div class="listen-voice" id="listen-mode-row" hidden>
-            <label for="listen-mode-select">Listening voice</label>
-            <select id="listen-mode-select">
-              <option value="device" selected>Device voice</option>
-              <option value="recorded">Recorded voice</option>
-            </select>
-          </div>
-          <div class="listen-voice" id="listen-voice-row" hidden>
-            <label for="listen-voice-select">Voice</label>
-            <select id="listen-voice-select"></select>
-          </div>
           <p class="listen-rec-error" id="listen-rec-error" hidden>Recording unavailable — check your connection, or switch to Device voice.</p>
           <audio id="rec-audio" preload="none" hidden></audio>
           <div class="listen-opts" id="listen-opts" hidden>
@@ -1485,7 +1584,6 @@
                 <option value="60">60 min</option>
               </select>
             </span>
-            <button type="button" class="lo-toggle on" id="listen-autocont" aria-pressed="true">Auto-continue: On</button>
           </div>
           <div>
             <button class="voice-help-toggle" id="voice-help-toggle" type="button" aria-expanded="false" aria-controls="voice-help">Want a nicer voice?</button>
@@ -1680,9 +1778,21 @@
         <div class="saved-box">
           <button class="btn saved-btn" id="words-btn" type="button">📚 Bible Words</button>
         </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="maps-btn" type="button">🗺 Bible Maps</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="illustrations-btn" type="button">🖼 Bible Illustrations</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="timeline-btn" type="button">⏳ Bible Timeline</button>
+        </div>
+        <div class="saved-box">
+          <button class="btn saved-btn" id="whoswho-btn" type="button">👥 Who's Who</button>
+        </div>
         <h2 class="testament">Downloads</h2>
         <div class="download-box">
-          <button class="btn download-btn" id="download-btn" type="button">⬇ Download this Bible — free, works offline</button>
+          <a class="btn download-btn download-link" id="download-btn" href="assets/world-english-bible.epub">⬇ Download this Bible — free, works offline</a>
           <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
         </div>
         <div class="download-box">
@@ -1692,6 +1802,79 @@
         <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
       </section>
 
+      <!-- ============ BIBLE MAPS ============ -->
+      <section id="view-maps" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="maps-back">‹ Dashboard</button>
+          <span class="tb-title">Bible Maps</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Bible Maps</h2>
+          <p>The lands of the Bible, drawn by mapmakers of long ago. Tap a map to see it full-screen, and tap a passage to read the story where it happened.</p>
+        </div>
+        <div id="maps-body"></div>
+        <p class="credit-note">All six maps are public-domain works, shared through Wikimedia Commons: Heinrich Bünting (1581), Tobias Lotter (1762), Athanase Coquerel (1843), Kent &amp; Madsen (1912), the American Tract Society, and Johnson &amp; Ward (1862).</p>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ BIBLE ILLUSTRATIONS ============ -->
+      <section id="view-illustrations" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="illustrations-back">‹ Dashboard</button>
+          <span class="tb-title">Bible Illustrations</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Bible Illustrations</h2>
+          <p>The story of the Bible in twenty-four engravings by Gustave Doré. Tap a picture to see it full-screen, and tap its passage to read the chapter.</p>
+        </div>
+        <div id="plates-body"></div>
+        <p class="credit-note">Engravings by Gustave Doré for the Bible de Tours (1866), public domain, shared through Wikimedia Commons. A few plates are Doré's same engravings as reprinted in The Bible Panorama (1891), also public domain.</p>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ BIBLE TIMELINE ============ -->
+      <section id="view-timeline" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="timeline-back">‹ Dashboard</button>
+          <span class="tb-title">Bible Timeline</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Bible Timeline</h2>
+          <p>The whole story in nine stretches of time. Dates are marked “about” on purpose: they follow the Bible's own traditional reckoning, and honest readers place some of them a little differently.</p>
+        </div>
+        <div class="tl" id="timeline-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+      <!-- ============ WHO'S WHO ============ -->
+      <section id="view-whoswho" hidden>
+        <div class="topbar">
+          <button class="navbtn" id="whoswho-back">‹ Dashboard</button>
+          <span class="tb-title">Who's Who</span>
+          <a class="homebtn" href="https://jesuslovestyler.com/">⌂ Home</a>
+        </div>
+        <div class="search-head">
+          <h2>Who's Who</h2>
+          <p>The people of the Bible, from Adam to the apostles — who each one was, in a line or two, with the chapters where their story lives.</p>
+        </div>
+        <div class="filter-box">
+          <input id="who-filter" type="search" autocomplete="off" placeholder="Type to filter people…" aria-label="Filter Who's Who by name" />
+        </div>
+        <p class="filter-none" id="who-filter-none" hidden>No matches — try another name</p>
+        <div id="who-body"></div>
+        <footer class="site">World English Bible (WEB) — public domain. Share freely.<br />Words of Jesus shown in red.</footer>
+      </section>
+
+    </div>
+
+    <!-- full-screen picture viewer for the Explore galleries -->
+    <div class="fs-overlay" id="fs-overlay" hidden>
+      <button class="fs-close" id="fs-close" type="button">✕ Close</button>
+      <img id="fs-img" alt="" />
+      <p class="fs-cap" id="fs-cap"></p>
     </div>
 
     <!-- verse action bar: appears while verses are selected in the reader -->
@@ -4816,7 +4999,7 @@
         if (text != null) e.textContent = text;
         return e;
       }
-      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-prayers", "view-journey", "view-glossary", "view-explore"];
+      var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-prayers", "view-journey", "view-glossary", "view-explore", "view-maps", "view-illustrations", "view-timeline", "view-whoswho"];
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -6925,6 +7108,9 @@
       var GLOSSARY = [
         ["Abba", "An Aramaic word for \"father\" — the intimate family name, warm like \"Dad\" but never casual. Jesus used it in Gethsemane, and the Spirit teaches God's adopted children to cry it too (Romans 8:15): it is the sound of belonging."],
         ["Adoption", "God taking people who believe in Jesus into His own family as His sons and daughters, with all the love and inheritance of children."],
+        ["Advocate", "One who pleads another’s case. “We have an advocate with the Father, Jesus Christ, the righteous” (1 John 2:1) — the same word the Gospels use for the Holy Spirit, our Counselor and Helper."],
+        ["Alabaster", "A white, marble-like stone carved into jars for precious perfume. A woman anointed Jesus from an alabaster jar, and some thought the costly ointment wasted; Jesus called it a beautiful thing, done for His burial."],
+        ["Alpha and Omega", "The first and last letters of the Greek alphabet, and the Lord’s name for Himself: “I am the Alpha and the Omega, the Beginning and the End” — everything starts and ends with Him."],
         ["Altar", "A raised place or table where sacrifices and offerings were presented to God in worship."],
         ["Amen", "A Hebrew word meaning 'so be it' or 'truly' — our way of saying, 'Yes, Lord, we agree.'"],
         ["Angel", "A messenger from God. Angels serve God, carry His words to people, and watch over His children."],
@@ -6933,115 +7119,187 @@
         ["Apostasy", "Deliberately turning away from the faith once professed — not a stumble or a season of doubt, but a settled departure from Christ. Scripture warns against it soberly (Hebrews 6; 2 Thessalonians 2) and urges believers to hold fast and encourage one another daily."],
         ["Apostle", "One sent out by Jesus Himself. The first apostles were the twelve men Jesus chose to witness His resurrection and found the church."],
         ["Ark", "Two famous ‘arks’ in Scripture: Noah’s great boat that carried his family through the flood, and the ark of the covenant, the golden chest where God’s presence rested among Israel."],
+        ["Armageddon", "The Hebrew name (Har Megiddo, Mount Megiddo) for the place where the kings of the earth gather for the last battle in Revelation 16. Megiddo’s plain had seen many battles; this one ends with the coming of the King."],
         ["Ascension", "Jesus' return to heaven forty days after His resurrection, when He rose bodily before His disciples' eyes, blessing them, and was taken up in a cloud. He sits now at the Father's right hand, interceding for His people, until He comes again the same way He went."],
         ["Atonement", "The price paid to bring sinners back to God. In the Old Testament it was animal sacrifices; finally and fully, it is Jesus' death on the cross for us."],
         ["Baptism", "Being washed in water as a sign of new life: buried with Jesus in His death, and raised with Him to walk in newness of life."],
         ["Beatitudes", "The blessings that open the Sermon on the Mount (Matthew 5): \"Blessed are the poor in spirit... the meek... those who hunger and thirst for righteousness.\" Each one reverses the world's values and describes the person God's kingdom delights to honor."],
+        ["Beelzebub", "A mocking name for the prince of demons, borrowed from a Philistine god. The Pharisees accused Jesus of casting out demons by Beelzebub’s power — as if God’s Spirit and Satan could be partners."],
         ["Believe", "To trust — not just to know facts about Jesus, but to rest your whole weight on Him and what He promised."],
+        ["Bethlehem", "The little town in Judah where David was born and, as Micah foretold, where Jesus was born too: “out of you one will come to me who is to be ruler in Israel.” Small place, eternal King."],
         ["Blasphemy", "Speaking of God with contempt, or claiming God’s name and honors for yourself. It is treating the Holy One as if He were nothing."],
         ["Blessing", "God's goodness given as a gift. To bless someone is to speak and give God's good over their life."],
         ["Blood", "In Scripture, blood is life itself (Leviticus 17:11), and shed blood speaks: Abel's cried from the ground; the Passover lamb's marked Israel's doors; sacrifices sealed covenants. Jesus' blood — \"the blood of the covenant\" — speaks a better word than Abel's: not vengeance, but forgiveness for all who come under it."],
+        ["Body of Christ", "Paul’s picture of the church: many members, one body, and Christ the head. No member is useless and none is the whole; we need each other the way eyes need hands."],
+        ["Book of Life", "Heaven’s register of those who belong to the Lamb. Names are written there from the foundation of the world, and Revelation promises that whoever’s name is found in it enters the holy city."],
         ["Born again", "Jesus' words for what God does inside a person: giving them a brand-new heart and life by His Spirit."],
         ["Branch", "A name for the coming Messiah: the shoot that springs from Jesse's cut-down family tree, righteous and fruitful, on whom the Spirit rests (Isaiah 11). Jeremiah calls Him \"a righteous Branch\" who will reign as King; Zechariah, \"my servant the Branch,\" who builds the temple of the LORD."],
+        ["Breastplate", "The chest armor of a soldier — and of Israel’s high priest, who wore a jeweled breastpiece bearing the tribes’ names over his heart. Paul gives believers “the breastplate of righteousness,” and of faith and love."],
+        ["Calling", "God’s summons into His service and His family. Scripture speaks of a holy calling not earned by works but given by His purpose and grace — and urges us to walk worthy of it."],
+        ["Censer", "A pan or vessel for carrying burning coals and incense into holy places. Aaron’s sons Nadab and Abihu offered “strange fire” with theirs and died; in Revelation an angel’s golden censer carries the prayers of the saints."],
         ["Centurion", "A Roman officer commanding about a hundred soldiers. The Gospels treat centurions remarkably kindly — one had faith greater than any in Israel; one confessed at the cross, \"Truly this was the Son of God\"; and Cornelius became the first Gentile household gathered into the church."],
+        ["Chaff", "The dry husks blown away when grain is threshed and winnowed. John the Baptist said Jesus would clear His threshing floor, gather the wheat, and burn the chaff — a picture of judgment sorting true from empty."],
         ["Cherubim", "Mighty angels shown with wings, set to guard holy places — they watched over Eden’s entrance and above the ark of the covenant."],
         ["Church", "Not a building — the people who belong to Jesus, gathered to worship Him and love one another, all over the world."],
         ["Circumcision", "The cutting sign God gave Abraham and his family as the mark of the old covenant — a sign in the body of belonging to God’s people."],
         ["Commandment", "Something God tells us to do. His commandments are not burdens; they show us His heart and the shape of a good life."],
         ["Condemnation", "God’s guilty verdict over sin. The gospel’s wonder: ‘There is therefore now no condemnation to those who are in Christ Jesus.’"],
         ["Confess", "To say the same thing God says — to admit our sins honestly to Him, and to say out loud that Jesus is Lord."],
+        ["Conscience", "The inner witness God built into us, which accuses or excuses our own thoughts. A good conscience is a treasure to keep; faith itself can be shipwrecked by pushing conscience aside (1 Timothy 1:19)."],
         ["Cornerstone", "The first and governing stone of a building, by which every wall is aligned. Scripture calls the Messiah the cornerstone God laid in Zion — precious to those who believe, a stone of stumbling to those who reject Him — and Jesus applied the words to Himself before the rulers who rejected Him."],
         ["Covenant", "God's solemn promise-bond with people, like a marriage vow from His side. The old covenant came through Moses; the new covenant comes through Jesus' blood."],
         ["Cross", "Where Jesus died for our sins. In the Bible 'the cross' often means the whole saving work Jesus did there."],
+        ["Crown of thorns", "The mock crown Roman soldiers twisted from thorns and pressed onto Jesus’ head, with a reed for a scepter and “Hail, King of the Jews!” for a joke. He wore the curse’s own plant — thorns came with the fall — as His crown."],
         ["Crucifixion", "Execution by being nailed to a wooden cross — a slow, shaming Roman death. It is how Jesus died for us, bearing our curse in our place."],
+        ["Cubit", "The everyday measure of the Bible: the length from elbow to fingertip, about eighteen inches. Noah’s ark was three hundred cubits long; Goliath stood six cubits and a span."],
         ["Curse", "God’s judgment spoken against sin and evil. At the cross, Jesus became a curse for us, so that blessing could come to us instead."],
+        ["Darnel", "A weed that looks like wheat while it grows — the “tares” of older translations. In Jesus’ parable an enemy sows darnel in a man’s field, and the master lets both grow together until the harvest sorts them."],
+        ["Day of Atonement", "The holiest day of Israel’s year (Leviticus 16): the high priest alone entered the Most Holy Place with blood, and a scapegoat carried the people’s sins into the wilderness. Hebrews says Jesus entered heaven itself, once for all, with His own blood."],
         ["Day of the Lord", "The coming day when God acts openly in judgment and salvation — darkness and wrath for the proud, deliverance for His people. The prophets used it for near judgments (on Babylon, Egypt, Israel) and for the final day when Christ returns; the New Testament calls it \"the day of the Lord Jesus.\""],
         ["Deacon", "A servant-leader in the church, appointed to care for practical needs — food, money, widows — so the word of God can be served freely."],
+        ["Dedication", "Setting something apart for God with ceremony. Solomon dedicated the Temple; Jesus walked in the Temple at the Feast of the Dedication (John 10:22) — the feast Jews still keep as Hanukkah."],
         ["Deliverance", "God's rescue of His people from enemies, slavery, sin, and death. Israel's great memory was deliverance from Egypt; the Psalms cry for it by name; and Jesus is the Deliverer who sets captives free — past rescue feeding present trust: \"He has delivered us... He will deliver us.\""],
         ["Demon", "An evil spirit who serves Satan and works against God and people. Demons fear Jesus, and His name drives them out."],
         ["Denarius", "A Roman silver coin, worth about a day's wage for a laborer — the coin of the vineyard parable, the coin with Caesar's image shown to Jesus, and the measure in Revelation's famine prices: \"A quart of wheat for a denarius.\""],
         ["Devil", "Another name for Satan. ‘Devil’ means the slanderer, the accuser — the enemy who lies about God to us and about us to God."],
         ["Disciple", "A student and follower of Jesus — someone learning His ways and obeying Him, day by day, for life."],
         ["Dispersion", "God's people scattered among the nations — also called the Diaspora. It began with the exiles to Assyria and Babylon and continued in Jewish communities across the Roman world; James and Peter write their letters \"to the Dispersion,\" and God used those scattered seeds to prepare the gospel's roads."],
+        ["Divination", "Seeking knowledge or power from spirits — fortune-telling, omens, spells. Israel was forbidden it entirely: their knowledge was to come from God’s word, not from the dead or the stars."],
         ["Doctrine", "Teaching — the body of truth handed down and believed. Scripture prizes sound doctrine: it is to be guarded, taught, and adorned by our lives (Titus 2:10), and never traded for teaching that merely suits itching ears (2 Timothy 4:3)."],
+        ["Dove", "The gentle bird that returned to Noah with an olive leaf, the offering of the poor at the Temple, and the form in which the Holy Spirit descended on Jesus at His baptism, “like a dove.”"],
         ["Dragon", "Scripture's picture of Satan in his rage: the great red dragon of Revelation, \"that ancient serpent, who is called the devil and Satan, the deceiver of the whole world\" (Revelation 12:9). Old Testament poetry uses dragon imagery for the chaos powers God mastered at creation and will slay at the end (Isaiah 27:1)."],
         ["Elder", "A mature, godly leader in a local church — a shepherd who teaches, guards, and cares for God’s people."],
         ["Election", "God’s choosing of His people in love before time began — He saw us fully, sins and all, and set His love on us in Christ anyway."],
+        ["Ephah", "A dry measure for grain and flour — about 22 liters, or some five gallons. Gideon baked with an ephah of flour, Ruth gleaned “about an ephah of barley” in a day, and the manna was measured in omers, tenths of an ephah."],
         ["Ephod", "The richly woven vest worn by Israel's high priest (Exodus 28), bearing the breastpiece with twelve stones for the tribes and the Urim and Thummim for discerning God's will. Gideon tragically made a golden ephod that became a snare — a reminder that even God-ward things can be turned into idols."],
         ["Epistle", "A letter. Most of the New Testament is epistles — real letters from apostles to real churches, kept for us as Scripture."],
         ["Eternal life", "Life that never ends — but more than length, it is knowing God Himself, beginning now and lasting forever."],
+        ["Eunuch", "A man made unable to father children, often a trusted court official in eastern kingdoms. Isaiah promises eunuchs who keep God’s covenant “a name better than sons and daughters”; the Ethiopian eunuch of Acts 8 was among the gospel’s first fruits."],
         ["Evangelist", "One who carries the good news to people who have not heard it — a herald of the gospel, like Philip in the book of Acts."],
         ["Exile", "Israel’s punishment of being carried off to Babylon for their sins — and God’s promise, kept, to bring His people home again."],
         ["Faith", "Trust in God that acts on what He said. Faith receives His promises as gifts; even faith itself is His gift to us."],
+        ["False prophet", "One who claims to speak for God but lies — Jesus warned they come in sheep’s clothing while inwardly ravening wolves. The test is fruit: a false prophet’s teaching and life eventually show what he is."],
         ["Fasting", "Going without food for a time in order to seek God — humbling the body to pray with your whole heart."],
+        ["Fear of the LORD", "Not cringing terror but reverent awe — standing before God’s holiness with your whole heart awake. It is “the beginning of wisdom,” the fountain of life, and the Old Testament’s shortest summary of true religion."],
+        ["Feast of Tabernacles", "The joyful autumn feast when Israel lived in booths for a week, remembering the wilderness tents and thanking God for the harvest. It was at this feast that Jesus stood and cried, “If anyone thirsts, let him come to me and drink.”"],
+        ["Feast of Weeks", "The harvest feast seven weeks after Passover, when the firstfruits of wheat were offered — also called Pentecost (fifty days), the very day the Holy Spirit fell on the church."],
         ["Fellowship", "Sharing life with God and with His people — praying, eating, giving, and walking together as one family in Christ."],
+        ["Fig tree", "Israel’s tree of peace and plenty — “every man under his vine and fig tree.” Jesus cursed a fruitless fig tree as a sermon against empty show, and used its budding as a sign to watch for His return."],
         ["Firstborn", "The first son, who held the birthright: a double portion and headship of the family. God claimed Israel's firstborn as His own after the Exodus, calls Israel itself \"My firstborn son,\" and names Jesus \"the firstborn over all creation\" and \"firstborn from the dead\" — the heir to whom everything belongs."],
         ["Firstfruits", "The first and best of the harvest, offered to God before the rest was used — a confession that the whole crop was His gift. Jesus' resurrection is called the firstfruits of those who sleep: the first sheaf of the great harvest of the dead that God will gather at His return."],
         ["Flesh", "In Paul's letters, usually not the body itself but human nature left to itself — life organized around appetite, pride, and self, at war with the Spirit. \"The flesh\" cannot please God; believers are commanded to walk by the Spirit so they do not gratify its desires."],
+        ["Foreknowledge", "God’s knowing beforehand — not bare information, but knowing with love and purpose: those He foreknew He also predestined, called, and glorified (Romans 8:29). Christ Himself was “foreknown before the foundation of the world.”"],
         ["Forgiveness", "God canceling the debt of our sins completely, for Jesus' sake — not holding them against us anymore, ever."],
+        ["Frankincense", "A fragrant resin from a desert tree, burned as pure incense on the golden altar and treasured as a royal gift — the wise men brought it to the child Jesus, with gold and myrrh."],
         ["Fruit of the Spirit", "The character the Holy Spirit grows in a believer, named in Galatians 5: love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control. It is fruit, not manufacture — one crop with nine flavors, grown by abiding in Christ, against which \"there is no law.\""],
+        ["Galilee", "The green northern region of Israel around the great lake, where Jesus grew up (in Nazareth) and did much of His ministry. Looked down on by Judea — “Can anything good come out of Nazareth?” — it was where the light dawned first."],
+        ["Gall", "A bitter, poisonous plant; in Scripture, bitterness itself. Israel’s unfaithfulness turns wine to gall; soldiers offered Jesus wine mixed with gall at the cross, and He refused it."],
         ["Gehenna", "Jesus' word for hell: the valley of Hinnom south of Jerusalem, where children had once been burned to Molech and refuse later smoldered. He used it of the final judgment — a real place of fire and loss, spoken of more by Jesus than by anyone else in Scripture, and always as a warning."],
         ["Gentile", "Anyone who is not a Jew by birth. The gospel’s surprise and glory: the Gentiles — most of us — are welcomed into God’s family through Jesus."],
+        ["Gethsemane", "The olive garden across the Kidron from Jerusalem — its name means “oil press” — where Jesus prayed in agony the night He was betrayed, and surrendered: “Not my will, but yours, be done.”"],
         ["Glory", "The shining weight of who God is — His beauty, power, and worth, seen most fully in Jesus."],
+        ["Godliness", "A life shaped by reverence for God — devotion that shows in conduct. Paul calls it great gain when joined with contentment, and urges training in it the way athletes train, for it holds promise for the present life and also for the life to come."],
+        ["Golgotha", "The place outside Jerusalem’s wall where Jesus was crucified — Aramaic for “the skull” (in Latin, Calvary), from the hill’s bare, skull-like look."],
         ["Gospel", "Good news! The message that Jesus died for our sins, rose again, and that everyone who believes in Him receives eternal life."],
         ["Grace", "God's kindness to people who deserve the opposite — His gifts given freely because He loves, not because we earned."],
+        ["Guilt offering", "The sacrifice for sins needing repayment (Leviticus 5) — where something holy was damaged or someone wronged, restitution was added to the offering. Isaiah borrows the word for the Servant: God makes His soul “an offering for sin.”"],
         ["Hades", "The Greek word for the realm of the dead — the place of departed spirits before the final judgment, corresponding to the Hebrew Sheol. In Jesus' story of the rich man and Lazarus, Hades holds both torment and comfort; its keys now belong to the risen Christ."],
         ["Hallelujah", "A Hebrew shout meaning \"Praise the LORD!\" (hallelu = praise, Yah = the LORD). It opens and closes many Psalms, and in Revelation 19 heaven's multitude thunders it four times over Babylon's fall and the marriage of the Lamb."],
         ["Heaven", "God's home, where Jesus now is, and where His people will live with Him forever — no more death, tears, or pain."],
+        ["Heir", "One who receives an inheritance. Believers are heirs of God and joint heirs with Christ — everything the Father gives the Son, He shares with His adopted children, “heirs according to the hope of eternal life.”"],
         ["Hell", "The place of final judgment and separation from God for those who refuse His mercy. It is real, and it is why the gospel is urgent."],
         ["High places", "Hilltop shrines where sacrifices were offered — condemned when used for idols, and a chronic temptation even for kings otherwise faithful to God. Again and again the histories add the sad refrain, \"yet the high places were not removed\": half-obedience in stone."],
+        ["Hin", "A liquid measure — about a gallon (some four liters). Drink offerings of wine and oil were poured out by the hin beside the sacrifices of the tabernacle."],
+        ["Holiness", "The state of being holy: set apart from sin and set apart for God. Scripture calls God “holy, holy, holy” and calls His people to the same: “Be holy, for I am holy” — a gift received in Christ, and a life grown into by the Spirit."],
         ["Holy", "Set apart and perfectly pure. God is holy — completely other, completely good — and He makes His people holy too."],
         ["Holy Spirit", "God the Spirit, who lives in every believer: comforting, teaching, convicting, and making us more like Jesus."],
         ["Hope", "In the Bible, hope is not a wish — it is a confident expectation of what God has promised and will surely do."],
         ["Hosanna", "A Hebrew cry meaning \"Save us, we pray!\" that became a shout of praise. The crowds cried it to Jesus entering Jerusalem, waving palm branches (Psalm 118:25–26) — a plea and a coronation in one word."],
+        ["Humility", "Lowly-mindedness: not thinking little of yourself, but thinking of yourself little, because your eyes are on God and on others. God opposes the proud and gives grace to the humble; Jesus, who washed feet, is the pattern."],
+        ["Hypocrite", "From the Greek word for a stage actor: one who performs religion for an audience. Jesus used it of those who prayed, gave, and fasted to be seen — they have their reward, He said: being seen was all it was."],
         ["Hyssop", "A bushy plant used to sprinkle blood and water in Israel's cleansing rites — the Passover blood was painted on with it. David prayed, \"Purge me with hyssop, and I shall be clean\" (Psalm 51:7), and a sponge on a hyssop branch lifted sour wine to Jesus' lips at the cross."],
         ["Idol", "Anything we love, trust, or serve in God's place. Idolatry is giving God's worship to something smaller."],
+        ["Image of God", "What mankind was made in: “God created man in his own image” (Genesis 1:27) — made to reflect God’s character and rule His world kindly. The image was marred by the fall, and is being renewed in Christ, “the image of the invisible God.”"],
         ["Immanuel", "\"God with us\" — the name Isaiah promised a virgin's son would bear (Isaiah 7:14), fulfilled in Jesus (Matthew 1:23). It is more than a name: it is the gospel in three syllables — God has not stayed far off; in Christ He has come to be with His people, and will never leave them."],
         ["Incense", "Fragrant spices burned on the altar of incense morning and evening, its rising smoke a picture of prayer: \"Let my prayer be counted as incense before you\" (Psalm 141:2). In Revelation, golden bowls of incense are \"the prayers of the saints,\" rising before God's throne."],
+        ["Inheritance", "What God gives His children as family wealth: not wages but a birthright — an inheritance “imperishable, undefiled, and unfading, kept in heaven for you” (1 Peter 1:4)."],
+        ["Iniquity", "Sin in its bent, twisted character — not only the wrong deed but the crookedness beneath it. “He was wounded for our transgressions; he was bruised for our iniquities” (Isaiah 53:5)."],
         ["Intercession", "Praying for someone else, pleading their case before God. Jesus Himself intercedes for us, always."],
         ["Jew", "A descendant of Abraham through Judah and Israel, one of God’s chosen people — the family through whom the Messiah came to the whole world."],
         ["Jubilee", "The fiftieth year in Israel's calendar (Leviticus 25), when debts were released, slaves freed, and land returned to its families — heralded by a trumpet on the Day of Atonement. Jesus opened His ministry by proclaiming \"the year of the LORD's favor,\" the true Jubilee of release for captives."],
+        ["Judgment seat", "The raised platform where a Roman judge sat — and Paul’s name for Christ’s tribunal, before which we must all appear. For believers it is where works are weighed and rewards given; the verdict of condemnation has already been settled at the cross."],
         ["Justified", "Declared righteous by God. When you believe in Jesus, God counts you as right with Him — as if you had never sinned — because Jesus paid it all."],
         ["Kingdom of God", "God's rule and reign — wherever Jesus is King. It came with Jesus, grows now in hearts, and will fill the earth when He returns."],
+        ["Kingdom of heaven", "Matthew’s name for the kingdom of God — the same reign, named with a Jewish reverence that avoided speaking God’s name lightly. “Heaven” here is a respectful way of saying “God.”"],
         ["Lamb of God", "John the Baptist's name for Jesus: \"Behold, the Lamb of God, who takes away the sin of the world!\" It joins the Passover lamb, Abraham's \"God will provide himself the lamb,\" and Isaiah's lamb led to slaughter — one sacrifice, once for all, in whom the book of Revelation sees a Lamb standing as though slain, forever."],
+        ["Lampstand", "The golden seven-branched menorah that burned day and night in the tabernacle and Temple, the only light in the holy place. In Revelation the lampstands are the churches, and Christ walks among His own lights."],
         ["Law", "God's instructions given through Moses in the Old Testament. The law shows us God's holiness and our sin, and points us to Jesus."],
+        ["Leaven", "The yeast that works silently through a whole lump of dough. Jesus used it both ways: the kingdom spreads like leaven hidden in flour — and hypocrisy spreads like “the leaven of the Pharisees,” to be watched and avoided."],
         ["Legion", "A Roman army unit of some five to six thousand soldiers — and the name the demons gave themselves in the man of the Gadarenes: \"My name is Legion, for we are many\" (Mark 5:9). Jesus sent them out with a word, and left the man clothed, seated, and in his right mind."],
         ["Leprosy", "A dreaded skin disease (a broader category in the Bible than modern leprosy) that made a person ceremonially unclean — cut off from worship and community, crying \"Unclean!\" Jesus touched lepers and cleansed them anyway, and sent the healed to the priests as a testimony."],
         ["Leviathan", "A mighty sea creature of poetry — the twisting serpent God will punish at the end (Isaiah 27:1), the dragon of Psalm 74, and the untamable beast of Job 41 whom only God can face. Crocodile, chaos-monster, or both, Leviathan stands for every power too great for man and nothing to God."],
+        ["Levite", "A member of Levi’s tribe, set apart to serve in the tabernacle and Temple — carrying, guarding, singing, assisting the priests. A Levite passes by on the other side in the parable of the Good Samaritan."],
+        ["Living water", "Spring water, moving and fresh, as against a stagnant cistern. Jesus offered the Samaritan woman “living water” that becomes “a well of water springing up to eternal life” — the Holy Spirit, given to everyone who believes."],
+        ["Locust", "The swarming grasshopper that eats a land bare — one of Egypt’s plagues and Joel’s invading army. John the Baptist ate locusts and wild honey in the wilderness, as poor men did."],
         ["Lord", "Master and ruler. Calling Jesus 'Lord' means He is God, He is in charge, and we gladly belong to Him."],
         ["Lord's Supper", "The meal Jesus gave His church on the night He was betrayed: bread, \"This is my body,\" and the cup, \"the new covenant in my blood.\" Paul calls it proclaiming the Lord's death until He comes; it is eaten together, in self-examination and gratitude, looking back at the cross and forward to the feast."],
         ["Love", "God's own nature — He IS love. Real love gives itself for the good of another, as Jesus did at the cross."],
+        ["Manger", "A feeding trough for animals. The newborn Jesus was laid in one in Bethlehem because there was no room at the inn — the sign the angel gave the shepherds: the bread of heaven, found where animals feed."],
         ["Manna", "The bread from heaven God fed Israel with for forty years in the wilderness — appearing fresh every morning, impossible to hoard."],
         ["Maranatha", "An Aramaic prayer meaning \"Our Lord, come!\" (or \"Our Lord has come\"), left untranslated by Paul at the end of 1 Corinthians and echoed in Revelation's \"Come, Lord Jesus.\" It is the church's oldest watchword of hope: everything held, everything endured, facing the door."],
         ["Martyr", "A witness for Jesus who would rather die than deny Him. Stephen was the first; the church has honored their courage ever since."],
         ["Mediator", "A go-between who brings two parties together. Moses mediated the old covenant at Sinai; \"there is one God, and one mediator between God and men, the man Christ Jesus\" (1 Timothy 2:5) — fully God and fully man, He alone can lay a hand on both."],
+        ["Meekness", "Strength held gently: not weakness but power under God’s control. Moses was “very meek, above all men”; the meek, Jesus promises, will inherit the earth; and He invites the weary to learn meekness from Him."],
         ["Mercy", "God NOT giving us the punishment we deserve. Grace gives us good we don't deserve; mercy withholds the bad we do."],
         ["Mercy seat", "The pure gold lid of the Ark of the Covenant, flanked by golden cherubim, where God's presence rested and where the high priest sprinkled blood once a year on the Day of Atonement. Paul's word for Jesus' sacrifice points back here (Romans 3:25): the place where God meets sinners is now a Person."],
         ["Messiah", "Hebrew for 'the Anointed One' — God's promised King and Savior. In Greek the word is 'Christ.' Jesus is the Messiah."],
+        ["Millstone", "One of the great round stones that grind grain — the upper one turned by hand or by a donkey. Jesus’ warning is unforgettable: better a great millstone hung around the neck and drowned in the sea than to stumble one of His little ones."],
         ["Miracle", "An act of God beyond the ordinary course of nature — a sign pointing to who Jesus is and what His kingdom is like."],
+        ["Mite", "The smallest coin in Jesus’ world — two mites were all the poor widow put into the Temple treasury, and Jesus said she had given more than all the rich: everything she had to live on."],
+        ["Mount of Olives", "The ridge east of Jerusalem across the Kidron valley, where Jesus often withdrew, taught of His return, and prayed in Gethsemane, and from which He ascended — and where His feet will stand when He comes again (Zechariah 14:4)."],
         ["Mustard seed", "The tiny seed Jesus used twice: faith \"like a grain of mustard seed\" moves mountains, and God's kingdom itself is mustard-like — beginning smaller than every seed, ending as a tree where the birds come and nest. God's great things habitually start embarrassingly small."],
+        ["Myrrh", "A costly, bitter resin used in holy anointing oil, in perfumes, and in burial spices. The wise men brought it to Jesus as a gift; Nicodemus brought it to His tomb — kingship and suffering in one present."],
+        ["Mystery", "In Paul’s letters, not a puzzle but a secret God kept hidden for ages and has now revealed: Christ in you, the hope of glory — and the gospel going out to Jew and Gentile together in one body."],
+        ["Nard", "A precious perfumed oil from a Himalayan plant — “pure nard” was in the alabaster jar Mary of Bethany poured on Jesus’ feet, worth a year’s wages, filling the house with its fragrance."],
+        ["Nazarene", "One from Nazareth. “He will be called a Nazarene” (Matthew 2:23) sums up the prophets’ picture of a despised, lowly Messiah — Nathanael’s question hangs over it: “Can anything good come out of Nazareth?”"],
         ["Nazirite", "A man or woman under a special vow to God (Numbers 6): no wine, no haircut, no contact with the dead, for a set season or for life. Samson and Samuel were Nazirites from birth. The vow said with the whole body: wholly the LORD's."],
+        ["New moon", "The first day of each Hebrew month, marked with trumpets and sacrifices — a monthly Sabbath of sorts. Paul warns believers not to be judged over new moons and feast days: they were shadows; the substance is Christ."],
+        ["Oath", "A solemn promise calling God to witness. God Himself swore an oath to Abraham — coming down to our weakness so we would be sure — but Jesus teaches His people a plainness beyond oaths: let your “yes” be yes."],
+        ["Obedience", "Hearing that turns into doing. “To obey is better than sacrifice,” Samuel told Saul; Jesus was “obedient to the point of death,” and those who love Him, He says, will keep His commandments — gladly, as children, not slaves."],
         ["Offering", "A gift presented to God in worship. Under the old covenant these were animals and grain; now we offer Him our money, our work, our very lives."],
+        ["Omer", "A small dry measure — about two quarts. Israel gathered an omer of manna per person each morning: exactly enough, no hoarding, a daily lesson in trusting God for daily bread."],
         ["Parable", "A story Jesus told from everyday life — seeds, sheep, lost coins — carrying a truth about God's kingdom inside it."],
+        ["Paradise", "A Persian word for a king’s walled garden, used of heaven itself. Jesus promised the dying thief, “Today you will be with me in Paradise”; Paul was caught up to it; and its tree of life stands in Revelation’s city."],
         ["Passover", "The feast remembering how God rescued Israel from Egypt, when the lamb's blood covered His people's homes. Jesus is our Passover Lamb."],
+        ["Patience", "Long-suffering: the strength to wait and endure without giving up or giving way. God is patient with sinners, not wishing any to perish; and the farmer waiting for his crop is James’s picture of how we wait for the Lord’s coming."],
         ["Peace", "Wholeness and rest with God — the quiet heart of someone whose sins are forgiven and whose life is in God's hands."],
+        ["Pearl", "The jewel of the ancient world. Jesus likens the kingdom to a pearl of great price worth selling everything for, and warns against casting pearls before swine — holy things offered to those who can only trample them."],
         ["Pentecost", "The feast fifty days after Passover when the Holy Spirit came upon the church in wind and fire (Acts 2) — the church’s birthday."],
         ["Persecution", "Being hated, harmed, or hunted for following Jesus. He told us to expect it — and to rejoice when it comes for His sake."],
         ["Pharisee", "A member of the strictest Jewish party in Jesus' day — devoted to the Law and its traditions, and respected by the people. Jesus honored their zeal for Scripture but warned against their pride and outward show; a few of them, like Nicodemus and Paul, became His followers."],
+        ["Phylacteries", "Small leather boxes holding written Scripture, worn on the forehead and arm in prayer, from the command to bind God’s words there (Deuteronomy 6). Jesus condemned making them wide for show — the practice was fine; the pride was not."],
+        ["Plumb line", "A mason’s cord with a weight, used to check whether a wall stands true. In Amos 7, God sets a plumb line among His people: they have leaned too far from upright to stand."],
         ["Prayer", "Talking with God — honestly, about everything, as Jesus taught us: as children to a Father who hears."],
         ["Priest", "One appointed to stand between God and people: offering sacrifices and praying for them. Jesus is our great High Priest forever, and all His people are called a royal priesthood."],
+        ["Priesthood", "The order of those who stand between God and people. Aaron’s line served the old covenant; Christ is high priest forever after Melchizedek’s order; and all believers are made “a royal priesthood” — priests who offer spiritual sacrifices and declare God’s praises."],
         ["Prophet", "A person God sends to speak His words to people — calling them back to God and, often, pointing ahead to Jesus."],
         ["Providence", "God's quiet rule over all things — He works every event, even the hard ones, together for the good of His people and for His purposes."],
         ["Psalm", "A sacred song or poem to God. There are 150 in the book of Psalms — Israel’s hymnbook, and still the church’s prayer book today."],
+        ["Purification", "Cleansing, by water or by blood, that made a person or thing fit to draw near to God. The old rites purified the flesh; the blood of Christ, Hebrews says, purifies the conscience itself."],
+        ["Quail", "The small game birds God drove in from the sea to feed Israel in the wilderness — a mercy the first time, and a judgment the second, when the people’s craving came with complaint."],
         ["Rabbi", "A Hebrew title meaning \"my teacher\" or \"my master,\" used for respected teachers of the Law — and for Jesus, by disciples, crowds, and even opponents. Jesus is the church's one Rabbi in the deepest sense: \"You have one teacher, and you are all brothers\" (Matthew 23:8)."],
         ["Ransom", "The price paid to set a captive free. Jesus said He came ‘to give his life as a ransom for many’ — we are the freed captives."],
+        ["Reconciliation", "Enemies made friends again. Through Christ’s death God reconciled the world to Himself, “not counting their trespasses against them” — and gave His people the ministry and the message of reconciliation to carry."],
         ["Redeem", "To buy back. Jesus redeemed us — He paid the price (His own life) to free us from sin and make us God's own."],
+        ["Redemption", "The buying-back of something enslaved or lost, at a price. Israel was redeemed from Egypt by God’s outstretched arm; we are redeemed not with silver or gold, but with the precious blood of Christ (1 Peter 1)."],
         ["Remnant", "The small, faithful part of God’s people that He preserves through every age of falling away and judgment. God always keeps a remnant."],
         ["Repentance", "Turning around: changing your mind about sin, turning away from it and toward God. Its fruit is a changed life."],
         ["Resurrection", "Being raised from the dead, body and all. Jesus rose first; everyone who belongs to Him will rise too."],
         ["Righteousness", "Being right with God and living rightly. We receive righteousness as a gift through Jesus, then grow in it day by day."],
         ["Sabbath", "The seventh day, set apart by God for rest and worship — a gift reminding us that God, not our work, holds our lives."],
+        ["Sackcloth", "Coarse cloth woven from goat hair, worn in mourning, grief, and repentance — Nineveh put even its cattle in it. To sit in sackcloth and ashes was to say with the whole body: we are sorry, we are dust."],
         ["Sacrifice", "An offering given to God. In the Old Testament, animals died in the sinner's place; Jesus is the final, once-for-all sacrifice."],
+        ["Sadducee", "The wealthy, priestly party of Jesus’ day, who accepted only the written Law and denied the resurrection, angels, and spirits. The Sadducees helped bring Jesus to trial; their “no resurrection” riddle gave Him an occasion to teach it plainly."],
         ["Saint", "A holy one — in the New Testament, simply every believer, set apart for God by Jesus. Saints are not a special class; they are the whole family."],
         ["Salvation", "Being rescued by God — from sin, death, and judgment — and brought into His family forever. It is all by grace, through faith in Jesus."],
         ["Samaritan", "An inhabitant of Samaria, the land between Galilee and Judea, whose people mixed Israelite descent with foreign settlers and worshiped on Mount Gerizim. Jews and Samaritans despised each other — which is why Jesus' parable of the Good Samaritan, and His kindness to the Samaritan woman, shocked their hearers."],
@@ -7050,28 +7308,57 @@
         ["Scapegoat", "On the Day of Atonement, one goat was sacrificed and a second — the scapegoat — had Israel's sins confessed over its head and was sent bearing them into the wilderness (Leviticus 16). It pictures what Christ does: God lays our sin on another, and it is carried away, remembered no more."],
         ["Scribe", "An expert who copied Scripture by hand and taught the Law. In Jesus’ day the scribes were respected — and often His sharpest opponents."],
         ["Scripture", "God's written word, the Bible itself — breathed out by God and given to teach us, correct us, and train us in doing right."],
+        ["Scroll", "The Bible’s own form for most of its history: a long sheet of papyrus or parchment, rolled on rods, read aloud in synagogue and church. Jesus unrolled Isaiah’s scroll in Nazareth and read, “The Spirit of the Lord is on me.”"],
+        ["Sea of Galilee", "The great freshwater lake of northern Israel — also called Gennesaret and Tiberias — on whose shores Jesus called fishermen, calmed a storm with a word, and cooked breakfast for His disciples after the resurrection."],
         ["Selah", "A musical marking found 71 times in the Psalms and three times in Habakkuk. Its exact meaning is uncertain — likely a pause, a lift of the voice, or an instrumental break: an invitation to stop and let what was just sung sink in."],
         ["Seraphim", "The burning ones: six-winged angels Isaiah saw above God's throne, crying \"Holy, holy, holy\" and veiling their faces and feet (Isaiah 6). One touched Isaiah's lips with a coal from the altar, and his guilt was taken away — heaven's fire, sent to cleanse rather than consume."],
+        ["Serpent", "The snake — in Eden, the crafty tempter through whom sin entered; yet God also made the bronze serpent whose lifting up healed snake-bitten Israel, and Jesus took it as a picture of His own lifting up on the cross."],
+        ["Shekel", "Israel’s standard weight and coin — about 11 grams of silver. The Temple tax was a half-shekel per man; Judas was paid thirty pieces of silver — the price of a slave in the Law."],
         ["Sheol", "The Hebrew name for the realm of the dead — the grave's shadowy depth where all the dead went, righteous and wicked alike. The Old Testament only glimpses beyond it (\"You will not abandon my soul to Sheol\"), until resurrection morning: death and Sheol themselves are thrown into the lake of fire (Revelation 20)."],
         ["Showbread", "Twelve loaves laid fresh every Sabbath on the golden table in the tabernacle and temple — \"the bread of the Presence,\" bread set before God's face continually. David once ate it in need, and Jesus cited that day to show that mercy outranks ritual scruple."],
+        ["Signet", "A seal ring engraved with its owner’s mark, pressed into clay or wax to sign and secure. Pharaoh gave Joseph his signet; God calls Zerubbabel His signet ring — the kingly line sealed in God’s hand."],
         ["Sin", "Anything we think, say, or do against God's will — and the bent toward it in every human heart. Sin is why we need a Savior."],
+        ["Sin offering", "The sacrifice for sins committed unintentionally and for cleansing from defilement (Leviticus 4–5). Paul reaches for its world when he writes of Christ: God made Him who knew no sin to be sin on our behalf, so that in Him we might become the righteousness of God."],
+        ["Sling", "The shepherd’s weapon of woven cords that whirls a stone with deadly aim — David’s weapon against Goliath, chosen over Saul’s armor: five smooth stones, and complete trust."],
+        ["Sojourner", "A resident foreigner — one who lives in a land not his own, under its protection but without its inheritance. Israel was told to love the sojourner, “for you were sojourners in Egypt”; and God’s people still call themselves sojourners whose citizenship is in heaven."],
+        ["Sorcery", "Magic arts — potions, spells, and traffic with spirits — listed by Paul among the works of the flesh and barred from God’s city. Simon the sorcerer tried to buy the Holy Spirit with money, and heard Peter’s rebuke."],
         ["Soul", "The inner, living you — your mind, heart, and will — the part of you made for God and made to live forever."],
+        ["Steward", "The trusted servant who manages another’s household and goods, and must give an account. Jesus’ parables make stewards of us all: it is required of stewards that they be found faithful."],
+        ["Stumbling block", "Anything that trips another into sin or unbelief. Paul warns that even a Christian freedom — food, drink, a strong opinion — becomes a stumbling block when it wounds a weaker brother; love, he says, would rather give the thing up."],
+        ["Sycamore", "A broad fig tree of the lowlands, easy to climb — Zacchaeus climbed one to see Jesus over the crowd. Amos was a dresser of sycamore figs before God called him."],
         ["Synagogue", "The local Jewish house of prayer and Scripture reading in every town — where Jesus often taught, and where Paul preached first in each new city."],
         ["Tabernacle", "God’s tent among Israel in the wilderness before the Temple was built — a movable holy place where His presence lived in their midst."],
         ["Talent", "A huge unit of money — a weight of silver worth roughly twenty years of a laborer's wages. In Jesus' parables a talent is a fortune entrusted to a servant; one man buried his master's talent in the ground and heard the saddest verdict: \"You wicked and slothful servant.\" (Our word \"talent\" for abilities descends from this parable.)"],
         ["Temple", "The house of God in Jerusalem, where Israel worshiped and offered sacrifices. Now God's Spirit lives in His people — we are His temple."],
         ["Temptation", "Being drawn toward sin. God never tempts anyone to evil; when we are tempted, He always makes a way out."],
         ["Testament", "Another word for covenant. The Old Testament is God's dealings with Israel before Jesus; the New Testament is the good news of Jesus and His church."],
+        ["Testimony", "A witness’s solemn declaration of what is true. The tabernacle was “the tent of testimony,” the ark held “the testimony” of the covenant, and Revelation’s conquerors overcome “by the word of their testimony.”"],
+        ["Threshing floor", "The flat, hard, open place where grain was beaten and winnowed — often on a hilltop for the wind. David bought Araunah’s threshing floor for an altar; it became the site of Solomon’s Temple."],
+        ["Tithe", "A tenth, given to God. Abraham gave a tenth to Melchizedek; the Law assigned tithes to the Levites, the poor, and the feasts. Jesus affirms tithing while insisting the weightier matters — justice, mercy, faithfulness — must never be neglected."],
         ["Tongues", "Languages. At Pentecost the Spirit gave the apostles speech in real languages they had never learned, so every nation heard the gospel in its own tongue. Paul also describes a gift of tongues needing interpretation in church; his rule is order: intelligible words that build others up."],
         ["Transfiguration", "The moment on the mountain when Jesus shone with heaven’s glory before Peter, James, and John, and the Father’s voice said, ‘Listen to him.’"],
         ["Tribulation", "Great trouble and suffering. Jesus promised His followers tribulation in this world — and promised, in the same breath, that He has overcome the world."],
         ["Trinity", "The one true God is three Persons — Father, Son, and Holy Spirit — one God, forever, in perfect love."],
+        ["Unclean", "Ceremonially unfit to join in worship — through disease, decay, death’s touch, or certain foods. Jesus turned the whole idea inside out: it is what comes out of the heart that defiles a person, and in Him the unclean are touched and made clean."],
+        ["Unleavened Bread", "Bread made without yeast, baked in haste the night Israel fled Egypt — and eaten through the seven days of the Feast of Unleavened Bread that follows Passover. Paul takes up the picture: purge out the old leaven of malice; Christ, our Passover, has been sacrificed."],
+        ["Veil", "The great curtain that hid the Most Holy Place in tabernacle and Temple — only the high priest passed it, once a year, with blood. At Jesus’ death it was torn in two from top to bottom: the way into God’s presence stands open."],
+        ["Vengeance", "Payback — which God reserves for Himself: “Vengeance is mine; I will repay, says the Lord.” Believers are forbidden it and commanded the opposite: overcome evil with good, and leave room for God’s just wrath."],
         ["Vine", "Israel's emblem and Jesus' great \"I am\": \"I am the true vine, and my Father is the vinedresser.\" Israel as God's vine often bore wild grapes; in Christ the true Vine, branches bear fruit by abiding — remaining — in Him, apart from whom we can do nothing."],
         ["Virgin", "Mary, the mother of Jesus, was a virgin when the Holy Spirit caused her to conceive — so Jesus is both truly God’s Son and truly human, born of a woman."],
+        ["Vow", "A solemn promise made to God — Hannah’s, the Nazirite’s, the returned exiles’. Scripture treats vows gravely: better not to vow than to vow and not pay. God never requires them, but He hears them."],
+        ["Watchman", "The sentinel on the city wall who blows the trumpet at approaching danger. Ezekiel was made a watchman for Israel — to warn was his duty, and the blood of the unwarned would be on his hands."],
+        ["Wilderness", "The dry, trackless country between Egypt and Canaan where Israel wandered forty years — a place of testing, hunger, and manna; where John preached and Jesus was tempted; where God speaks tenderly to His bride (Hosea 2)."],
+        ["Wineskin", "A bottle made of a whole animal skin, which stretched as new wine fermented. Jesus’ picture: new wine bursts old skins — His new covenant life cannot be poured into the brittle forms of the old order."],
+        ["Wisdom", "The skill of living well under God: seeing life as He sees it and walking accordingly. It begins with the fear of the LORD, cries aloud in Proverbs’ streets as a woman calling, and is found fully in Christ, who became our wisdom from God."],
+        ["Wise men", "The Magi: learned men from the East — astronomers, counselors of kings — who followed a star to Bethlehem and worshiped the child Jesus with gold, frankincense, and myrrh. Scripture never says there were three, or that they were kings."],
         ["Witness", "Someone who tells what they have seen and heard. Every Christian is Christ’s witness — with words, and with a life that backs them."],
+        ["Word of God", "God’s speech: by it the worlds were made; through the prophets it came to Israel; in Scripture it is written for us; and supremely, Jesus Himself is the Word made flesh. It is living and active, sharper than any two-edged sword."],
+        ["Wormwood", "A bitter desert plant, and Scripture’s taste-word for bitterness and judgment. In Revelation a burning star named Wormwood falls and makes a third of the waters bitter."],
         ["Worship", "Giving God the worth He deserves — with songs, prayers, obedience, and our whole lives offered to Him."],
         ["Wrath", "God's settled, holy anger against evil. It is not a temper tantrum; it is the judgment sin deserves — which Jesus bore for us at the cross."],
         ["Yoke", "The wooden frame joining oxen to work together. Scripture uses it for slavery and oppression (\"the yoke of Babylon\") and for Jesus' own gentle rule: \"Take my yoke upon you, and learn from me... my yoke is easy, and my burden is light\" — discipleship as shared labor with a kind Master."],
+        ["Zeal", "Burning earnestness for a cause. Jehu had it falsely; Paul had it for the Law before Christ re-aimed it; and of Jesus it is written, “Zeal for your house will consume me.” Zeal is fire — blessed when God lights it and aims it."],
+        ["Zealot", "A member of the Jewish party sworn to throw off Rome by force if need be. Simon the Zealot was one of the Twelve — proof that Jesus’ kingdom gathered even men whose politics had been revolution, and gave them a better war."],
         ["Zion", "The hill of Jerusalem where God’s Temple stood — in Scripture the name grows to mean God’s city, God’s people, and finally the heavenly Jerusalem to come."]
       ];
       function renderGlossary() {
@@ -7127,6 +7414,499 @@
       }
       try { $("explore-btn").addEventListener("click", openExplore); } catch (e) {}
       try { $("explore-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- explore: maps, illustrations, timeline, who's who ----
+         Four more doors on the Explore page. The pictures are
+         public-domain files that live beside the app and load only
+         when their page is opened — they are never part of the
+         offline install. Passage chips open the very chapters they
+         name, the way cross-reference chips do in the reader. */
+      function openFullImage(src, caption) {
+        var ov = $("fs-overlay"), im = $("fs-img");
+        if (!ov || !im) return;
+        im.src = src;
+        im.alt = caption || "";
+        $("fs-cap").textContent = caption || "";
+        ov.hidden = false;
+      }
+      function closeFullImage() {
+        var ov = $("fs-overlay"), im = $("fs-img");
+        if (ov) ov.hidden = true;
+        if (im) im.removeAttribute("src");
+      }
+      try { $("fs-close").addEventListener("click", closeFullImage); } catch (e) {}
+      try { $("fs-overlay").addEventListener("click", function (ev) { if (ev.target === $("fs-overlay")) closeFullImage(); }); } catch (e) {}
+      function passageChip(bi, ci, label) {
+        var chip = el("button", "xref-chip", label);
+        chip.type = "button";
+        chip.addEventListener("click", function () { openChapter(bi, ci); });
+        return chip;
+      }
+      function galleryCard(item) {
+        var card = el("div", "gal-card");
+        card.appendChild(el("h3", "gal-title", item.title));
+        if (item.ctx) card.appendChild(el("p", "gal-ctx", item.ctx));
+        var img = document.createElement("img");
+        img.className = "gal-img";
+        img.loading = "lazy";
+        img.src = item.img;
+        img.alt = item.title;
+        img.addEventListener("click", function () { openFullImage(item.img, item.title); });
+        card.appendChild(img);
+        if (item.credit) card.appendChild(el("p", "gal-credit", item.credit));
+        if (item.chips && item.chips.length) {
+          var row = el("div", "gal-chips");
+          item.chips.forEach(function (c) { row.appendChild(passageChip(c[0], c[1], c[2])); });
+          card.appendChild(row);
+        }
+        return card;
+      }
+
+      /* ---- bible maps ---- */
+      var MAPS = [
+        { title: "The Exodus and the Wilderness Wanderings",
+          ctx: "Heinrich Bünting's map of 1581 follows Israel's journey out of Egypt — the sea crossing, Mount Sinai, and the long way through the wilderness toward Canaan.",
+          img: "assets/map-exodus.jpg",
+          credit: "Heinrich Bünting, 1581 — public domain, via Wikimedia Commons.",
+          chips: [[1, 13, "Exodus 14"], [1, 18, "Exodus 19"], [3, 32, "Numbers 33"], [4, 33, "Deuteronomy 34"]] },
+        { title: "The Land of Israel in the Old Testament",
+          ctx: "Tobias Lotter's map of 1762 shows the promised land divided among the twelve tribes of Israel, from Dan in the north to Beersheba in the south.",
+          img: "assets/map-tribes.jpg",
+          credit: "Tobias Conrad Lotter, 1762 — public domain, via Wikimedia Commons.",
+          chips: [[5, 12, "Joshua 13"], [5, 17, "Joshua 18"], [10, 11, "1 Kings 12"]] },
+        { title: "Jerusalem in the Time of Jesus",
+          ctx: "Athanase Coquerel's plan of 1843 draws the city as it stood in Jesus' day: the Temple courts, the Antonia fortress, the walls, and the Mount of Olives across the Kidron valley. (Its labels are in French.)",
+          img: "assets/map-jerusalem.jpg",
+          credit: "Athanase Josué Coquerel, 1843 — public domain, via Wikimedia Commons.",
+          chips: [[39, 20, "Matthew 21"], [41, 18, "Luke 19"], [42, 1, "John 2"]] },
+        { title: "Israel in the Time of Jesus",
+          ctx: "Kent and Madsen's map shows Palestine in the time of Jesus (about 4 BC–AD 30): Galilee where He taught, Samaria, Judea and Jerusalem — with the Temple drawn in the corner.",
+          img: "assets/map-israel-jesus.jpg",
+          credit: "Kent & Madsen, Historical Maps (1912) — public domain, via Wikimedia Commons.",
+          chips: [[39, 3, "Matthew 4"], [41, 3, "Luke 4"], [42, 3, "John 4"]] },
+        { title: "Paul's Missionary Journeys",
+          ctx: "The American Tract Society's map traces all four of Paul's journeys — through Cyprus and Asia, into Greece, and at last by ship to Rome.",
+          img: "assets/map-paul-journeys.jpg",
+          credit: "American Tract Society — public domain, via Wikimedia Commons.",
+          chips: [[43, 12, "Acts 13"], [43, 15, "Acts 16"], [43, 17, "Acts 18"], [43, 26, "Acts 27"]] },
+        { title: "The Roman World of the New Testament",
+          ctx: "Johnson's atlas map of 1862 shows the Roman Empire at its widest — the one world, under one emperor, into which the gospel first went out.",
+          img: "assets/map-roman-world.jpg",
+          credit: "Johnson & Ward, 1862 — public domain, via Wikimedia Commons.",
+          chips: [[41, 1, "Luke 2"], [43, 1, "Acts 2"], [65, 0, "Revelation 1"]] }
+      ];
+      var mapsRendered = false;
+      function renderMaps() {
+        if (mapsRendered) return;
+        mapsRendered = true;
+        var body = $("maps-body");
+        MAPS.forEach(function (m) { body.appendChild(galleryCard(m)); });
+      }
+      function openMaps() {
+        renderMaps();
+        showView("view-maps");
+        setPageMeta("Bible Maps — World English Bible", DEFAULT_DESC);
+      }
+      try { $("maps-btn").addEventListener("click", openMaps); } catch (e) {}
+      try { $("maps-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- bible illustrations: Gustave Doré, 1866 ---- */
+      var PLATES = [
+        { title: "The Creation of Light", img: "assets/dore-creation.jpg", chips: [[0, 0, "Genesis 1"]] },
+        { title: "The Flood", img: "assets/dore-flood.jpg", chips: [[0, 6, "Genesis 7"]] },
+        { title: "Abraham Offers Isaac", img: "assets/dore-abraham-isaac.jpg", chips: [[0, 21, "Genesis 22"]] },
+        { title: "The Egyptians Drown in the Sea", img: "assets/dore-red-sea.jpg", chips: [[1, 13, "Exodus 14"]] },
+        { title: "The Giving of the Law on Mount Sinai", img: "assets/dore-law-sinai.jpg", chips: [[1, 18, "Exodus 19"]] },
+        { title: "Joshua Burns the Town of Ai", img: "assets/dore-joshua-ai.jpg", chips: [[5, 7, "Joshua 8"]] },
+        { title: "Samson Slays the Lion", img: "assets/dore-samson-lion.jpg", chips: [[6, 13, "Judges 14"]] },
+        { title: "David Slays Goliath", img: "assets/dore-david-goliath.jpg", chips: [[8, 16, "1 Samuel 17"]] },
+        { title: "The Judgment of Solomon", img: "assets/dore-solomon-judgment.jpg", chips: [[10, 2, "1 Kings 3"]] },
+        { title: "Elijah Taken Up to Heaven", img: "assets/dore-elijah-chariot.jpg", chips: [[11, 1, "2 Kings 2"]] },
+        { title: "Daniel in the Lions' Den", img: "assets/dore-daniel-lions.jpg", chips: [[26, 5, "Daniel 6"]] },
+        { title: "Jonah Preaches to the Ninevites", img: "assets/dore-jonah-nineveh.jpg", chips: [[31, 2, "Jonah 3"]] },
+        { title: "The Birth of Jesus", img: "assets/dore-nativity.jpg", chips: [[41, 1, "Luke 2"]] },
+        { title: "The Baptism of Jesus", img: "assets/dore-baptism.jpg", chips: [[39, 2, "Matthew 3"]] },
+        { title: "The Sermon on the Mount", img: "assets/dore-sermon-mount.jpg", chips: [[39, 4, "Matthew 5"]] },
+        { title: "The Raising of Lazarus", img: "assets/dore-lazarus.jpg", chips: [[42, 10, "John 11"]] },
+        { title: "The Last Supper", img: "assets/dore-last-supper.jpg", chips: [[40, 13, "Mark 14"]] },
+        { title: "Jesus in Gethsemane", img: "assets/dore-gethsemane.jpg", chips: [[39, 25, "Matthew 26"]] },
+        { title: "The Crucifixion", img: "assets/dore-crucifixion.jpg", chips: [[41, 22, "Luke 23"]] },
+        { title: "The Resurrection Morning", img: "assets/dore-resurrection.jpg", chips: [[39, 27, "Matthew 28"]] },
+        { title: "On the Road to Emmaus", img: "assets/dore-emmaus.jpg", chips: [[41, 23, "Luke 24"]] },
+        { title: "The Day of Pentecost", img: "assets/dore-pentecost.jpg", chips: [[43, 1, "Acts 2"]] },
+        { title: "Paul Addresses the Crowd", img: "assets/dore-paul-crowd.jpg", chips: [[43, 21, "Acts 22"]] },
+        { title: "The New Jerusalem", img: "assets/dore-new-jerusalem.jpg", chips: [[65, 20, "Revelation 21"]] }
+      ];
+      var platesRendered = false;
+      function renderPlates() {
+        if (platesRendered) return;
+        platesRendered = true;
+        var body = $("plates-body");
+        PLATES.forEach(function (p) { body.appendChild(galleryCard(p)); });
+      }
+      function openIllustrations() {
+        renderPlates();
+        showView("view-illustrations");
+        setPageMeta("Bible Illustrations — World English Bible", DEFAULT_DESC);
+      }
+      try { $("illustrations-btn").addEventListener("click", openIllustrations); } catch (e) {}
+      try { $("illustrations-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- bible timeline ---- */
+      var ERAS = [
+        { name: "Creation and the Patriarchs", dates: "From the beginning to about 2000 BC",
+          text: "God creates all things, and after the flood and Babel He calls one man, Abraham, and promises him a family, a land, and blessing for every nation on earth. The promise passes to Isaac, to Jacob, and to Joseph, who carries the family down into Egypt.",
+          books: [0, 17] },
+        { name: "Exodus and the Wilderness", dates: "About the 1400s BC",
+          text: "God hears His people's groaning in Egypt and brings them out with a mighty hand — through the sea, to Sinai, and into covenant. Israel wanders forty years in the wilderness while God feeds them, teaches them, and makes them His own nation.",
+          books: [1, 2, 3, 4] },
+        { name: "Conquest and the Judges", dates: "About 1400 to 1050 BC",
+          text: "Under Joshua, Israel enters the promised land. Then comes the long, repeating story of the judges: the people fall away, cry out in trouble, and God raises up a deliverer — again and again, His mercy outlasting their memory.",
+          books: [5, 6, 7] },
+        { name: "The United Kingdom", dates: "About 1050 to 930 BC",
+          text: "Israel asks for a king. Saul fails; David is chosen — a shepherd who slays Goliath, unites the tribes, and brings the ark to Jerusalem — and Solomon builds the Temple and asks God for wisdom. These are the golden years, and the Psalms are their songbook.",
+          books: [8, 9, 10, 18, 19, 20, 21] },
+        { name: "The Divided Kingdom and Exile", dates: "About 930 to 538 BC",
+          text: "The kingdom tears in two. Prophets call both halves back to God — Elijah on Carmel, Isaiah in the Temple, Jeremiah weeping over Jerusalem — but the north falls to Assyria and Judah is carried off to Babylon. Even in exile, God speaks comfort and promise.",
+          books: [11, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35] },
+        { name: "The Return", dates: "About 538 to 430 BC",
+          text: "After seventy years, a remnant comes home. The Temple is rebuilt, the walls of Jerusalem rise again under Nehemiah, Ezra reads the Law aloud to the people, and the last prophets speak — until the Old Testament closes, watching for the One to come.",
+          books: [12, 13, 14, 15, 16, 36, 37, 38] },
+        { name: "Between the Testaments", dates: "About 430 BC to the birth of Jesus",
+          text: "Four quiet centuries: empires rise and fall — Persia, Greece, Rome — and no new book of Scripture is written. But the promises are not forgotten. The Old Testament's last page looks for a messenger to prepare the way of the Lord, and the New Testament opens with that hope still warm.",
+          books: [38, 39] },
+        { name: "The Life of Jesus", dates: "About 4 BC to AD 30",
+          text: "The Word becomes flesh. Jesus is born in Bethlehem, baptized in the Jordan, and goes about Galilee and Judea teaching, healing, and gathering disciples — until He is crucified outside Jerusalem, buried, and raised on the third day, alive forevermore.",
+          books: [39, 40, 41, 42] },
+        { name: "The Early Church", dates: "About AD 30 to 100",
+          text: "The risen Jesus pours out His Spirit at Pentecost, and the good news runs: Jerusalem, Samaria, Antioch, Ephesus, Corinth, Rome. Apostles preach, churches are planted, letters are written to teach and comfort them — and the book closes with a vision of the end: a new heaven, a new earth, and the Lamb on the throne.",
+          books: [43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 57, 58, 59, 61, 65] }
+      ];
+      var timelineRendered = false;
+      function renderTimeline() {
+        if (timelineRendered) return;
+        timelineRendered = true;
+        var body = $("timeline-body");
+        ERAS.forEach(function (era) {
+          var box = el("div", "tl-era");
+          box.appendChild(el("h3", "tl-name", era.name));
+          box.appendChild(el("p", "tl-dates", era.dates));
+          box.appendChild(el("p", "tl-text", era.text));
+          var row = el("div", "tl-books");
+          era.books.forEach(function (bi) {
+            var chip = el("button", "xref-chip", META[bi][0]);
+            chip.type = "button";
+            chip.addEventListener("click", function () { openChapters(bi); });
+            row.appendChild(chip);
+          });
+          box.appendChild(row);
+          body.appendChild(box);
+        });
+      }
+      function openTimeline() {
+        renderTimeline();
+        showView("view-timeline");
+        setPageMeta("Bible Timeline — World English Bible", DEFAULT_DESC);
+      }
+      try { $("timeline-btn").addEventListener("click", openTimeline); } catch (e) {}
+      try { $("timeline-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+
+      /* ---- who's who ----
+         The people of the Bible, in the Bible Words pattern: a
+         filter box, a name, one line of who they are, and chips
+         that open the chapters where their story lives. */
+      var PEOPLE = [
+        ["Adam", "The first man, formed from the dust and placed in Eden; through him sin and death entered the world.", [[0, 1, "Genesis 2"], [0, 2, "Genesis 3"]]],
+        ["Eve", "The first woman, Adam's wife and the mother of all living; deceived by the serpent, yet named in the promise of a coming seed.", [[0, 2, "Genesis 3"], [0, 3, "Genesis 4"]]],
+        ["Enoch", "The man who walked with God — and was not, for God took him; he never saw death.", [[0, 4, "Genesis 5"], [57, 10, "Hebrews 11"]]],
+        ["Noah", "A righteous man in a corrupt age; he built the ark and carried his family and the animals through the flood.", [[0, 5, "Genesis 6"], [0, 8, "Genesis 9"]]],
+        ["Melchizedek", "King of Salem and priest of God Most High, who blessed Abraham — a mystery figure with no beginning or end recorded, a picture of Christ's priesthood.", [[0, 13, "Genesis 14"], [18, 109, "Psalm 110"]]],
+        ["Abraham", "The father of all who believe: called out of Ur, he believed God's promise and it was counted to him as righteousness.", [[0, 11, "Genesis 12"], [0, 21, "Genesis 22"], [44, 3, "Romans 4"]]],
+        ["Sarah", "Abraham's wife, who laughed at God's promise — and then laughed with joy when Isaac was born in her old age.", [[0, 17, "Genesis 18"], [0, 20, "Genesis 21"]]],
+        ["Hagar", "Sarah's Egyptian servant, mother of Ishmael; alone in the wilderness she named God 'the God who sees me.'", [[0, 15, "Genesis 16"], [0, 20, "Genesis 21"]]],
+        ["Isaac", "The child of promise, Abraham's son, offered on Moriah and spared; father of Jacob and Esau.", [[0, 21, "Genesis 22"], [0, 25, "Genesis 26"]]],
+        ["Rebekah", "Isaac's wife, chosen at the well; mother of Jacob and Esau, she favored Jacob and helped him win the blessing.", [[0, 23, "Genesis 24"], [0, 26, "Genesis 27"]]],
+        ["Jacob", "The schemer who wrestled with God and would not let go; renamed Israel, father of the twelve tribes.", [[0, 27, "Genesis 28"], [0, 31, "Genesis 32"]]],
+        ["Joseph", "Jacob's beloved son, sold by his brothers, who rose in Egypt and saved them all: 'You meant evil against me, but God meant it for good.'", [[0, 36, "Genesis 37"], [0, 44, "Genesis 45"]]],
+        ["Moses", "The prophet like no other: drawn from the Nile, called at the burning bush, he led Israel out of Egypt and received the Law on Sinai.", [[1, 2, "Exodus 3"], [1, 19, "Exodus 20"], [4, 33, "Deuteronomy 34"]]],
+        ["Aaron", "Moses' brother and Israel's first high priest; his rod budded, and his family carried the priesthood after him.", [[1, 27, "Exodus 28"], [2, 15, "Leviticus 16"]]],
+        ["Miriam", "Moses' sister, who watched over the baby in the ark of reeds and led Israel's women in song after the sea crossing.", [[1, 14, "Exodus 15"], [3, 11, "Numbers 12"]]],
+        ["Joshua", "Moses' servant and successor, who led Israel into the promised land: 'As for me and my house, we will serve the LORD.'", [[5, 0, "Joshua 1"], [5, 23, "Joshua 24"]]],
+        ["Caleb", "One of the twelve spies — with Joshua alone he believed God and urged Israel to take the land; at eighty-five he was still asking for his mountain.", [[3, 13, "Numbers 14"], [5, 13, "Joshua 14"]]],
+        ["Rahab", "The woman of Jericho who hid Israel's spies and tied a scarlet cord in her window; she is named in Jesus' own family line.", [[5, 1, "Joshua 2"], [5, 5, "Joshua 6"]]],
+        ["Deborah", "A prophetess and judge of Israel, who sang of God's victory while seated under her palm tree.", [[6, 3, "Judges 4"], [6, 4, "Judges 5"]]],
+        ["Gideon", "The least of his family, called by the angel of the LORD; with three hundred men and God's word he routed Midian.", [[6, 5, "Judges 6"], [6, 6, "Judges 7"]]],
+        ["Samson", "A Nazirite from birth with God-given strength, undone by his own appetites; in his death he struck Israel's enemies harder than in his life.", [[6, 13, "Judges 14"], [6, 15, "Judges 16"]]],
+        ["Ruth", "A widow from Moab who clung to Naomi and to Naomi's God: 'Your people shall be my people.' Great-grandmother of King David.", [[7, 0, "Ruth 1"], [7, 3, "Ruth 4"]]],
+        ["Boaz", "A worthy man of Bethlehem, Ruth's kinsman-redeemer, who covered her with the corner of his cloak and bought back Naomi's field.", [[7, 2, "Ruth 3"], [7, 3, "Ruth 4"]]],
+        ["Hannah", "Barren and broken-hearted, she poured out her soul at Shiloh and gave her answered prayer, Samuel, back to the LORD.", [[8, 0, "1 Samuel 1"], [8, 1, "1 Samuel 2"]]],
+        ["Samuel", "The last judge and a great prophet of the kingdom age; as a boy he answered, 'Speak, for your servant hears.'", [[8, 2, "1 Samuel 3"], [8, 11, "1 Samuel 12"]]],
+        ["Saul", "Israel's first king, tall and promising, who lost the kingdom through disobedience and died on Mount Gilboa.", [[8, 9, "1 Samuel 10"], [8, 14, "1 Samuel 15"]]],
+        ["David", "Shepherd, giant-killer, king, and psalmist — a man after God's own heart, whose greater Son sits on his throne forever.", [[8, 16, "1 Samuel 17"], [9, 6, "2 Samuel 7"], [18, 22, "Psalm 23"]]],
+        ["Abigail", "The wise wife of foolish Nabal, who rode out with food and humility and turned David from bloodshed.", [[8, 24, "1 Samuel 25"]]],
+        ["Nathan", "The prophet who told David 'You are the man' — and also brought him God's promise of an everlasting house.", [[9, 6, "2 Samuel 7"], [9, 11, "2 Samuel 12"]]],
+        ["Solomon", "David's son, who asked God for wisdom and built the Temple; the wisest and richest king of Israel, whose end warns against a divided heart.", [[10, 2, "1 Kings 3"], [10, 7, "1 Kings 8"]]],
+        ["Elijah", "The prophet of fire: fed by ravens, challenger of Baal on Carmel, taken up to heaven in a whirlwind before Elisha's eyes.", [[10, 17, "1 Kings 18"], [11, 1, "2 Kings 2"]]],
+        ["Elisha", "Elijah's successor, who asked for a double portion of his spirit and did miracles of mercy — oil multiplied, a boy raised, Naaman healed.", [[11, 3, "2 Kings 4"], [11, 4, "2 Kings 5"]]],
+        ["Josiah", "The boy king who found the lost Book of the Law, wept over it, and led Judah's greatest return to God.", [[11, 21, "2 Kings 22"], [11, 22, "2 Kings 23"]]],
+        ["Isaiah", "The prophet who saw the LORD high and lifted up, and foretold the virgin's child and the suffering Servant who bears our sins.", [[22, 5, "Isaiah 6"], [22, 52, "Isaiah 53"]]],
+        ["Jeremiah", "The weeping prophet, called as a youth, who preached forty years to a people who would not listen — and announced the new covenant.", [[23, 0, "Jeremiah 1"], [23, 30, "Jeremiah 31"]]],
+        ["Ezekiel", "The priest-prophet among the exiles, who saw God's glory by the Chebar canal and watched dry bones live.", [[25, 0, "Ezekiel 1"], [25, 36, "Ezekiel 37"]]],
+        ["Daniel", "Taken to Babylon as a youth, he purposed in his heart not to defile himself; God gave him wisdom, dreams, and a night unharmed among lions.", [[26, 0, "Daniel 1"], [26, 5, "Daniel 6"]]],
+        ["Hosea", "The prophet whose broken marriage became God's sermon to unfaithful Israel: 'I will heal their apostasy; I will love them freely.'", [[27, 0, "Hosea 1"], [27, 10, "Hosea 11"]]],
+        ["Amos", "A shepherd and fig farmer from Tekoa, sent to preach justice to a prosperous, careless Israel.", [[29, 6, "Amos 7"], [29, 8, "Amos 9"]]],
+        ["Micah", "The prophet who named Bethlehem as the Messiah's birthplace and summed up God's requirement: do justice, love kindness, walk humbly.", [[32, 4, "Micah 5"], [32, 5, "Micah 6"]]],
+        ["Habakkuk", "The prophet who questioned God about evil — and ended rejoicing in God his salvation while the fig tree stood bare.", [[34, 2, "Habakkuk 3"]]],
+        ["Jonah", "The prophet who ran from God's mercy toward Nineveh, was swallowed and sent back, and preached to the city he hoped would fall.", [[31, 0, "Jonah 1"], [31, 2, "Jonah 3"]]],
+        ["Job", "A blameless man stripped of everything in a day, who argued with God from the ash heap and came out saying, 'Now my eye sees you.'", [[17, 0, "Job 1"], [17, 41, "Job 42"]]],
+        ["Esther", "The Jewish orphan who became queen of Persia 'for such a time as this,' and risked her life to save her people.", [[16, 3, "Esther 4"], [16, 6, "Esther 7"]]],
+        ["Mordecai", "Esther's cousin and guardian, who raised her, uncovered a plot against the king, and would not bow to Haman.", [[16, 2, "Esther 3"], [16, 5, "Esther 6"]]],
+        ["Ezra", "The scribe skilled in the Law who led the returned exiles and read the Law aloud to all Jerusalem; he set his heart to seek it, do it, and teach it.", [[14, 6, "Ezra 7"], [15, 7, "Nehemiah 8"]]],
+        ["Nehemiah", "The king's cupbearer who wept over Jerusalem's broken walls and rebuilt them in fifty-two days, a trowel in one hand and a sword in the other.", [[15, 0, "Nehemiah 1"], [15, 5, "Nehemiah 6"]]],
+        ["Jesus", "The Son of God and Son of Man: born of the virgin Mary, crucified for our sins, raised on the third day, and seated now at the Father's right hand.", [[42, 0, "John 1"], [41, 1, "Luke 2"], [39, 26, "Matthew 27"]]],
+        ["Mary", "The virgin mother of Jesus, who treasured all these things in her heart; blessed among women, she magnified the Lord.", [[41, 0, "Luke 1"], [41, 1, "Luke 2"]]],
+        ["Joseph", "Mary's husband, a righteous man of David's line, who took Jesus as his own and guarded the family on the flight to Egypt.", [[39, 0, "Matthew 1"], [39, 1, "Matthew 2"]]],
+        ["John the Baptist", "The voice crying in the wilderness, greatest of the prophets, who baptized Jesus and pointed to Him: 'Behold, the Lamb of God.'", [[39, 2, "Matthew 3"], [42, 0, "John 1"]]],
+        ["Herod the Great", "The king who rebuilt the Temple courts — and slaughtered Bethlehem's children trying to kill the newborn King.", [[39, 1, "Matthew 2"]]],
+        ["Peter", "The fisherman called Simon, bold and stumbling, who confessed 'You are the Christ' and preached at Pentecost; restored by the risen Lord, he fed His sheep.", [[39, 15, "Matthew 16"], [43, 1, "Acts 2"], [42, 20, "John 21"]]],
+        ["Andrew", "Peter's brother, one of the first to follow Jesus; he is forever bringing people to Him — Peter, a boy with loaves, some Greeks.", [[42, 0, "John 1"], [42, 5, "John 6"]]],
+        ["James, son of Zebedee", "A son of thunder, brother of John, first of the apostles to be martyred, killed by Herod's sword.", [[39, 3, "Matthew 4"], [43, 11, "Acts 12"]]],
+        ["John", "The beloved disciple, who leaned on Jesus' breast at the Supper, stood at the cross, and wrote the Gospel, the letters, and Revelation.", [[42, 20, "John 21"], [65, 0, "Revelation 1"]]],
+        ["Philip", "The apostle from Bethsaida who said, 'Come and see'; later he explained Isaiah to the Ethiopian official on the desert road.", [[42, 5, "John 6"], [43, 7, "Acts 8"]]],
+        ["Thomas", "The twin, absent and doubting — 'unless I see, I will not believe' — then, seeing the risen Lord: 'My Lord and my God!'", [[42, 10, "John 11"], [42, 19, "John 20"]]],
+        ["Matthew", "The tax collector called Levi, who left his booth at Jesus' word and wrote the first Gospel.", [[39, 8, "Matthew 9"], [40, 1, "Mark 2"]]],
+        ["Judas Iscariot", "One of the Twelve, keeper of the money box, who betrayed Jesus with a kiss for thirty pieces of silver — Scripture's saddest warning.", [[39, 25, "Matthew 26"], [42, 12, "John 13"]]],
+        ["Mary Magdalene", "Delivered from seven demons, she followed Jesus, stood at the cross, and was the first witness of the resurrection: 'I have seen the Lord.'", [[41, 7, "Luke 8"], [42, 19, "John 20"]]],
+        ["Martha", "Mary's sister in Bethany, busy with serving and honest with grief: 'Lord, if you had been here…' — 'I believe you are the Christ.'", [[41, 9, "Luke 10"], [42, 10, "John 11"]]],
+        ["Lazarus", "Jesus' friend in Bethany, four days dead when Jesus called him out of the tomb: 'Lazarus, come out!'", [[42, 10, "John 11"], [42, 11, "John 12"]]],
+        ["Nicodemus", "A ruler of the Jews who came to Jesus by night and heard of the new birth; at the end he brought spices for Jesus' burial, in daylight.", [[42, 2, "John 3"], [42, 18, "John 19"]]],
+        ["Zacchaeus", "The little tax collector who climbed a sycamore tree to see Jesus — and came down rejoicing, giving half his goods to the poor.", [[41, 18, "Luke 19"]]],
+        ["Pontius Pilate", "The Roman governor who found no guilt in Jesus, washed his hands, and handed Him over anyway.", [[39, 26, "Matthew 27"], [42, 18, "John 19"]]],
+        ["Stephen", "Full of grace and power, the first martyr: he saw heaven opened and the Son of Man standing, and prayed for his killers as he died.", [[43, 5, "Acts 6"], [43, 6, "Acts 7"]]],
+        ["Paul", "Once Saul, the church's fiercest enemy, met by the risen Jesus on the Damascus road; apostle to the Gentiles, prisoner, and author of thirteen letters.", [[43, 8, "Acts 9"], [43, 15, "Acts 16"], [44, 0, "Romans 1"]]],
+        ["Barnabas", "'Son of encouragement,' the Levite who sold his field, vouched for Saul, fetched him to Antioch, and carried the gospel beside him.", [[43, 3, "Acts 4"], [43, 12, "Acts 13"]]],
+        ["Silas", "Paul's companion on the second journey, who sang hymns with him at midnight in a Philippian jail.", [[43, 15, "Acts 16"]]],
+        ["Timothy", "Paul's beloved child in the faith, a young pastor charged to guard the gospel and preach the word in season and out.", [[43, 15, "Acts 16"], [53, 0, "1 Timothy 1"]]],
+        ["Luke", "The beloved physician and careful historian, who wrote the Gospel and Acts and traveled with Paul to the end.", [[41, 0, "Luke 1"], [43, 15, "Acts 16"]]],
+        ["Mark", "John Mark, who wrote the second Gospel; once he turned back, but Paul ended by saying, 'He is useful to me for service.'", [[43, 11, "Acts 12"], [54, 3, "2 Timothy 4"]]],
+        ["James, the Lord's brother", "Jesus' brother, who did not believe at first, then led the Jerusalem church and wrote the letter of practical faith.", [[43, 14, "Acts 15"], [58, 0, "James 1"]]],
+        ["Cornelius", "The God-fearing centurion of Caesarea whose household received the Holy Spirit — the gospel's door opening wide to the Gentiles.", [[43, 9, "Acts 10"]]],
+        ["Lydia", "A seller of purple cloth in Philippi, whose heart the Lord opened; her house became Europe's first church home.", [[43, 15, "Acts 16"]]],
+        ["Priscilla and Aquila", "Tentmakers who worked beside Paul in Corinth and Ephesus, and explained the way of God more accurately to Apollos.", [[43, 17, "Acts 18"], [44, 15, "Romans 16"]]],
+        ["Apollos", "The eloquent Alexandrian who knew only John's baptism, until Priscilla and Aquila filled the gaps; he watered what Paul planted.", [[43, 17, "Acts 18"], [45, 2, "1 Corinthians 3"]]]
+      ];
+      var whoRendered = false;
+      function renderWho() {
+        if (whoRendered) return;
+        whoRendered = true;
+        var body = $("who-body");
+        var list = el("div", "glossary-list");
+        PEOPLE.forEach(function (p) {
+          var item = el("div", "gloss-item");
+          item.appendChild(el("h3", "gloss-term", p[0]));
+          item.appendChild(el("p", "gloss-def", p[1]));
+          var row = el("div", "who-chips");
+          p[2].forEach(function (c) { row.appendChild(passageChip(c[0], c[1], c[2])); });
+          item.appendChild(row);
+          list.appendChild(item);
+        });
+        body.appendChild(list);
+        try { applyWhoFilter(); } catch (e) {}
+      }
+      /* The filter box, the twin of Bible Words': people step aside
+         as the reader types and all return when the box is cleared. */
+      function applyWhoFilter() {
+        var input = $("who-filter"), none = $("who-filter-none");
+        if (!input || !none) return;
+        var q = input.value.replace(/^\s+|\s+$/g, "").toLowerCase();
+        var items = $("who-body").querySelectorAll(".gloss-item");
+        var shown = 0;
+        for (var i = 0; i < items.length; i++) {
+          var t = items[i].querySelector(".gloss-term");
+          var hit = !q || (t && t.textContent.toLowerCase().indexOf(q) !== -1);
+          items[i].hidden = !hit;
+          if (hit) shown++;
+        }
+        none.hidden = shown > 0;
+      }
+      function openWhosWho() {
+        renderWho();
+        showView("view-whoswho");
+        setPageMeta("Who's Who — World English Bible", DEFAULT_DESC);
+      }
+      try { $("whoswho-btn").addEventListener("click", openWhosWho); } catch (e) {}
+      try { $("whoswho-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("who-filter").addEventListener("input", applyWhoFilter); } catch (e) {}
+
+      /* ---- the four doors' deep links: "#maps", "#illustrations",
+         "#timeline", "#whos-who" open their views, the same way
+         "#plans" and "#explore" open theirs. None of the words is
+         a book name, so none can collide with a verse link. */
+      function isMapsHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return false; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        return h.trim().toLowerCase() === "maps";
+      }
+      function isIllustrationsHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return false; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        return h.trim().toLowerCase() === "illustrations";
+      }
+      function isTimelineHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return false; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        return h.trim().toLowerCase() === "timeline";
+      }
+      function isWhosWhoHash() {
+        var h = "";
+        try { h = location.hash || ""; } catch (e) { return false; }
+        if (h.charAt(0) === "#") h = h.slice(1);
+        return h.trim().toLowerCase() === "whos-who";
+      }
+
+      /* ---- reader settings sheet ----
+         The button gathers and gathers back the reader's settings
+         (see the sheet in the reader markup). Choosing Print in
+         the sheet hands off to the print flow exactly as before:
+         the sheet closes, and the print panel the button has
+         always opened opens. */
+      try { $("settings-btn").addEventListener("click", function () {
+        var sh = $("settings-sheet");
+        if (!sh) return;
+        var willOpen = sh.hidden;
+        sh.hidden = !willOpen;
+        this.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      }); } catch (e) {}
+      try { $("print-open-btn").addEventListener("click", function () {
+        var sh = $("settings-sheet");
+        if (sh) sh.hidden = true;
+        var b = $("settings-btn");
+        if (b) b.setAttribute("aria-expanded", "false");
+      }); } catch (e) {}
+
+      /* ---- the verse of the day paints its own sky ----
+         The card's background is a small dawn scene the app draws
+         itself, from the day itself: the seed is the calendar day,
+         so the same day paints the same sky for every reader
+         everywhere, and each new day paints a new one. The palettes
+         drift with the seasons, the sun rides higher toward
+         midsummer, clouds and hills take seeded shapes, and the
+         foreground is water on some days and meadow on others.
+         Nothing is fetched and no file is stored: it works offline
+         exactly as it does online. A soft wash in the theme's own
+         tones (see .votd-scrim) keeps the verse easy to read. */
+      function votdRand(seed) {
+        var t = seed >>> 0;
+        return function () {
+          t = (t + 0x6D2B79F5) >>> 0;
+          var r = Math.imul(t ^ (t >>> 15), 1 | t);
+          r = (r ^ (r + Math.imul(r ^ (r >>> 7), 61 | r))) >>> 0;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      function paintVotdSky(date) {
+        var cv = $("votd-sky");
+        if (!cv || !cv.getContext) return;
+        var ctx = cv.getContext("2d");
+        if (!ctx) return;
+        var W = cv.width, H = cv.height;
+        var seed = (Math.imul((date.getMonth() + 1) * 100 + date.getDate(), 2654435761) ^ 0x9E3779B9) >>> 0;
+        var rnd = votdRand(seed);
+        var yearStart = new Date(date.getFullYear(), 0, 0);
+        var doy = Math.floor((date.getTime() - yearStart.getTime()) / 86400000);
+        var arc = Math.sin((doy - 1) / 365 * Math.PI * 2 - Math.PI / 2); /* -1 in deep winter, 1 at midsummer */
+        var month = date.getMonth();
+        var season = (month === 11 || month <= 1) ? 0 : month <= 4 ? 1 : month <= 7 ? 2 : 3;
+        var PALS = [
+          { top: "#2f3c5e", mid: "#77688f", hor: "#eda668", sun: "#ffd9a3", far: "#5d5570", near: "#38324a" },
+          { top: "#3a5a84", mid: "#93aec4", hor: "#f6cd8d", sun: "#ffe4a6", far: "#5d7d68", near: "#38543f" },
+          { top: "#2e5c8c", mid: "#7db1d1", hor: "#ffd98f", sun: "#ffedb3", far: "#4e7c59", near: "#2d5537" },
+          { top: "#473a60", mid: "#a26b74", hor: "#f69e5d", sun: "#ffc98c", far: "#6a4a4c", near: "#443034" }
+        ];
+        var P = PALS[season];
+        var horizon = Math.round(H * 0.74);
+        var sky = ctx.createLinearGradient(0, 0, 0, horizon);
+        sky.addColorStop(0, P.top);
+        sky.addColorStop(0.62, P.mid);
+        sky.addColorStop(1, P.hor);
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, horizon + 1);
+        /* a few fading stars, on the quieter mornings */
+        if (rnd() < 0.55) {
+          var n = 8 + Math.floor(rnd() * 26);
+          for (var i = 0; i < n; i++) {
+            ctx.fillStyle = "rgba(255,250,230," + (0.25 + rnd() * 0.5).toFixed(2) + ")";
+            var sr = rnd() < 0.12 ? 2 : 1;
+            ctx.fillRect(rnd() * W, rnd() * H * 0.36, sr, sr);
+          }
+        }
+        /* the sun, higher and stronger toward midsummer */
+        var sunX = W * (0.22 + rnd() * 0.56);
+        var sunR = 24 + rnd() * 20;
+        var sunY = horizon - (H * 0.13 + arc * H * 0.075 + rnd() * H * 0.05);
+        var glow = ctx.createRadialGradient(sunX, sunY, sunR * 0.4, sunX, sunY, sunR * 4.2);
+        glow.addColorStop(0, "rgba(255,226,160,0.55)");
+        glow.addColorStop(1, "rgba(255,226,160,0)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, horizon + 1);
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+        ctx.fillStyle = P.sun;
+        ctx.fill();
+        /* clouds in seeded shapes */
+        var clouds = 3 + Math.floor(rnd() * 4);
+        for (var c = 0; c < clouds; c++) {
+          var cx = rnd() * W, cy = H * (0.08 + rnd() * 0.38);
+          var cw = 60 + rnd() * 150, chh = 10 + rnd() * 14;
+          ctx.fillStyle = "rgba(255,240,214," + (0.13 + rnd() * 0.16).toFixed(2) + ")";
+          for (var b = 0; b < 5; b++) {
+            ctx.beginPath();
+            if (ctx.ellipse) ctx.ellipse(cx + (rnd() - 0.5) * cw, cy + (rnd() - 0.5) * chh, cw * (0.24 + rnd() * 0.3), chh * (0.7 + rnd() * 0.6), 0, 0, Math.PI * 2);
+            else ctx.rect(cx + (rnd() - 0.5) * cw, cy, cw * 0.4, chh);
+            ctx.fill();
+          }
+        }
+        /* two ridges of hills along the horizon */
+        function ridge(base, amp, color) {
+          ctx.beginPath();
+          ctx.moveTo(0, horizon + 1);
+          var pts = 7;
+          for (var k = 0; k <= pts; k++) ctx.lineTo((W / pts) * k, base - rnd() * amp);
+          ctx.lineTo(W, horizon + 1);
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+        ridge(horizon - H * 0.02, H * 0.10, P.far);
+        ridge(horizon + H * 0.015, H * 0.06, P.near);
+        /* the foreground: water on some days, meadow on others */
+        var water = rnd() < 0.5;
+        var fg = ctx.createLinearGradient(0, horizon, 0, H);
+        if (water) {
+          fg.addColorStop(0, P.hor);
+          fg.addColorStop(0.25, P.mid);
+          fg.addColorStop(1, P.top);
+        } else {
+          fg.addColorStop(0, P.near);
+          fg.addColorStop(1, "#141a12");
+        }
+        ctx.fillStyle = fg;
+        ctx.fillRect(0, horizon, W, H - horizon);
+        if (water) {
+          ctx.fillStyle = "rgba(255,232,170,0.5)";
+          for (var g = 0; g < 26; g++) {
+            var gy = horizon + 4 + rnd() * (H - horizon - 8);
+            var gw = 6 + rnd() * 26;
+            ctx.fillRect(sunX - gw / 2 + (rnd() - 0.5) * 14, gy, gw, 1.6);
+          }
+        } else {
+          ctx.fillStyle = "rgba(214,235,180,0.20)";
+          for (var s = 0; s < 260; s++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6, 1.6);
+        }
+      }
 
       /* ---- tap-a-word definitions (reader) ----
          In the reader, a tap that lands on a word the Bible Words
@@ -7409,6 +8189,9 @@
                 { weekday: "long", month: "long", day: "numeric" });
               $("votd-today").hidden = offset === 0;
               $("votd-card").hidden = false;
+              /* the card's sky is painted for the day being shown,
+                 so stepping a day repaints that day's own sky */
+              try { paintVotdSky(date); } catch (e) {}
             }).catch(function () { /* no card — the home view stands without it */ });
           };
           step(0);
@@ -7754,31 +8537,14 @@
         parts.push(new Uint8Array(end.buffer));
         return new Blob(parts, { type: "application/epub+zip" });
       }
-      $("download-btn").addEventListener("click", function () {
-        var btn = $("download-btn");
-        if (btn.disabled) return;
-        var label = btn.textContent;
-        btn.disabled = true;
-        btn.textContent = "Preparing your Bible…";
-        function restore(msg) {
-          btn.disabled = false;
-          btn.textContent = label;
-          if (msg) showToast(msg);
-        }
-        ensureAll().then(function () {
-          var blob = buildEpubBlob();
-          /* Delivered like every file in this app (see the print
-             section's delivery helpers): the share sheet in the
-             installed app — a bare download link is silently
-             ignored there — and a plain download elsewhere. */
-          deliverFile(makeFile(blob, "World-English-Bible.epub", "application/epub+zip"), null);
-          restore(preferShareDelivery()
-            ? "Your Bible is ready — save it from the share sheet"
-            : "Your Bible is downloading — look in your downloads");
-        }).catch(function () {
-          restore("Couldn't prepare the download — check your connection and try again.");
-        });
-      });
+      /* The EPUB row on Explore is a plain link now, in every
+         mode: tapping it navigates straight to
+         assets/world-english-bible.epub, a ready-made copy of this
+         same EPUB, so iOS hands it to Apple Books the way it does
+         from Safari — no fetch-and-share step for this row. (The
+         large-print PDF row keeps its share-sheet delivery in the
+         installed app, untouched.) The builder above stays as the
+         record of how that ready-made file is made. */
 
       /* ---- the large-print PDF download row ----
          In the installed app a bare link to the PDF strands the
@@ -10286,6 +11052,10 @@
           if (followPlanHash()) return;
           if (isPlansHash()) { openPlans(); return; }
           if (isExploreHash()) { openExplore(); return; }
+          if (isMapsHash()) { openMaps(); return; }
+          if (isIllustrationsHash()) { openIllustrations(); return; }
+          if (isTimelineHash()) { openTimeline(); return; }
+          if (isWhosWhoHash()) { openWhosWho(); return; }
           var link = parseHash();
           if (link) openChapter(link.b, link.c, link.vEnd ? [link.v, link.vEnd] : link.v);
         } catch (e) { /* a deep link that cannot be followed leaves the home view standing */ }
@@ -10323,7 +11093,7 @@
       (function () {
         try {
           if (wasWelcomed()) return;
-          if (parsePlanHash() || isPlansHash() || isExploreHash() || parseHash()) return;
+          if (parsePlanHash() || isPlansHash() || isExploreHash() || isMapsHash() || isIllustrationsHash() || isTimelineHash() || isWhosWhoHash() || parseHash()) return;
           var w = $("welcome");
           if (w) w.hidden = false;
         } catch (e) {}
@@ -10336,6 +11106,10 @@
           if (followPlanHash()) return;
           if (isPlansHash()) { openPlans(); return; }
           if (isExploreHash()) { openExplore(); return; }
+          if (isMapsHash()) { openMaps(); return; }
+          if (isIllustrationsHash()) { openIllustrations(); return; }
+          if (isTimelineHash()) { openTimeline(); return; }
+          if (isWhosWhoHash()) { openWhosWho(); return; }
           var link = parseHash();
           if (!link) return;
           if (!$("view-reader").hidden && link.b === current.b && link.c === current.c && !link.v) return;
@@ -10404,7 +11178,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610210238";
+      var APP_BUILD_STAMP = "202610210500";
       (function () {
         try {
           var btn = $("update-btn");
