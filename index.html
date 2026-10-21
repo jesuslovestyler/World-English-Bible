@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610210500" />
+    <meta name="app-build" content="202610210600" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -823,6 +823,7 @@
         padding: 6px 8px; min-height: 36px;
       }
       .votd-share:active { transform: translateY(1px); }
+      .votd-actions { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; justify-content: flex-end; }
       .votd-main {
         display: block; width: 100%; text-align: left; cursor: pointer;
         background: none; border: 0; padding: 0;
@@ -1347,7 +1348,10 @@
             <div class="votd-scrim" aria-hidden="true"></div>
             <div class="votd-head">
               <span class="votd-label">Verse of the Day</span>
-              <button class="votd-share" id="votd-share" type="button">Share</button>
+              <span class="votd-actions">
+                <button class="votd-share" id="votd-share-img" type="button">Share as image</button>
+                <button class="votd-share" id="votd-share" type="button">Share</button>
+              </span>
             </div>
             <button class="votd-main" id="votd-main" type="button">
               <span class="votd-text" id="votd-text"></span>
@@ -1793,7 +1797,7 @@
         <h2 class="testament">Downloads</h2>
         <div class="download-box">
           <a class="btn download-btn download-link" id="download-btn" href="assets/world-english-bible.epub">⬇ Download this Bible — free, works offline</a>
-          <p class="download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
+          <p class="download-note" id="epub-download-note">One file with the whole Bible — opens in Apple Books, works offline.</p>
         </div>
         <div class="download-box">
           <a class="btn download-btn download-link" id="pdf-download-link" href="world-english-bible-large-print.pdf">⬇ The whole Bible as a large-print PDF</a>
@@ -1827,7 +1831,7 @@
         </div>
         <div class="search-head">
           <h2>Bible Illustrations</h2>
-          <p>The story of the Bible in twenty-four engravings by Gustave Doré. Tap a picture to see it full-screen, and tap its passage to read the chapter.</p>
+          <p>The story of the Bible in sixty-four engravings by Gustave Doré. Tap a picture to see it full-screen, and tap its passage to read the chapter.</p>
         </div>
         <div id="plates-body"></div>
         <p class="credit-note">Engravings by Gustave Doré for the Bible de Tours (1866), public domain, shared through Wikimedia Commons. A few plates are Doré's same engravings as reprinted in The Bible Panorama (1891), also public domain.</p>
@@ -5000,6 +5004,33 @@
         return e;
       }
       var VIEWS = ["view-home", "view-chapters", "view-reader", "view-search", "view-saved", "view-plans", "view-turn", "view-prayers", "view-journey", "view-glossary", "view-explore", "view-maps", "view-illustrations", "view-timeline", "view-whoswho"];
+      /* ---- where "back" leads ----
+         Every door on the Explore page opens a view whose top-left
+         return control has always led home to the Dashboard. When
+         a view was entered FROM Explore, that control instead
+         reads "‹ Explore" and returns to the Explore page — the
+         reader came from there, and there is where back should
+         take them. The origin is remembered per view as views are
+         entered, and it follows the reading chain: a chapter
+         opened from an Explore-born view (a plan day, a map's
+         passage chip, a saved verse) keeps the Explore return
+         through its book view and the reader alike. Entered from
+         anywhere else — home, a deep link — the control reads
+         "‹ Dashboard" and goes home, exactly as it always has. */
+      var currentViewId = "view-home";
+      var navFromExplore = {};
+      var BACK_BTNS = {
+        "view-chapters": "chapters-back", "view-reader": "reader-to-books",
+        "view-saved": "saved-back", "view-plans": "plans-back",
+        "view-turn": "turn-back", "view-prayers": "prayers-back",
+        "view-journey": "journey-back", "view-glossary": "words-back",
+        "view-maps": "maps-back", "view-illustrations": "illustrations-back",
+        "view-timeline": "timeline-back", "view-whoswho": "whoswho-back"
+      };
+      function goBackFrom(viewId) {
+        if (navFromExplore[viewId]) openExplore();
+        else showView("view-home");
+      }
       function showView(id) {
         /* Every navigation in the app passes through this one door, so it
            is also where listening stops: another chapter or book, a search,
@@ -5008,7 +5039,20 @@
            declarations hoist) and is fully guarded, so this can never
            break navigation on a browser without speech. */
         try { stopListening(); } catch (e) {}
+        /* remember the Explore origin before the views change:
+           entered from the Explore page itself, or from a view
+           that itself carries the Explore origin (the reading
+           chain), the new view carries it too; entered from home
+           or a deep link, it does not. Going home clears every
+           origin, so a later visit starts clean. */
+        if (id === "view-home") navFromExplore = {};
+        else if (id !== "view-explore" && BACK_BTNS[id]) {
+          navFromExplore[id] = currentViewId === "view-explore" || !!navFromExplore[currentViewId];
+        }
         VIEWS.forEach(function (v) { $(v).hidden = v !== id; });
+        currentViewId = id;
+        var backBtn = BACK_BTNS[id] ? $(BACK_BTNS[id]) : null;
+        if (backBtn) backBtn.textContent = navFromExplore[id] ? "‹ Explore" : "‹ Dashboard";
         window.scrollTo(0, 0);
         if (id !== "view-reader") dismissSelection();
         try { hideDefCard(); } catch (e) {}
@@ -5018,6 +5062,9 @@
              redrawn on every arrival home. */
           try { refreshPlanCard(); } catch (e) {}
           try { refreshPlaces(); } catch (e) {}
+          /* The verse card's sky is repainted too, so its reading
+             wash is refitted if the theme changed while reading. */
+          try { if (votdDate) paintVotdSky(votdDate); } catch (e) {}
         }
       }
 
@@ -6545,7 +6592,7 @@
         }
       }
       try { $("plans-btn").addEventListener("click", openPlans); } catch (e) {}
-      try { $("plans-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("plans-back").addEventListener("click", function () { goBackFrom("view-plans"); }); } catch (e) {}
       try {
         $("plan-return-btn").addEventListener("click", function () {
           if (!planReturn) return;
@@ -6820,7 +6867,7 @@
       }
       try { renderTurn(); } catch (e) {}
       try { $("turn-btn").addEventListener("click", openTurn); } catch (e) {}
-      try { $("turn-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("turn-back").addEventListener("click", function () { goBackFrom("view-turn"); }); } catch (e) {}
       try { $("turn-filter").addEventListener("input", applyTurnFilter); } catch (e) {}
       try {
         $("turn-return-btn").addEventListener("click", function () {
@@ -6917,7 +6964,7 @@
       }
       try { renderPrayers(); } catch (e) {}
       try { $("prayers-btn").addEventListener("click", openPrayers); } catch (e) {}
-      try { $("prayers-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("prayers-back").addEventListener("click", function () { goBackFrom("view-prayers"); }); } catch (e) {}
       try {
         $("prayers-return-btn").addEventListener("click", function () {
           if (prayersReturn) openPrayers();
@@ -7098,7 +7145,7 @@
         }).catch(function () {});
       }
       try { $("journey-btn").addEventListener("click", openJourney); } catch (e) {}
-      try { $("journey-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("journey-back").addEventListener("click", function () { goBackFrom("view-journey"); }); } catch (e) {}
 
       /* ---- bible words ----
          A small glossary: the big words of the faith in plain
@@ -7396,7 +7443,7 @@
         none.hidden = shown > 0;
       }
       try { $("words-btn").addEventListener("click", openGlossary); } catch (e) {}
-      try { $("words-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("words-back").addEventListener("click", function () { goBackFrom("view-glossary"); }); } catch (e) {}
       try { $("words-filter").addEventListener("input", applyWordsFilter); } catch (e) {}
 
       /* ---- explore ----
@@ -7508,33 +7555,73 @@
         setPageMeta("Bible Maps — World English Bible", DEFAULT_DESC);
       }
       try { $("maps-btn").addEventListener("click", openMaps); } catch (e) {}
-      try { $("maps-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("maps-back").addEventListener("click", function () { goBackFrom("view-maps"); }); } catch (e) {}
 
       /* ---- bible illustrations: Gustave Doré, 1866 ---- */
       var PLATES = [
         { title: "The Creation of Light", img: "assets/dore-creation.jpg", chips: [[0, 0, "Genesis 1"]] },
+        { title: "Adam and Eve Are Driven Out of Eden", img: "assets/dore-eden-expulsion.jpg", chips: [[0, 2, "Genesis 3"]] },
+        { title: "Cain Slays Abel", img: "assets/dore-cain-abel.jpg", chips: [[0, 3, "Genesis 4"]] },
         { title: "The Flood", img: "assets/dore-flood.jpg", chips: [[0, 6, "Genesis 7"]] },
+        { title: "The Tower of Babel", img: "assets/dore-babel.jpg", chips: [[0, 10, "Genesis 11"]] },
         { title: "Abraham Offers Isaac", img: "assets/dore-abraham-isaac.jpg", chips: [[0, 21, "Genesis 22"]] },
+        { title: "Jacob Wrestles with the Angel", img: "assets/dore-jacob-wrestles.jpg", chips: [[0, 31, "Genesis 32"]] },
+        { title: "Joseph Is Sold by His Brothers", img: "assets/dore-joseph-sold.jpg", chips: [[0, 36, "Genesis 37"]] },
+        { title: "Joseph Interprets Pharaoh's Dream", img: "assets/dore-joseph-pharaoh.jpg", chips: [[0, 40, "Genesis 41"]] },
+        { title: "Joseph Reveals Himself to His Brothers", img: "assets/dore-joseph-reveals.jpg", chips: [[0, 44, "Genesis 45"]] },
+        { title: "The Finding of Moses", img: "assets/dore-moses-nile.jpg", chips: [[1, 1, "Exodus 2"]] },
         { title: "The Egyptians Drown in the Sea", img: "assets/dore-red-sea.jpg", chips: [[1, 13, "Exodus 14"]] },
         { title: "The Giving of the Law on Mount Sinai", img: "assets/dore-law-sinai.jpg", chips: [[1, 18, "Exodus 19"]] },
+        { title: "The Bronze Serpent", img: "assets/dore-bronze-serpent.jpg", chips: [[3, 20, "Numbers 21"]] },
+        { title: "The Walls of Jericho Fall Down", img: "assets/dore-jericho.jpg", chips: [[5, 5, "Joshua 6"]] },
         { title: "Joshua Burns the Town of Ai", img: "assets/dore-joshua-ai.jpg", chips: [[5, 7, "Joshua 8"]] },
+        { title: "Gideon Chooses His Three Hundred", img: "assets/dore-gideon.jpg", chips: [[6, 6, "Judges 7"]] },
         { title: "Samson Slays the Lion", img: "assets/dore-samson-lion.jpg", chips: [[6, 13, "Judges 14"]] },
+        { title: "The Death of Samson", img: "assets/dore-samson-death.jpg", chips: [[6, 15, "Judges 16"]] },
+        { title: "Ruth and Boaz", img: "assets/dore-ruth-boaz.jpg", chips: [[7, 1, "Ruth 2"]] },
         { title: "David Slays Goliath", img: "assets/dore-david-goliath.jpg", chips: [[8, 16, "1 Samuel 17"]] },
         { title: "The Judgment of Solomon", img: "assets/dore-solomon-judgment.jpg", chips: [[10, 2, "1 Kings 3"]] },
+        { title: "Solomon Receives the Queen of Sheba", img: "assets/dore-queen-sheba.jpg", chips: [[10, 9, "1 Kings 10"]] },
+        { title: "Elijah Raises the Widow's Son", img: "assets/dore-elijah-widow-son.jpg", chips: [[10, 16, "1 Kings 17"]] },
         { title: "Elijah Taken Up to Heaven", img: "assets/dore-elijah-chariot.jpg", chips: [[11, 1, "2 Kings 2"]] },
+        { title: "Nehemiah Views the Ruins of Jerusalem", img: "assets/dore-nehemiah-walls.jpg", chips: [[15, 1, "Nehemiah 2"]] },
+        { title: "Esther Before the King", img: "assets/dore-esther-king.jpg", chips: [[16, 4, "Esther 5"]] },
+        { title: "Job Hears of His Misfortunes", img: "assets/dore-job-misfortunes.jpg", chips: [[17, 0, "Job 1"]] },
+        { title: "The Prophet Isaiah", img: "assets/dore-isaiah.jpg", chips: [[22, 0, "Isaiah 1"]] },
+        { title: "Isaiah's Vision of Babylon Fallen", img: "assets/dore-isaiah-vision.jpg", chips: [[22, 12, "Isaiah 13"]] },
+        { title: "Ezekiel's Vision of the Valley of Dry Bones", img: "assets/dore-ezekiel-dry-bones.jpg", chips: [[25, 36, "Ezekiel 37"]] },
+        { title: "Shadrach, Meshach and Abednego in the Furnace", img: "assets/dore-fiery-furnace.jpg", chips: [[26, 2, "Daniel 3"]] },
+        { title: "Daniel Interprets the Writing on the Wall", img: "assets/dore-writing-wall.jpg", chips: [[26, 4, "Daniel 5"]] },
         { title: "Daniel in the Lions' Den", img: "assets/dore-daniel-lions.jpg", chips: [[26, 5, "Daniel 6"]] },
         { title: "Jonah Preaches to the Ninevites", img: "assets/dore-jonah-nineveh.jpg", chips: [[31, 2, "Jonah 3"]] },
+        { title: "The Annunciation", img: "assets/dore-annunciation.jpg", chips: [[41, 0, "Luke 1"]] },
         { title: "The Birth of Jesus", img: "assets/dore-nativity.jpg", chips: [[41, 1, "Luke 2"]] },
         { title: "The Baptism of Jesus", img: "assets/dore-baptism.jpg", chips: [[39, 2, "Matthew 3"]] },
+        { title: "The Marriage at Cana", img: "assets/dore-cana.jpg", chips: [[42, 1, "John 2"]] },
+        { title: "Jesus and the Samaritan Woman", img: "assets/dore-samaritan-woman.jpg", chips: [[42, 3, "John 4"]] },
         { title: "The Sermon on the Mount", img: "assets/dore-sermon-mount.jpg", chips: [[39, 4, "Matthew 5"]] },
+        { title: "Jesus Calms the Tempest", img: "assets/dore-tempest.jpg", chips: [[40, 3, "Mark 4"]] },
+        { title: "The Feeding of the Multitude", img: "assets/dore-feeding-multitude.jpg", chips: [[39, 13, "Matthew 14"]] },
+        { title: "The Raising of Jairus' Daughter", img: "assets/dore-jairus-daughter.jpg", chips: [[40, 4, "Mark 5"]] },
+        { title: "The Transfiguration", img: "assets/dore-transfiguration.jpg", chips: [[39, 16, "Matthew 17"]] },
+        { title: "Jesus and the Woman Taken in Adultery", img: "assets/dore-adulteress.jpg", chips: [[42, 7, "John 8"]] },
         { title: "The Raising of Lazarus", img: "assets/dore-lazarus.jpg", chips: [[42, 10, "John 11"]] },
+        { title: "The Return of the Prodigal Son", img: "assets/dore-prodigal-son.jpg", chips: [[41, 14, "Luke 15"]] },
+        { title: "The Rich Man and Lazarus", img: "assets/dore-rich-man-lazarus.jpg", chips: [[41, 15, "Luke 16"]] },
+        { title: "The Pharisee and the Publican", img: "assets/dore-pharisee-publican.jpg", chips: [[41, 17, "Luke 18"]] },
+        { title: "Christ's Entry into Jerusalem", img: "assets/dore-entry-jerusalem.jpg", chips: [[39, 20, "Matthew 21"]] },
         { title: "The Last Supper", img: "assets/dore-last-supper.jpg", chips: [[40, 13, "Mark 14"]] },
         { title: "Jesus in Gethsemane", img: "assets/dore-gethsemane.jpg", chips: [[39, 25, "Matthew 26"]] },
         { title: "The Crucifixion", img: "assets/dore-crucifixion.jpg", chips: [[41, 22, "Luke 23"]] },
         { title: "The Resurrection Morning", img: "assets/dore-resurrection.jpg", chips: [[39, 27, "Matthew 28"]] },
         { title: "On the Road to Emmaus", img: "assets/dore-emmaus.jpg", chips: [[41, 23, "Luke 24"]] },
+        { title: "The Ascension", img: "assets/dore-ascension.jpg", chips: [[43, 0, "Acts 1"]] },
         { title: "The Day of Pentecost", img: "assets/dore-pentecost.jpg", chips: [[43, 1, "Acts 2"]] },
+        { title: "The Death of Stephen", img: "assets/dore-stephen.jpg", chips: [[43, 6, "Acts 7"]] },
+        { title: "Peter Delivered from Prison", img: "assets/dore-peter-prison.jpg", chips: [[43, 11, "Acts 12"]] },
         { title: "Paul Addresses the Crowd", img: "assets/dore-paul-crowd.jpg", chips: [[43, 21, "Acts 22"]] },
+        { title: "Death on the Pale Horse", img: "assets/dore-pale-horse.jpg", chips: [[65, 5, "Revelation 6"]] },
+        { title: "The Fall of Babylon", img: "assets/dore-babylon-fallen.jpg", chips: [[65, 17, "Revelation 18"]] },
         { title: "The New Jerusalem", img: "assets/dore-new-jerusalem.jpg", chips: [[65, 20, "Revelation 21"]] }
       ];
       var platesRendered = false;
@@ -7550,7 +7637,7 @@
         setPageMeta("Bible Illustrations — World English Bible", DEFAULT_DESC);
       }
       try { $("illustrations-btn").addEventListener("click", openIllustrations); } catch (e) {}
-      try { $("illustrations-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("illustrations-back").addEventListener("click", function () { goBackFrom("view-illustrations"); }); } catch (e) {}
 
       /* ---- bible timeline ---- */
       var ERAS = [
@@ -7609,7 +7696,7 @@
         setPageMeta("Bible Timeline — World English Bible", DEFAULT_DESC);
       }
       try { $("timeline-btn").addEventListener("click", openTimeline); } catch (e) {}
-      try { $("timeline-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("timeline-back").addEventListener("click", function () { goBackFrom("view-timeline"); }); } catch (e) {}
 
       /* ---- who's who ----
          The people of the Bible, in the Bible Words pattern: a
@@ -7735,7 +7822,7 @@
         setPageMeta("Who's Who — World English Bible", DEFAULT_DESC);
       }
       try { $("whoswho-btn").addEventListener("click", openWhosWho); } catch (e) {}
-      try { $("whoswho-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("whoswho-back").addEventListener("click", function () { goBackFrom("view-whoswho"); }); } catch (e) {}
       try { $("who-filter").addEventListener("input", applyWhoFilter); } catch (e) {}
 
       /* ---- the four doors' deep links: "#maps", "#illustrations",
@@ -7788,16 +7875,23 @@
       }); } catch (e) {}
 
       /* ---- the verse of the day paints its own sky ----
-         The card's background is a small dawn scene the app draws
-         itself, from the day itself: the seed is the calendar day,
-         so the same day paints the same sky for every reader
-         everywhere, and each new day paints a new one. The palettes
-         drift with the seasons, the sun rides higher toward
-         midsummer, clouds and hills take seeded shapes, and the
-         foreground is water on some days and meadow on others.
-         Nothing is fetched and no file is stored: it works offline
-         exactly as it does online. A soft wash in the theme's own
-         tones (see .votd-scrim) keeps the verse easy to read. */
+         The card's background is a small painted scene the app
+         draws itself, from the day itself: the seed is the
+         calendar day, so the same day paints the same sky for
+         every reader everywhere, and each new day paints a new
+         one. The scenes are no longer dawn alone — the seed
+         chooses among a dozen kinds of day (golden dawn, bright
+         midday, warm afternoon, ember sunset, violet dusk, a
+         starry night with a moon, a soft grey morning, and the
+         season's own lights among them), the pools drift with
+         the seasons, and sun, clouds, hills and foreground take
+         seeded shapes within the scene. Nothing is fetched and
+         no file is stored: it works offline exactly as it does
+         online. A wash in the theme's own tones (see .votd-scrim)
+         lies over the painting, its strength fitted to each
+         scene's brightness, so the verse stays easy to read on
+         the brightest noon and the darkest night alike. The same
+         drawing paints the shareable picture (shareVotdImage). */
       function votdRand(seed) {
         var t = seed >>> 0;
         return function () {
@@ -7807,26 +7901,54 @@
           return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
         };
       }
-      function paintVotdSky(date) {
-        var cv = $("votd-sky");
-        if (!cv || !cv.getContext) return;
-        var ctx = cv.getContext("2d");
-        if (!ctx) return;
-        var W = cv.width, H = cv.height;
+      /* The kinds of day the painter knows. sunMode places the
+         sun — "low" on the horizon, "mid" up the sky, "high" near
+         noon, "moon" for the night scene, "hidden" under cloud.
+         stars is how full the sky is of them, glow how wide the
+         light blooms around the sun, cloud the tint the clouds
+         take, and fg the foreground the hills look over: water,
+         meadow, a harvested field, or snow. */
+      var VOTD_SCENES = [
+        { name: "golden dawn",    top: "#33477a", mid: "#c98a68", hor: "#ffd9a0", sun: "#ffe3ae", sunMode: "low",    glow: 0.55, stars: 0.25, cloud: [255, 240, 214], far: "#5d5570", near: "#38324a", fg: "water" },
+        { name: "bright midday",  top: "#2a6fc4", mid: "#79b4e0", hor: "#dceef7", sun: "#fff6d8", sunMode: "high",   glow: 0.40, stars: 0,    cloud: [255, 255, 255], far: "#4e7c59", near: "#2d5537", fg: "water" },
+        { name: "warm afternoon", top: "#3a7cc0", mid: "#a8c4d4", hor: "#ffd9a3", sun: "#ffedb3", sunMode: "mid",    glow: 0.45, stars: 0,    cloud: [255, 246, 224], far: "#6a7c46", near: "#46532e", fg: "field" },
+        { name: "ember sunset",   top: "#3a2a5e", mid: "#b34a3c", hor: "#ff9a4d", sun: "#ffc46b", sunMode: "low",    glow: 0.65, stars: 0.1,  cloud: [255, 196, 150], far: "#59383e", near: "#33202a", fg: "water" },
+        { name: "violet dusk",    top: "#241f4d", mid: "#6b4a8f", hor: "#d97b8f", sun: "#f7b1a1", sunMode: "low",    glow: 0.35, stars: 0.5,  cloud: [216, 180, 216], far: "#3c2c50", near: "#241a33", fg: "meadow" },
+        { name: "starry night",   top: "#060a24", mid: "#14264d", hor: "#2c4a73", sun: "#f4f1de", sunMode: "moon",   glow: 0.22, stars: 1,    cloud: [168, 184, 214], far: "#101a30", near: "#060a18", fg: "water" },
+        { name: "grey morning",   top: "#6d7681", mid: "#9aa3ab", hor: "#cfd0c8", sun: "#e8e6da", sunMode: "hidden", glow: 0.18, stars: 0,    cloud: [226, 228, 226], far: "#5b665e", near: "#39423c", fg: "meadow" },
+        { name: "spring green-gold", top: "#3f7f9e", mid: "#9dc08b", hor: "#ffe9a8", sun: "#fff0b3", sunMode: "mid", glow: 0.50, stars: 0,    cloud: [255, 250, 226], far: "#55803f", near: "#33512a", fg: "meadow" },
+        { name: "autumn amber",   top: "#4a3a63", mid: "#c06a3a", hor: "#ffb85c", sun: "#ffd08a", sunMode: "low",    glow: 0.55, stars: 0.1,  cloud: [255, 205, 150], far: "#6e4630", near: "#40281e", fg: "field" },
+        { name: "pale winter light", top: "#7e93ad", mid: "#bcc9d6", hor: "#f2ead8", sun: "#fff6e0", sunMode: "low", glow: 0.35, stars: 0,    cloud: [244, 246, 250], far: "#7c8aa0", near: "#55617a", fg: "snow" },
+        { name: "rose dawn",      top: "#46589e", mid: "#d98a9e", hor: "#ffd9b0", sun: "#ffe8c0", sunMode: "low",    glow: 0.55, stars: 0.2,  cloud: [255, 224, 224], far: "#6a5570", near: "#40344a", fg: "water" },
+        { name: "clear teal morning", top: "#14607a", mid: "#5fb3b0", hor: "#ffe9b8", sun: "#fff3c4", sunMode: "mid", glow: 0.50, stars: 0,   cloud: [240, 255, 248], far: "#2f6e5e", near: "#1d463c", fg: "water" }
+      ];
+      /* Which scenes a season deals from — each pool holds six,
+         so no two days near each other need ever match, and the
+         year still turns through its own lights. */
+      var VOTD_POOLS = [
+        [9, 6, 0, 5, 4, 10],   /* winter */
+        [7, 1, 0, 11, 2, 10],  /* spring */
+        [1, 2, 11, 0, 3, 5],   /* summer */
+        [8, 3, 4, 6, 0, 5]     /* autumn */
+      ];
+      function votdHexRgb(hex) {
+        return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+      }
+      function votdLum(hex) {
+        var c = votdHexRgb(hex);
+        return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+      }
+      /* Paint one day's scene into any canvas-sized context.
+         Returns the scene, with its brightness (lum, 0 to 1)
+         measured, so the caller can fit a reading wash to it. */
+      function drawVotdSky(ctx, W, H, date) {
         var seed = (Math.imul((date.getMonth() + 1) * 100 + date.getDate(), 2654435761) ^ 0x9E3779B9) >>> 0;
         var rnd = votdRand(seed);
-        var yearStart = new Date(date.getFullYear(), 0, 0);
-        var doy = Math.floor((date.getTime() - yearStart.getTime()) / 86400000);
-        var arc = Math.sin((doy - 1) / 365 * Math.PI * 2 - Math.PI / 2); /* -1 in deep winter, 1 at midsummer */
         var month = date.getMonth();
         var season = (month === 11 || month <= 1) ? 0 : month <= 4 ? 1 : month <= 7 ? 2 : 3;
-        var PALS = [
-          { top: "#2f3c5e", mid: "#77688f", hor: "#eda668", sun: "#ffd9a3", far: "#5d5570", near: "#38324a" },
-          { top: "#3a5a84", mid: "#93aec4", hor: "#f6cd8d", sun: "#ffe4a6", far: "#5d7d68", near: "#38543f" },
-          { top: "#2e5c8c", mid: "#7db1d1", hor: "#ffd98f", sun: "#ffedb3", far: "#4e7c59", near: "#2d5537" },
-          { top: "#473a60", mid: "#a26b74", hor: "#f69e5d", sun: "#ffc98c", far: "#6a4a4c", near: "#443034" }
-        ];
-        var P = PALS[season];
+        var pool = VOTD_POOLS[season];
+        var P = VOTD_SCENES[pool[Math.floor(rnd() * pool.length)]];
+        var S = W / 880; /* sizes were tuned on the card's 880-wide canvas */
         var horizon = Math.round(H * 0.74);
         var sky = ctx.createLinearGradient(0, 0, 0, horizon);
         sky.addColorStop(0, P.top);
@@ -7834,34 +7956,51 @@
         sky.addColorStop(1, P.hor);
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, horizon + 1);
-        /* a few fading stars, on the quieter mornings */
-        if (rnd() < 0.55) {
-          var n = 8 + Math.floor(rnd() * 26);
+        /* stars, as full as the scene calls for */
+        if (P.stars > 0 && rnd() < 0.35 + P.stars * 0.65) {
+          var n = Math.floor((6 + rnd() * 26) * (0.4 + P.stars));
           for (var i = 0; i < n; i++) {
-            ctx.fillStyle = "rgba(255,250,230," + (0.25 + rnd() * 0.5).toFixed(2) + ")";
-            var sr = rnd() < 0.12 ? 2 : 1;
-            ctx.fillRect(rnd() * W, rnd() * H * 0.36, sr, sr);
+            ctx.fillStyle = "rgba(255,250,230," + (0.25 + rnd() * 0.55).toFixed(2) + ")";
+            var sr = Math.max(1, (rnd() < 0.12 ? 2 : 1) * S);
+            ctx.fillRect(rnd() * W, rnd() * H * 0.4, sr, sr);
           }
         }
-        /* the sun, higher and stronger toward midsummer */
+        /* the sun — or the moon — placed as the scene's hour asks */
         var sunX = W * (0.22 + rnd() * 0.56);
-        var sunR = 24 + rnd() * 20;
-        var sunY = horizon - (H * 0.13 + arc * H * 0.075 + rnd() * H * 0.05);
-        var glow = ctx.createRadialGradient(sunX, sunY, sunR * 0.4, sunX, sunY, sunR * 4.2);
-        glow.addColorStop(0, "rgba(255,226,160,0.55)");
-        glow.addColorStop(1, "rgba(255,226,160,0)");
-        ctx.fillStyle = glow;
-        ctx.fillRect(0, 0, W, horizon + 1);
-        ctx.beginPath();
-        ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
-        ctx.fillStyle = P.sun;
-        ctx.fill();
-        /* clouds in seeded shapes */
+        var sunR = (24 + rnd() * 20) * S * (P.sunMode === "low" ? 1.25 : 1);
+        var sunY = P.sunMode === "high" ? horizon - H * (0.46 + rnd() * 0.08)
+          : P.sunMode === "mid" || P.sunMode === "moon" ? horizon - H * (0.30 + rnd() * 0.09)
+          : horizon - H * (0.10 + rnd() * 0.05);
+        if (P.sunMode !== "hidden") {
+          var glow = ctx.createRadialGradient(sunX, sunY, sunR * 0.4, sunX, sunY, sunR * 4.2);
+          var gc = votdHexRgb(P.sun);
+          glow.addColorStop(0, "rgba(" + gc[0] + "," + gc[1] + "," + gc[2] + "," + (0.55 * P.glow / 0.55).toFixed(2) + ")");
+          glow.addColorStop(1, "rgba(" + gc[0] + "," + gc[1] + "," + gc[2] + ",0)");
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, W, horizon + 1);
+          ctx.beginPath();
+          ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+          ctx.fillStyle = P.sun;
+          ctx.fill();
+          if (P.sunMode === "moon") { /* a soft shadow gives the moon its roundness */
+            ctx.beginPath();
+            ctx.arc(sunX - sunR * 0.34, sunY - sunR * 0.18, sunR * 0.88, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(148,163,196,0.35)";
+            ctx.fill();
+          }
+        } else { /* hidden sun: one broad, diffuse brightening */
+          var haze = ctx.createRadialGradient(sunX, horizon - H * 0.3, 10, sunX, horizon - H * 0.3, W * 0.55);
+          haze.addColorStop(0, "rgba(255,255,250,0.28)");
+          haze.addColorStop(1, "rgba(255,255,250,0)");
+          ctx.fillStyle = haze;
+          ctx.fillRect(0, 0, W, horizon + 1);
+        }
+        /* clouds in seeded shapes, in the scene's own tint */
         var clouds = 3 + Math.floor(rnd() * 4);
         for (var c = 0; c < clouds; c++) {
           var cx = rnd() * W, cy = H * (0.08 + rnd() * 0.38);
-          var cw = 60 + rnd() * 150, chh = 10 + rnd() * 14;
-          ctx.fillStyle = "rgba(255,240,214," + (0.13 + rnd() * 0.16).toFixed(2) + ")";
+          var cw = (60 + rnd() * 150) * S, chh = (10 + rnd() * 14) * S;
+          ctx.fillStyle = "rgba(" + P.cloud[0] + "," + P.cloud[1] + "," + P.cloud[2] + "," + (0.13 + rnd() * 0.16).toFixed(2) + ")";
           for (var b = 0; b < 5; b++) {
             ctx.beginPath();
             if (ctx.ellipse) ctx.ellipse(cx + (rnd() - 0.5) * cw, cy + (rnd() - 0.5) * chh, cw * (0.24 + rnd() * 0.3), chh * (0.7 + rnd() * 0.6), 0, 0, Math.PI * 2);
@@ -7882,29 +8021,157 @@
         }
         ridge(horizon - H * 0.02, H * 0.10, P.far);
         ridge(horizon + H * 0.015, H * 0.06, P.near);
-        /* the foreground: water on some days, meadow on others */
-        var water = rnd() < 0.5;
+        /* the foreground the scene calls for */
         var fg = ctx.createLinearGradient(0, horizon, 0, H);
-        if (water) {
+        if (P.fg === "water") {
           fg.addColorStop(0, P.hor);
           fg.addColorStop(0.25, P.mid);
           fg.addColorStop(1, P.top);
+        } else if (P.fg === "snow") {
+          fg.addColorStop(0, "#e9edf4");
+          fg.addColorStop(1, "#b9c5d6");
+        } else if (P.fg === "field") {
+          fg.addColorStop(0, P.hor);
+          fg.addColorStop(1, P.near);
         } else {
           fg.addColorStop(0, P.near);
           fg.addColorStop(1, "#141a12");
         }
         ctx.fillStyle = fg;
         ctx.fillRect(0, horizon, W, H - horizon);
-        if (water) {
-          ctx.fillStyle = "rgba(255,232,170,0.5)";
+        if (P.fg === "water") {
+          ctx.fillStyle = "rgba(255,240,190,0.5)";
           for (var g = 0; g < 26; g++) {
             var gy = horizon + 4 + rnd() * (H - horizon - 8);
-            var gw = 6 + rnd() * 26;
-            ctx.fillRect(sunX - gw / 2 + (rnd() - 0.5) * 14, gy, gw, 1.6);
+            var gw = (6 + rnd() * 26) * S;
+            ctx.fillRect(sunX - gw / 2 + (rnd() - 0.5) * 14 * S, gy, gw, Math.max(1.4, 1.6 * S));
           }
+        } else if (P.fg === "snow") {
+          ctx.fillStyle = "rgba(255,255,255,0.55)";
+          for (var w2 = 0; w2 < 200; w2++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.8 * S, 1.8 * S);
+        } else if (P.fg === "field") {
+          ctx.fillStyle = "rgba(255,214,130,0.28)";
+          for (var f2 = 0; f2 < 240; f2++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 2.6 * S);
         } else {
           ctx.fillStyle = "rgba(214,235,180,0.20)";
-          for (var s = 0; s < 260; s++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6, 1.6);
+          for (var s = 0; s < 260; s++) ctx.fillRect(rnd() * W, horizon + 3 + rnd() * (H - horizon - 5), 1.6 * S, 1.6 * S);
+        }
+        P.lum = votdLum(P.mid) * 0.45 + votdLum(P.hor) * 0.4 + votdLum(P.top) * 0.15;
+        return P;
+      }
+      function paintVotdSky(date) {
+        var cv = $("votd-sky");
+        if (!cv || !cv.getContext) return;
+        var ctx = cv.getContext("2d");
+        if (!ctx) return;
+        var P = drawVotdSky(ctx, cv.width, cv.height, date);
+        /* Fit the reading wash to this scene: the wash keeps its
+           theme color, but where the scene is bright under a dark
+           theme (or dark under a light one) it thickens until the
+           words sit on a ground made for them. */
+        try {
+          var scrim = document.querySelector(".votd-scrim");
+          if (scrim && P && typeof P.lum === "number") {
+            /* the wash color comes from the theme's own variable —
+               never the scrim's computed background, which an
+               earlier painting's inline style would freeze at the
+               theme of that hour */
+            var cs = window.getComputedStyle(document.documentElement).getPropertyValue("--votd-wash") || "";
+            var m = cs.match(/rgba?\(([^)]+)\)/);
+            if (m) {
+              var parts = m[1].split(",");
+              var r = parseInt(parts[0], 10), gg = parseInt(parts[1], 10), bb = parseInt(parts[2], 10);
+              var washLum = (0.2126 * r + 0.7152 * gg + 0.0722 * bb) / 255;
+              var alpha;
+              if (washLum > 0.5) alpha = P.lum < 0.8 ? Math.min(0.93, Math.max(0.5, (0.8 - P.lum) / Math.max(0.05, washLum - P.lum))) : 0.5;
+              else alpha = P.lum > 0.22 ? Math.min(0.93, Math.max(0.48, (P.lum - 0.22) / Math.max(0.05, P.lum - washLum))) : 0.48;
+              scrim.style.background = "rgba(" + r + "," + gg + "," + bb + "," + alpha.toFixed(2) + ")";
+            }
+          }
+        } catch (e) {}
+      }
+
+      /* ---- the verse of the day as a shareable picture ----
+         The same painting the card shows for the day on show,
+         drawn at a portrait size made for sending, with the
+         verse and its reference laid over it and one small line
+         naming the app. The PNG goes out through the same
+         single-file share helper every other file uses — the
+         picture alone, no companions. Any failure is spoken
+         aloud in a message, never silence. */
+      function shareVotdImage() {
+        if (!votdPick) { try { showToast("The verse is still loading — try again in a moment."); } catch (e) {} return; }
+        try {
+          var now = new Date();
+          var date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + votdOffset);
+          var W = 1080, H = 1350;
+          var cv = document.createElement("canvas");
+          cv.width = W; cv.height = H;
+          var ctx = cv.getContext("2d");
+          if (!ctx) throw new Error("no canvas");
+          var P = drawVotdSky(ctx, W, H, date);
+          var dark = P.lum <= 0.45; /* a dark scene takes light words, a bright one dark words */
+          var wrgb = dark ? "18,16,28" : "255,252,244";
+          var wa = dark ? Math.min(0.82, Math.max(0.34, (P.lum - 0.14) / Math.max(0.05, P.lum - 0.02)))
+                         : Math.min(0.82, Math.max(0.34, (0.84 - P.lum) / Math.max(0.05, 1 - P.lum)));
+          ctx.fillStyle = "rgba(" + wrgb + "," + wa.toFixed(2) + ")";
+          ctx.fillRect(0, 0, W, H);
+          var ink = dark ? "#fdf6e9" : "#2a2019";
+          var accent = dark ? "#ffce8a" : "#9a5a17";
+          var soft = dark ? "rgba(253,246,233,0.85)" : "rgba(42,32,25,0.8)";
+          ctx.textAlign = "center";
+          /* the card's own label, spaced out the way the card shows it */
+          ctx.fillStyle = accent;
+          ctx.font = "700 30px -apple-system, Helvetica, Arial, sans-serif";
+          try { ctx.letterSpacing = "6px"; } catch (e) {}
+          ctx.fillText("VERSE OF THE DAY", W / 2, 148);
+          try { ctx.letterSpacing = "0px"; } catch (e) {}
+          /* the verse, wrapped to fit, shrinking a step at a time
+             until even a long verse sits comfortably */
+          /* some verses carry their own quotation marks in the
+             text; dress the ones that do not, never double them */
+          var text = votdPick.text;
+          if (text.charAt(0) !== "\u201C" && text.charAt(0) !== "\"") text = "\u201C" + text + "\u201D";
+          var size = 58, lines = [], lh = 0;
+          while (size >= 38) {
+            ctx.font = size + "px Newsreader, Georgia, serif";
+            lh = Math.round(size * 1.5);
+            lines = [];
+            var words = text.split(/\s+/), cur = "";
+            for (var wi = 0; wi < words.length; wi++) {
+              var trial = cur ? cur + " " + words[wi] : words[wi];
+              if (ctx.measureText(trial).width > W - 192 && cur) { lines.push(cur); cur = words[wi]; }
+              else cur = trial;
+            }
+            if (cur) lines.push(cur);
+            if (lines.length * lh <= 660) break;
+            size -= 4;
+          }
+          ctx.fillStyle = ink;
+          ctx.font = size + "px Newsreader, Georgia, serif";
+          var y = Math.round((H - lines.length * lh) / 2) + size * 0.4;
+          for (var li = 0; li < lines.length; li++) { ctx.fillText(lines[li], W / 2, y); y += lh; }
+          /* the reference under the verse, in the card's accent */
+          ctx.fillStyle = accent;
+          ctx.font = "700 38px -apple-system, Helvetica, Arial, sans-serif";
+          ctx.fillText(META[votdPick.b][0] + " " + (votdPick.c + 1) + ":" + votdPick.v, W / 2, y + 44);
+          /* one small footer line naming the app */
+          ctx.fillStyle = soft;
+          ctx.font = "28px -apple-system, Helvetica, Arial, sans-serif";
+          ctx.fillText("World English Bible · jesuslovestyler.github.io/World-English-Bible/", W / 2, H - 64);
+          if (cv.toBlob) {
+            cv.toBlob(function (blob) {
+              if (!blob) { try { showToast("Couldn't make the picture — please try again."); } catch (e) {} return; }
+              deliverFile(makeFile(blob, "verse-of-the-day.png", "image/png"), null);
+            }, "image/png");
+          } else if (cv.toDataURL) {
+            var durl = cv.toDataURL("image/png");
+            if (!anchorDownload(durl, "verse-of-the-day.png")) throw new Error("no delivery");
+          } else {
+            throw new Error("no canvas export");
+          }
+        } catch (e) {
+          try { showToast("Couldn't make the picture — please try again."); } catch (e2) {}
         }
       }
 
@@ -8153,6 +8420,7 @@
         [65,1,8],[65,3,20],[65,4,11],[65,21,4],[65,21,5],[65,22,20]
       ];
       var votdPick = null; /* {b, c (0-based), v, text} for the day the card is showing */
+      var votdDate = null; /* the calendar day the card is showing, for repaints */
       var votdOffset = 0;  /* days away from today the card is showing; 0 is today */
       var votdToken = 0;   /* keeps a slow day load from overwriting a newer one */
       /* The card can step a day at a time in either direction with
@@ -8168,6 +8436,7 @@
         try {
           var now = new Date();
           var date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+          votdDate = date;
           var dayNum = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
           var start = ((dayNum % VOTD.length) + VOTD.length) % VOTD.length;
           /* Walk forward from the day's pick until a verse with text
@@ -8215,7 +8484,7 @@
       try { $("note-cancel").addEventListener("click", closeNotePanel); } catch (e) {}
       try { $("note-remove").addEventListener("click", function () { applyNote(""); closeNotePanel(); }); } catch (e) {}
       try { $("saved-btn").addEventListener("click", openShelf); } catch (e) {}
-      try { $("saved-back").addEventListener("click", function () { showView("view-home"); }); } catch (e) {}
+      try { $("saved-back").addEventListener("click", function () { goBackFrom("view-saved"); }); } catch (e) {}
       try {
         $("votd-main").addEventListener("click", function () {
           if (votdPick) openChapter(votdPick.b, votdPick.c, votdPick.v);
@@ -8224,6 +8493,7 @@
       try { $("votd-prev").addEventListener("click", function () { showVotd(votdOffset - 1); }); } catch (e) {}
       try { $("votd-next").addEventListener("click", function () { showVotd(votdOffset + 1); }); } catch (e) {}
       try { $("votd-today").addEventListener("click", function () { showVotd(0); }); } catch (e) {}
+      try { $("votd-share-img").addEventListener("click", shareVotdImage); } catch (e) {}
       try {
         $("votd-share").addEventListener("click", function () {
           if (!votdPick) return;
@@ -8537,14 +8807,22 @@
         parts.push(new Uint8Array(end.buffer));
         return new Blob(parts, { type: "application/epub+zip" });
       }
-      /* The EPUB row on Explore is a plain link now, in every
-         mode: tapping it navigates straight to
+      /* The EPUB row on Explore is delivered the same way the
+         large-print PDF row is: in the installed app the file is
+         fetched and handed to the share sheet as a single item;
+         in a desktop browser the plain link downloads properly,
+         and it is left to do so. The file it delivers is
          assets/world-english-bible.epub, a ready-made copy of this
-         same EPUB, so iOS hands it to Apple Books the way it does
-         from Safari — no fetch-and-share step for this row. (The
-         large-print PDF row keeps its share-sheet delivery in the
-         installed app, untouched.) The builder above stays as the
-         record of how that ready-made file is made. */
+         same EPUB; the builder above stays as the record of how
+         that ready-made file is made. */
+      try {
+        var epubLink = $("download-btn");
+        if (epubLink) epubLink.addEventListener("click", function (ev) {
+          if (fetchAndDeliver("assets/world-english-bible.epub", "world-english-bible.epub", "application/epub+zip", $("epub-download-note"))) {
+            ev.preventDefault();
+          }
+        });
+      } catch (e) {}
 
       /* ---- the large-print PDF download row ----
          In the installed app a bare link to the PDF strands the
@@ -8604,7 +8882,7 @@
         }
         showView("view-chapters");
       }
-      $("chapters-back").addEventListener("click", function () { showView("view-home"); });
+      $("chapters-back").addEventListener("click", function () { goBackFrom("view-chapters"); });
 
       /* ---- reader ---- */
       var readerToken = 0;
@@ -8846,7 +9124,7 @@
         }
       }
       $("reader-to-chapters").addEventListener("click", function () { openChapters(current.b); });
-      $("reader-to-books").addEventListener("click", function () { showView("view-home"); });
+      $("reader-to-books").addEventListener("click", function () { goBackFrom("view-reader"); });
 
       /* ---- print ----
          A paper rendering built fresh from the Bible data into
@@ -11178,7 +11456,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610210500";
+      var APP_BUILD_STAMP = "202610210600";
       (function () {
         try {
           var btn = $("update-btn");
