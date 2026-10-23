@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Bible" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="data:," />
-    <meta name="app-build" content="202610231045" />
+    <meta name="app-build" content="202610231116" />
     <title>World English Bible</title>
     <meta property="og:title" content="World English Bible" />
     <meta property="og:description" content="The whole Bible, free to read and search — all 66 books, in the public-domain World English Bible." />
@@ -1228,6 +1228,46 @@
       /* the chapters-read count with Start over standing beside it */
       .journey-chaprow { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; }
       .journey-chaprow .journey-big { margin: 0; }
+      /* Start over, once tapped, arms itself before it can clear
+         anything: the label turns to a warning in the red-letter red
+         and only a second tap goes through */
+      .read-reset.armed { color: var(--redletter); font-weight: 700; }
+
+      /* ---------- protect your progress (my journey) ----------
+         The backup-and-restore home: a bordered box under the
+         journey tallies, in the surface dress of the app's other
+         panels, with room for its status lines, its action buttons,
+         a paste-a-backup field, and the inline confirmation a
+         restore asks for before it replaces anything. */
+      .protect-box {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+        box-shadow: var(--shadow); padding: 16px 18px; margin: 30px 0 0;
+      }
+      .protect-box h3 { font-family: "Newsreader", Georgia, serif; font-size: 21px; font-weight: 600; margin: 0 0 6px; }
+      .protect-note { color: var(--ink-soft); font-size: 15.5px; line-height: 1.55; margin: 0 0 6px; max-width: 34em; }
+      .protect-status { font-size: 15px; font-weight: 600; margin: 10px 0 0; }
+      .protect-status.soft { color: var(--ink-soft); font-weight: 500; }
+      .protect-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .protect-actions .btn { min-height: 50px; font-size: 16px; padding: 11px 18px; }
+      .protect-actions .btn.ghost { background: var(--surface); color: var(--accent); border-color: var(--line); }
+      .protect-paste { margin-top: 14px; }
+      .protect-paste textarea {
+        width: 100%; box-sizing: border-box;
+        font: inherit; font-size: 14.5px; line-height: 1.45;
+        color: var(--ink); background: var(--paper);
+        border: 1.5px solid var(--line); border-radius: 10px;
+        padding: 10px 12px; min-height: 64px; resize: vertical;
+      }
+      .protect-paste textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+      .protect-confirm {
+        border: 1.5px solid var(--redletter); border-radius: 10px;
+        padding: 12px 14px; margin-top: 14px;
+      }
+      .protect-confirm p { margin: 0 0 10px; font-size: 15.5px; line-height: 1.5; }
+      .protect-confirm .pc-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .protect-confirm .btn { min-height: 48px; font-size: 16px; padding: 10px 18px; }
+      .protect-confirm .btn.danger { background: var(--redletter); border-color: var(--redletter); color: #ffffff; }
+      .protect-confirm .btn.ghost { background: var(--surface); color: var(--accent); border-color: var(--line); }
 
       /* ---------- bible words (glossary) ---------- */
       .words-note { color: var(--ink-soft); font-size: 14.5px; margin: 12px 0 0; }
@@ -7013,6 +7053,9 @@
           nr.appendChild(el("p", null,
             "Nothing read or saved yet — and that's fine. When you're ready, the Start Here path on the home page is a gentle way in: Luke first, to meet Jesus, then John, Acts, and Romans. Every chapter you read will quietly take its place here."));
           body.appendChild(nr);
+          /* Even an empty journey keeps the way back open: a backup
+             saved on another day can be restored from right here. */
+          appendProtection(body);
           return;
         }
         var chapStat = el("div", "journey-stat");
@@ -7026,7 +7069,27 @@
         if (totalRead > 0) {
           var resetBtn = el("button", "read-reset", "Start over");
           resetBtn.type = "button";
+          /* One stray tap can no longer erase the record: the first
+             tap only arms the button — its label becomes the warning
+             and it waits, disarming itself after a few seconds — and
+             only a second, deliberate tap clears. The toast points at
+             the backup below, so a reader who wants the record kept
+             can save it first. */
+          var resetArmed = false, resetArmTimer = null;
           resetBtn.addEventListener("click", function () {
+            if (!resetArmed) {
+              resetArmed = true;
+              resetBtn.textContent = "Tap again to clear — this can't be undone";
+              resetBtn.classList.add("armed");
+              try { showToast("Sure? Save a backup below first — or tap Start over again to clear."); } catch (e) {}
+              resetArmTimer = setTimeout(function () {
+                resetArmed = false;
+                resetBtn.textContent = "Start over";
+                resetBtn.classList.remove("armed");
+              }, 9000);
+              return;
+            }
+            if (resetArmTimer) clearTimeout(resetArmTimer);
             resetReadingRecord();
             renderJourney();
           });
@@ -7152,6 +7215,360 @@
             "No notes yet — when you write a note on a verse, it will gather here."));
         }
         body.appendChild(notesStat);
+        appendProtection(body);
+      }
+
+      /* ---- protect your progress: backup, restore & keeping ----
+         Everything personal in this app — chapters read, plans,
+         Continue Reading, My Places, saved verses, highlights,
+         notes, and the reader's comfort picks — lives only in this
+         device's storage for the app, and a phone can clear that
+         storage while the app sits unopened. Three protections now
+         stand on My Journey against losing it:
+           1. A backup file the reader saves somewhere of their own
+              (Files, email, anywhere), and a restore that reads
+              that file — or the same backup pasted as text — back
+              in. Restoring always asks first, in the page, and it
+              merges: the backup's chapters, saved verses, and notes
+              join what this device already holds, never erasing
+              anything read or saved here.
+           2. The app asks the phone to keep its storage permanently
+              (navigator.storage.persist), once when it opens and
+              again from the button below, and says honestly whether
+              the phone has granted it.
+           3. Start over (above) takes two deliberate taps.
+         The backup carries the app's own storage records exactly as
+         they stand, under their own keys, so a restore is the very
+         records coming home — nothing is translated or reshaped. */
+      var BACKUP_KEYS = [
+        "web-bible:read", "web-bible:saved", "web-bible:last-read",
+        "web-bible:last-plan", "web-bible:places",
+        "web-bible:text-size", "web-bible:theme", "web-bible:font",
+        "web-bible:spacing", "web-bible:rate", "web-bible:listen-mode",
+        "web-bible:voice", "web-bible:welcomed"
+      ];
+      var BACKUP_AT_KEY = "web-bible:backup-at";
+      function collectBackupData() {
+        var data = {};
+        try {
+          BACKUP_KEYS.forEach(function (k) {
+            var v = window.localStorage.getItem(k);
+            if (v != null) data[k] = v;
+          });
+        } catch (e) {}
+        return data;
+      }
+      function buildBackupText() {
+        return JSON.stringify({
+          app: "World English Bible",
+          kind: "web-bible-progress-backup",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          data: collectBackupData()
+        }, null, 2);
+      }
+      function noteBackupMade() {
+        try { window.localStorage.setItem(BACKUP_AT_KEY, new Date().toISOString()); } catch (e) {}
+      }
+      function backupSummary(data) {
+        var parts = [];
+        try {
+          if (data["web-bible:read"]) {
+            var rd = JSON.parse(data["web-bible:read"]);
+            var rn = 0; for (var rk in rd) rn++;
+            if (rn) parts.push(rn + (rn === 1 ? " chapter" : " chapters") + " read");
+          }
+        } catch (e) {}
+        try {
+          if (data["web-bible:saved"]) {
+            var sv = JSON.parse(data["web-bible:saved"]);
+            var sn = 0; for (var sk in sv) sn++;
+            if (sn) parts.push(sn + (sn === 1 ? " saved verse" : " saved verses"));
+          }
+        } catch (e) {}
+        return parts.length ? parts.join(" · ") : "your reading settings and places";
+      }
+      function parseBackupText(text) {
+        var parsed = null;
+        try { parsed = JSON.parse(text); } catch (e) { return null; }
+        if (!parsed || typeof parsed !== "object") return null;
+        var data = (parsed.data && typeof parsed.data === "object") ? parsed.data : parsed;
+        var clean = {}, found = false;
+        BACKUP_KEYS.forEach(function (k) {
+          if (typeof data[k] === "string") { clean[k] = data[k]; found = true; }
+        });
+        return found ? clean : null;
+      }
+      function applyBackupData(data) {
+        try {
+          BACKUP_KEYS.forEach(function (k) {
+            if (typeof data[k] !== "string") return;
+            if (k === "web-bible:read" || k === "web-bible:saved") {
+              /* The two records that ARE the progress merge, never
+                 overwrite: every chapter and verse in the backup
+                 joins what this device already holds, and where the
+                 same verse stands in both, its fields join too —
+                 the backup's note or highlight wins for that verse,
+                 and nothing this device holds is lost. */
+              try {
+                var cur = JSON.parse(window.localStorage.getItem(k) || "{}");
+                var bak = JSON.parse(data[k]);
+                if (!cur || typeof cur !== "object") cur = {};
+                if (!bak || typeof bak !== "object") bak = {};
+                for (var bk in bak) {
+                  if (k === "web-bible:saved" &&
+                      cur[bk] && typeof cur[bk] === "object" &&
+                      bak[bk] && typeof bak[bk] === "object") {
+                    var joined = {};
+                    for (var cf in cur[bk]) joined[cf] = cur[bk][cf];
+                    for (var bf in bak[bk]) joined[bf] = bak[bk][bf];
+                    cur[bk] = joined;
+                  } else { cur[bk] = bak[bk]; }
+                }
+                window.localStorage.setItem(k, JSON.stringify(cur));
+              } catch (e2) {
+                if (!window.localStorage.getItem(k)) window.localStorage.setItem(k, data[k]);
+              }
+            } else if (k === "web-bible:places") {
+              try {
+                var curP = JSON.parse(window.localStorage.getItem(k) || "[]");
+                var bakP = JSON.parse(data[k]);
+                if (!Array.isArray(curP)) curP = [];
+                if (!Array.isArray(bakP)) bakP = [];
+                var seenP = {};
+                curP.forEach(function (p) { if (p) seenP[p.b + ":" + p.c] = 1; });
+                bakP.forEach(function (p) {
+                  if (p && !seenP[p.b + ":" + p.c]) { curP.push(p); seenP[p.b + ":" + p.c] = 1; }
+                });
+                window.localStorage.setItem(k, JSON.stringify(curP.slice(0, 3)));
+              } catch (e3) {
+                if (!window.localStorage.getItem(k)) window.localStorage.setItem(k, data[k]);
+              }
+            } else if (!window.localStorage.getItem(k)) {
+              /* Positions, plan, and picks: a value this device
+                 already holds stands; the backup fills only what
+                 is missing — on a device that lost everything,
+                 that is all of it. */
+              window.localStorage.setItem(k, data[k]);
+            }
+          });
+        } catch (e) {}
+        try { showToast("Progress restored — welcome back"); } catch (e) {}
+        /* The restored records are the app's own, read at opening:
+           reload so every tally, plan, and saved verse stands
+           exactly as the backup left it. */
+        setTimeout(function () {
+          try { window.location.reload(); } catch (e) {}
+        }, 700);
+      }
+      function downloadBackupFile() {
+        var text = buildBackupText();
+        var stamp = new Date().toISOString().slice(0, 10);
+        try {
+          var blob = new Blob([text], { type: "application/json" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "bible-progress-backup-" + stamp + ".json";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 4000);
+          noteBackupMade();
+          showToast("Backup saved — keep the file somewhere safe");
+        } catch (e) {
+          try { showToast("Couldn't save the file — try Copy backup instead"); } catch (e2) {}
+        }
+      }
+      function copyBackupText() {
+        var text = buildBackupText();
+        function done() {
+          noteBackupMade();
+          try { showToast("Backup copied — paste it somewhere safe"); } catch (e) {}
+        }
+        function fallback() {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(ta);
+          done();
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, fallback);
+        } else { fallback(); }
+      }
+      /* Ask the phone to keep this app's storage for good. Granted
+         or not, the answer is reported honestly; a browser without
+         the API simply leans on the backup file. */
+      function requestPersistentStorage() {
+        try {
+          if (!navigator.storage || typeof navigator.storage.persist !== "function") {
+            return Promise.resolve(null);
+          }
+          return navigator.storage.persist();
+        } catch (e) { return Promise.resolve(null); }
+      }
+      try {
+        if (navigator.storage && typeof navigator.storage.persisted === "function") {
+          navigator.storage.persisted().then(function (already) {
+            if (!already) requestPersistentStorage();
+          }).catch(function () {});
+        } else { requestPersistentStorage(); }
+      } catch (e) {}
+      function appendProtection(body) {
+        var box = el("div", "protect-box");
+        box.appendChild(el("h3", null, "Protect your progress"));
+        box.appendChild(el("p", "protect-note",
+          "Your reading lives only on this device — and a phone can clear an app's storage while it sits unopened. Two things keep your journey safe: ask this phone to keep the app's storage, and save a backup file of your own. If your progress ever looks gone, come back here and restore from that file."));
+
+        var persistStatus = el("p", "protect-status soft", "Checking how this phone keeps the app's storage…");
+        box.appendChild(persistStatus);
+        var persistRow = el("div", "protect-actions");
+        var persistBtn = el("button", "btn ghost", "Ask phone to keep my progress");
+        persistBtn.type = "button";
+        persistRow.appendChild(persistBtn);
+        box.appendChild(persistRow);
+        function refreshPersistStatus() {
+          try {
+            if (!navigator.storage || typeof navigator.storage.persisted !== "function") {
+              persistStatus.textContent = "This browser doesn't offer permanent storage — your backup file below is the surest protection.";
+              persistBtn.hidden = true;
+              return;
+            }
+            navigator.storage.persisted().then(function (kept) {
+              if (kept) {
+                persistStatus.textContent = "✓ This phone is keeping the app's storage — it won't be cleared for sitting unopened.";
+                persistBtn.hidden = true;
+              } else {
+                persistStatus.textContent = "This phone hasn't promised to keep the app's storage yet.";
+                persistBtn.hidden = false;
+              }
+            }).catch(function () {
+              persistStatus.textContent = "Couldn't check this phone's storage promise — your backup file below still protects you.";
+            });
+          } catch (e) {
+            persistStatus.textContent = "Couldn't check this phone's storage promise — your backup file below still protects you.";
+          }
+        }
+        persistBtn.addEventListener("click", function () {
+          requestPersistentStorage().then(function (granted) {
+            if (granted) {
+              try { showToast("This phone will keep your progress"); } catch (e) {}
+            } else if (granted === false) {
+              try { showToast("The phone didn't promise yet — a backup file still keeps you safe"); } catch (e) {}
+            }
+            refreshPersistStatus();
+          });
+        });
+        refreshPersistStatus();
+
+        var lastLine = el("p", "protect-status soft", "");
+        try {
+          var atRaw = window.localStorage.getItem(BACKUP_AT_KEY);
+          if (atRaw) {
+            var atDate = new Date(atRaw);
+            if (!isNaN(atDate.getTime())) {
+              lastLine.textContent = "Last backup made on this device: " +
+                atDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) + ".";
+            }
+          }
+        } catch (e) {}
+        if (lastLine.textContent) box.appendChild(lastLine);
+
+        var actions = el("div", "protect-actions");
+        var dlBtn = el("button", "btn", "⬇ Save a backup file");
+        dlBtn.type = "button";
+        dlBtn.addEventListener("click", downloadBackupFile);
+        actions.appendChild(dlBtn);
+        var copyBtn = el("button", "btn ghost", "Copy backup");
+        copyBtn.type = "button";
+        copyBtn.addEventListener("click", copyBackupText);
+        actions.appendChild(copyBtn);
+        var fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".json,application/json,text/plain";
+        fileInput.hidden = true;
+        var fileBtn = el("button", "btn ghost", "Restore from a backup file");
+        fileBtn.type = "button";
+        fileBtn.addEventListener("click", function () { fileInput.click(); });
+        actions.appendChild(fileBtn);
+        actions.appendChild(fileInput);
+        box.appendChild(actions);
+        box.appendChild(el("p", "protect-note",
+          "Keep the backup file somewhere that isn't this app — your Files, an email to yourself, anywhere you trust. Restoring always asks first, and it adds the backup's progress to what's here — nothing you've read or saved on this device is lost by restoring."));
+
+        var confirmBox = el("div", "protect-confirm");
+        confirmBox.hidden = true;
+        box.appendChild(confirmBox);
+        var pendingData = null;
+        function offerRestore(data) {
+          pendingData = data;
+          confirmBox.textContent = "";
+          confirmBox.appendChild(el("p", null,
+            "Restore this backup? It holds " + backupSummary(data) +
+            ". Restoring adds those chapters, saved verses, and notes to what this device already holds — nothing here is erased. Where the same verse stands in both, the backup's note or highlight is the one kept."));
+          var row = el("div", "pc-actions");
+          var go = el("button", "btn danger", "Restore my progress");
+          go.type = "button";
+          go.addEventListener("click", function () {
+            var d = pendingData;
+            pendingData = null;
+            confirmBox.hidden = true;
+            if (d) applyBackupData(d);
+          });
+          var cancel = el("button", "btn ghost", "Cancel");
+          cancel.type = "button";
+          cancel.addEventListener("click", function () {
+            pendingData = null;
+            confirmBox.hidden = true;
+          });
+          row.appendChild(go);
+          row.appendChild(cancel);
+          confirmBox.appendChild(row);
+          confirmBox.hidden = false;
+          try { confirmBox.scrollIntoView({ block: "nearest" }); } catch (e) {}
+        }
+        fileInput.addEventListener("change", function () {
+          var f = fileInput.files && fileInput.files[0];
+          fileInput.value = "";
+          if (!f) return;
+          var reader = new FileReader();
+          reader.onload = function () {
+            var data = parseBackupText(String(reader.result || ""));
+            if (data) offerRestore(data);
+            else try { showToast("That file doesn't look like a Bible backup"); } catch (e) {}
+          };
+          reader.onerror = function () {
+            try { showToast("Couldn't read that file — try again"); } catch (e) {}
+          };
+          try { reader.readAsText(f); } catch (e) {
+            try { showToast("Couldn't read that file — try again"); } catch (e2) {}
+          }
+        });
+
+        var pasteWrap = el("div", "protect-paste");
+        var pasteArea = document.createElement("textarea");
+        pasteArea.setAttribute("placeholder", "…or paste a copied backup here");
+        pasteArea.setAttribute("aria-label", "Paste a copied backup here");
+        pasteWrap.appendChild(pasteArea);
+        var pasteRow = el("div", "protect-actions");
+        var pasteBtn = el("button", "btn ghost", "Restore from pasted backup");
+        pasteBtn.type = "button";
+        pasteBtn.addEventListener("click", function () {
+          var data = parseBackupText(pasteArea.value || "");
+          if (data) offerRestore(data);
+          else try { showToast("That doesn't look like a Bible backup — copy a fresh one above"); } catch (e) {}
+        });
+        pasteRow.appendChild(pasteBtn);
+        pasteWrap.appendChild(pasteRow);
+        box.appendChild(pasteWrap);
+
+        body.appendChild(box);
       }
       function openJourney() {
         renderJourney();
@@ -12585,7 +13002,7 @@
          fetch (offline) shows a friendly no-connection line instead.
          Everything is wrapped so a check can never break offline
          reading or any other feature. */
-      var APP_BUILD_STAMP = "202610231045";
+      var APP_BUILD_STAMP = "202610231116";
       (function () {
         try {
           var btn = $("update-btn");
